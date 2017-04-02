@@ -234,6 +234,7 @@ namespace KSP_MOCR
 
 
 				// Supplies
+				/*
 				double mF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
 				double cF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
 

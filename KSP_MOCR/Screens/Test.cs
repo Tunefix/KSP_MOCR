@@ -35,9 +35,9 @@ namespace KSP_MOCR
 				//this.krpc = this.connection.KRPC();
 			}
 
-			//status = krpc.GetStatus();
+			status = krpc.GetStatus();
 
-			//status = stream.Get();
+			status = stream.Get();
 
 			if (form.connected && connection != null && 1 == 0)
 			{

@@ -377,7 +377,7 @@ namespace KSP_MOCR
 				this.flight = this.flight_stream.Get();
 				this.vessel_control = this.control_stream.Get();
 				this.vessel_resources = this.resources_stream.Get();
-				this.orbit = this.orbit_stream.Get();
+				//this.orbit = this.orbit_stream.Get();
 				this.vessel_resources_stage = this.vessel_resources_stage_stream.Get();
 				
 

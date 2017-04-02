@@ -13,11 +13,11 @@ namespace KSP_MOCR
 	public class Streams
 	{
 		private List<IStream> streams = new List<IStream>();
-		private KRPC.Client.Connection connection;
+		//private KRPC.Client.Connection connection;
 
 		public void setConnection(KRPC.Client.Connection con)
 		{
-			this.connection = con;
+			//this.connection = con;
 		}
 
 		public IStream getStream(Type function)
