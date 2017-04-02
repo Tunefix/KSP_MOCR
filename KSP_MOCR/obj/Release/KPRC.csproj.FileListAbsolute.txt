@@ -1,0 +1,17 @@
+Z:\DEV\KPRC\KPRC\bin\Release\KPRC.exe.config
+Z:\DEV\KPRC\KPRC\bin\Release\KPRC.exe
+Z:\DEV\KPRC\KPRC\bin\Release\KPRC.pdb
+Z:\DEV\KPRC\KPRC\bin\Release\Google.Protobuf.dll
+Z:\DEV\KPRC\KPRC\bin\Release\KRPC.Client.dll
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.Form1.resources
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.Properties.Resources.resources
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.csproj.GenerateResource.Cache
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.exe
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.pdb
+Z:\DEV\KPRC\KPRC\bin\Release\KPRC.exe.manifest
+Z:\DEV\KPRC\KPRC\bin\Release\KPRC.application
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.TrustInfo.xml
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.exe.manifest
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.application
+Z:\DEV\KPRC\KPRC\obj\Release\KPRC.csprojResolveAssemblyReference.cache
+Z:\DEV\KPRC\KPRC\bin\Release\Google.Protobuf.xml
