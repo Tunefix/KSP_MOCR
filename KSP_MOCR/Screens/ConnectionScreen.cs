@@ -34,11 +34,16 @@ namespace KSP_MOCR
 			{
 				this.connection = form.connection;
 				this.krpc = form.krpc;
+
+				screenButtons[0].Text = "Disconect";
+				screenButtons[0].Click -= form.ConnectToServer;
+				screenButtons[0].Click += form.DisconnectFromServer;
 			}
 
 			if (form.connected && this.connection != null)
 			{
-				if(status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
+
+				if (status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
 
 				status = status_stream.Get();
 

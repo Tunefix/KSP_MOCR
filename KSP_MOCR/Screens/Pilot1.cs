@@ -379,8 +379,8 @@ namespace KSP_MOCR
 				this.vessel_resources = this.resources_stream.Get();
 				this.orbit = this.orbit_stream.Get();
 				this.vessel_resources_stage = this.vessel_resources_stage_stream.Get();
+				
 
-				/*
 				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
 
 				// THROTTLE

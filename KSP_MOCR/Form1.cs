@@ -14,6 +14,7 @@ using System.Drawing.Text;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Net;
 
 namespace KSP_MOCR
 {
@@ -217,11 +218,15 @@ namespace KSP_MOCR
 
 			try
 			{
-				System.Net.IPAddress IP = System.Net.IPAddress.Parse(activeScreen.screenInputs[0].Text);
+
+				IPAddress[] adrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
+				System.Net.IPAddress IP = adrs[0]; // IPv4
+
+
+				//System.Net.IPAddress IP = System.Net.IPAddress.Parse(activeScreen.screenInputs[0].Text);
 				String name = activeScreen.screenInputs[1].Text;
 
 				connection = new Connection(name: name, address: IP);
-
 
 
 				krpc = connection.KRPC();
@@ -248,6 +253,12 @@ namespace KSP_MOCR
 				MessageBox.Show("IO ERROR");
 				activeScreen.screenLabels[0].Text = "NOT CONNECTED";
 			}
+		}
+
+		public void DisconnectFromServer(object sender, EventArgs e)
+		{
+			connection.Dispose();
+			connected = false;
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -314,7 +325,7 @@ namespace KSP_MOCR
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			Console.WriteLine("KD: " + e.KeyValue);
+			//Console.WriteLine("KD: " + e.KeyValue);
 
 			int x = e.KeyValue & 0x000000ff;
 
