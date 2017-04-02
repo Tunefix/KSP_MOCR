@@ -91,6 +91,7 @@ namespace KSP_MOCR
 		{
 			using (var pfc = new PrivateFontCollection())
 			{
+				Console.WriteLine(Path.GetFullPath(fontFile));
 				pfc.AddFontFile(fontFile);
 				using (var fontFamily = new FontFamily(pfc.Families[0].Name, pfc))
 				{
