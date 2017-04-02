@@ -43,9 +43,9 @@ namespace KSP_MOCR
 			if (form.connected && this.connection != null)
 			{
 
-				if (status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
+				//if (status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
 
-				status = status_stream.Get();
+				status = krpc.GetStatus();   //status_stream.Get();
 
 				screenLabels[0].Text = "CONNECTED\n\n"
 					+ "  VERSION: " + status.Version + "\n"
