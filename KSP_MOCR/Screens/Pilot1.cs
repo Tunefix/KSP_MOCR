@@ -433,9 +433,12 @@ namespace KSP_MOCR
 				logBlock("Rot Readout show data");
 
 				// STAGE LABEL
-				screenLabels[25].Text = "CUR: " + help.prtlen(vessel_control.CurrentStage.ToString(), 2);
+				String stageTxt = vessel_control.CurrentStage.ToString();
+				logBlock("Stage Data");
 
-				logBlock("Stage");
+				screenLabels[25].Text = "CUR: " + help.prtlen(stageTxt, 2);
+
+				logBlock("Stage Print");
 
 				// Status
 				if (vessel_control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
