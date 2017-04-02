@@ -440,6 +440,11 @@ namespace KSP_MOCR
 
 				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
 
+				end = DateTime.Now;
+				dur = end - start;
+				Console.WriteLine("Block 3: " + (int)dur.TotalMilliseconds);
+				start = DateTime.Now;
+
 				float maxR = vessel_resources.Max("ElectricCharge");
 				float curR = vessel_resources.Amount("ElectricCharge");
 				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(1); } else { screenIndicators[6].setStatus(0); } // Power High
@@ -459,7 +464,7 @@ namespace KSP_MOCR
 
 				end = DateTime.Now;
 				dur = end - start;
-				Console.WriteLine("Block 2: " + (int)dur.TotalMilliseconds);
+				Console.WriteLine("Block 3: " + (int)dur.TotalMilliseconds);
 
 				// Check for autopilot
 				switch (controlMode)
