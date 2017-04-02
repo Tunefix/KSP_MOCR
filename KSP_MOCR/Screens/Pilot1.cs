@@ -45,6 +45,12 @@ namespace KSP_MOCR
 
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
 
+
+		DateTime start;
+		DateTime end;
+		TimeSpan dur;
+		int block = 1;
+
 		public Pilot1(Form1 form)
 		{
 			this.connection = form.connection;
@@ -358,9 +364,6 @@ namespace KSP_MOCR
 
 			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
 			{
-				DateTime start;
-				DateTime end;
-				TimeSpan dur;
 
 				// INITIALIZE STREAMS
 				/*
@@ -374,6 +377,8 @@ namespace KSP_MOCR
 
 				// GET DATA
 				start = DateTime.Now;
+
+
 				this.vessel = spaceCenter.ActiveVessel;
 				this.flight = spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame);
 				this.vessel_control = spaceCenter.ActiveVessel.Control;
@@ -391,10 +396,7 @@ namespace KSP_MOCR
 				// THROTTLE
 				screenLabels[16].Text = help.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, helper.Align.RIGHT);
 
-				end = DateTime.Now;
-				dur = end - start;
-				Console.WriteLine("Block 1: " + (int)dur.TotalMilliseconds);
-				start = DateTime.Now;
+				logBlock("MET + Throttle");
 
 				// ROTATION READOUT
 				double cR = flight.Roll;
@@ -408,10 +410,11 @@ namespace KSP_MOCR
 				double? nR;
 				double? nP;
 				double? nY;
-				
+
+				logBlock("Rot Readout get data");
 
 				// IF IN LOCK MODE SHOW LOCK ANGLES
-				if(controlMode == 2)
+				if (controlMode == 2)
 				{
 					nR = lockRotR;
 					nP = lockRotP;
@@ -427,6 +430,8 @@ namespace KSP_MOCR
 				screenLabels[21].Text = "P: " + help.prtlen(help.toFixed(sP, 1), 6) + "  " + help.prtlen(help.toFixed(cP, 1), 6) + "  " + help.prtlen(help.toFixed(nP, 1), 6);
 				screenLabels[22].Text = "Y: " + help.prtlen(help.toFixed(sY, 1), 6) + "  " + help.prtlen(help.toFixed(cY, 1), 6) + "  " + help.prtlen(help.toFixed(nY, 1), 6);
 
+				logBlock("Rot Readout show data");
+
 				// STAGE LABEL
 				screenLabels[25].Text = "CUR: " + help.prtlen(vessel_control.CurrentStage.ToString(), 2);
 
@@ -440,10 +445,7 @@ namespace KSP_MOCR
 
 				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
 
-				end = DateTime.Now;
-				dur = end - start;
-				Console.WriteLine("Block 3: " + (int)dur.TotalMilliseconds);
-				start = DateTime.Now;
+				logBlock("Status indicators");
 
 				float maxR = vessel_resources.Max("ElectricCharge");
 				float curR = vessel_resources.Amount("ElectricCharge");
@@ -462,9 +464,7 @@ namespace KSP_MOCR
 				curR = vessel_resources_stage.Amount("Oxidizer");
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
 
-				end = DateTime.Now;
-				dur = end - start;
-				Console.WriteLine("Block 3: " + (int)dur.TotalMilliseconds);
+				logBlock("Resource indicators");
 
 				// Check for autopilot
 				switch (controlMode)
@@ -841,6 +841,17 @@ namespace KSP_MOCR
 			}
 
 			if (done) { controlMode = 1; }
+		}
+
+		private void logBlock() { logBlock(""); }
+		private void logBlock(String name)
+		{
+			end = DateTime.Now;
+			dur = end - start;
+			String outName = "";
+			if (name != "") outName = "(" + name + ")";
+			Console.WriteLine("Block " + block++ + outName + ": " + (int)dur.TotalMilliseconds);
+			start = DateTime.Now;
 		}
 	}
 }
