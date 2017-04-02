@@ -188,7 +188,7 @@ namespace KSP_MOCR
 
 		public void screenTick(object sender, EventArgs e)
 		{
-			Console.WriteLine("Starting ScreenTick");
+			//Console.WriteLine("Starting ScreenTick");
 			updateStart = DateTime.Now;
 
 			if (activeScreen != null)
@@ -233,7 +233,7 @@ namespace KSP_MOCR
 
 				activeScreen.screenLabels[0].Text = "Connected v. ";// + status.Version;
 				connected = true;
-				Console.WriteLine("CONNECTED");
+				//Console.WriteLine("CONNECTED");
 			}
 			catch(System.Net.Sockets.SocketException)
 			{
