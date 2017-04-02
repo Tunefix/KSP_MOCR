@@ -13,8 +13,8 @@ namespace KSP_MOCR
 	class TestScreen : MocrScreen
 	{
 
-		KRPC.Schema.KRPC.Status status;
-		KRPC.Client.Stream<KRPC.Schema.KRPC.Status> stream;
+		//KRPC.Schema.KRPC.Status status;
+		//KRPC.Client.Stream<KRPC.Schema.KRPC.Status> stream;
 
 		public TestScreen(Form1 form)
 		{
@@ -34,35 +34,6 @@ namespace KSP_MOCR
 				//this.connection = form.connection;
 				//this.krpc = this.connection.KRPC();
 			}
-
-			status = krpc.GetStatus();
-
-			status = stream.Get();
-
-			if (form.connected && connection != null && 1 == 0)
-			{
-				screenLabels[0].Text = "CONNECTED\n\n"
-					+ "  VERSION: " + status.Version + "\n"
-					+ "  ADAPTIVE RATE CONTROL: " + status.AdaptiveRateControl + "\n"
-					+ "  BLOCKING RECEIVE: " + status.BlockingRecv + "\n"
-					+ "  BYTES READ: " + status.BytesRead + "\n"
-					+ "  BYTES READ RATE: " + status.BytesReadRate + "\n"
-					+ "  BYTES WRITTEN: " + status.BytesWritten + "\n"
-					+ "  BYTES WRITTEN RATE: " + status.BytesWrittenRate + "\n"
-					+ "  TIME PER RPC UPDATE: " + status.ExecTimePerRpcUpdate + "\n"
-					+ "  MAX TIME PER UPDATE: " + status.MaxTimePerUpdate + "\n"
-					+ "  ONE RPC PER UPDATE: " + status.OneRpcPerUpdate + "\n"
-					+ "  POLL TIME PER RPC UPDATE: " + status.PollTimePerRpcUpdate + "\n"
-					+ "  RECEIVE TIMEOUT: " + status.RecvTimeout + "\n"
-					+ "  RPC RATE: " + status.RpcRate + "\n"
-					+ "  RPCS EXECUTED: " + status.RpcsExecuted + "\n"
-					+ "  STREAM RPC RATE: " + status.StreamRpcRate + "\n"
-					+ "  STREAM RPCS: " + status.StreamRpcs + "\n"
-					+ "  STREAM RPCS EXECUTED: " + status.StreamRpcsExecuted + "\n"
-					+ "  TIME PER RPC UPDATE: " + status.TimePerRpcUpdate + "\n"
-					+ "  TIME PER STREAM UPDATE: " + status.TimePerStreamUpdate + "\n";
-
-			}
 		}
 
 
@@ -81,7 +52,7 @@ namespace KSP_MOCR
 
 		public override void destroyStreams()
 		{
-			if (stream != null) stream.Remove();
+			
 		}
 	}
 }
