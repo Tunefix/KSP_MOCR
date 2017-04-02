@@ -15,3 +15,4 @@ C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.exe.manifes
 C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.application
 C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.exe
 C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.pdb
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KRPC.Client.xml
