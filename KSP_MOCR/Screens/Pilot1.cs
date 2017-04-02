@@ -391,6 +391,11 @@ namespace KSP_MOCR
 				// THROTTLE
 				screenLabels[16].Text = help.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, helper.Align.RIGHT);
 
+				end = DateTime.Now;
+				dur = end - start;
+				Console.WriteLine("Block 1: " + (int)dur.TotalMilliseconds);
+				start = DateTime.Now;
+
 				// ROTATION READOUT
 				double cR = flight.Roll;
 				double cP = flight.Pitch;
