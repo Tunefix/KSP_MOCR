@@ -112,8 +112,8 @@ namespace KSP_MOCR
 			// Load font
 			//font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
 			//buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
-			font = CreateFont("consola.otf", 12, FontStyle.Regular);
-			buttonFont = CreateFont("consola.otf", 8, FontStyle.Regular);
+			font = CreateFont("consola.ttf", 12, FontStyle.Regular);
+			buttonFont = CreateFont("consola.ttf", 8, FontStyle.Regular);
 
 			/*
 			try
