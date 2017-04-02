@@ -228,14 +228,13 @@ namespace KSP_MOCR
 
 				connection = new Connection(name: name, address: IP);
 
-
 				krpc = connection.KRPC();
 				spaceCenter = connection.SpaceCenter();
-				
-				status_stream = connection.AddStream(() => krpc.GetStatus());
-				status = status_stream.Get();
 
-				activeScreen.screenLabels[0].Text = "Connected v. " + status.Version;
+				//status_stream = connection.AddStream(() => krpc.GetStatus());
+				//status = status_stream.Get();
+
+				activeScreen.screenLabels[0].Text = "Connected v. ";// + status.Version;
 				connected = true;
 			}
 			catch(System.Net.Sockets.SocketException)

@@ -66,14 +66,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KSP_MOCR.exe" size="1363896">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KSP_MOCR.exe" size="1330104">
       <assemblyIdentity name="KSP_MOCR" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>875l3t7hdpIlLlaXEQmb0HTMlULKM782z7sA793hWcM=</dsig:DigestValue>
+        <dsig:DigestValue>b+oRIl9vc6/vn7zQd9cL5OoB4HXxKEU674rvKkjB00s=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
