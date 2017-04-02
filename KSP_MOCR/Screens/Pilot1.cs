@@ -435,6 +435,8 @@ namespace KSP_MOCR
 				// STAGE LABEL
 				screenLabels[25].Text = "CUR: " + help.prtlen(vessel_control.CurrentStage.ToString(), 2);
 
+				logBlock("Stage");
+
 				// Status
 				if (vessel_control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
 				if (vessel_control.RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
