@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KRPC.Client.dll" size="281088">
-      <assemblyIdentity name="KRPC.Client" version="0.3.7.0" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KRPC.Client.dll" size="314368">
+      <assemblyIdentity name="KRPC.Client" version="0.3.8.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>QSun5AqbeBGKvkGDbttEYPAmkCXaaEPzVD3wnbOIz6U=</dsig:DigestValue>
+        <dsig:DigestValue>Vm2tA8xgWWryKs/uI6wJGtIbGfSRNyNPrv52OccxXZY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -73,7 +73,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>b+oRIl9vc6/vn7zQd9cL5OoB4HXxKEU674rvKkjB00s=</dsig:DigestValue>
+        <dsig:DigestValue>VMF9bLbtttmUhhrAmh5lnWo21AofT0kS8cHIMPi6E7g=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -83,7 +83,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>bpTqnA+ihG933UVlUHfIlMYLnljQEwbgZ5B+hOeptbY=</dsig:DigestValue>
+      <dsig:DigestValue>4+6WjmWS6RRtdD336rBuFTpqMTtv7XaO+9Omvrqo49s=</dsig:DigestValue>
     </hash>
   </file>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">

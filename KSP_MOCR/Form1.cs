@@ -87,6 +87,19 @@ namespace KSP_MOCR
 			return new Font(fontCol.Families[0], size, style);
 		}
 
+		Font CreateFont(string fontFile, float size, FontStyle style)
+		{
+			using (var pfc = new PrivateFontCollection())
+			{
+				Console.WriteLine(Path.GetFullPath(fontFile));
+				pfc.AddFontFile(fontFile);
+				using (var fontFamily = new FontFamily(pfc.Families[0].Name, pfc))
+				{
+					return new Font(fontFamily, size, style);
+				}
+			}
+		}
+
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			Console.WriteLine("FORM LOADING");
@@ -98,8 +111,11 @@ namespace KSP_MOCR
 			this.KeyPreview = true;
 
 			// Load font
-			font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
-			buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
+			//font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
+			//buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
+
+			font = CreateFont(AppDomain.CurrentDomain.BaseDirectory + "/consola.otf", 12, FontStyle.Regular);
+			buttonFont = CreateFont(AppDomain.CurrentDomain.BaseDirectory + "/consola.otf", 8, FontStyle.Regular);
 
 			/*
 			try
@@ -158,11 +174,12 @@ namespace KSP_MOCR
 			screenTimer.Elapsed += screenTick;
 
 			// Initiate Graph Timer
-			graphTimer = new System.Timers.Timer();
+			/*graphTimer = new System.Timers.Timer();
 			graphTimer.AutoReset = false;
 			graphTimer.Interval = 500;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
+			*/
 
 			// Load the connection screen
 			SetScreen(0);
@@ -187,10 +204,14 @@ namespace KSP_MOCR
 
 		public void screenTick(object sender, EventArgs e)
 		{
+			//Console.WriteLine("Starting ScreenTick");
 			updateStart = DateTime.Now;
-			
-			updateActiveScreen(sender, e);
-			
+
+			if (activeScreen != null)
+			{
+				activeScreen.updateElements(sender, e);
+			}
+
 			updateEnd = DateTime.Now;
 
 			TimeSpan updateDuration = updateEnd - updateStart;
@@ -201,14 +222,6 @@ namespace KSP_MOCR
 
 			screenTimer.Interval = remainTime;
 			screenTimer.Start();
-		}
-
-		public void updateActiveScreen(object sender, EventArgs e)
-		{
-			if(activeScreen != null)
-			{
-				activeScreen.updateElements(sender, e);
-			}
 		}
 
 		public void ConnectToServer(object sender, EventArgs e)
@@ -236,6 +249,7 @@ namespace KSP_MOCR
 
 				activeScreen.screenLabels[0].Text = "Connected v. ";// + status.Version;
 				connected = true;
+				//Console.WriteLine("CONNECTED");
 			}
 			catch(System.Net.Sockets.SocketException)
 			{
@@ -380,6 +394,11 @@ namespace KSP_MOCR
 				}
 				screenCallup = "";
 			}
+		}
+
+		public void tcpTest(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

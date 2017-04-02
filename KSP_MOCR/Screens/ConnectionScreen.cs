@@ -35,17 +35,14 @@ namespace KSP_MOCR
 				this.connection = form.connection;
 				this.krpc = form.krpc;
 
-				screenButtons[0].Text = "Disconect";
+				screenButtons[0].Text = "Disconnect";
 				screenButtons[0].Click -= form.ConnectToServer;
 				screenButtons[0].Click += form.DisconnectFromServer;
 			}
 
 			if (form.connected && this.connection != null)
 			{
-
-				if (status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
-
-				status = status_stream.Get();
+				status = krpc.GetStatus();
 
 				screenLabels[0].Text = "CONNECTED\n\n"
 					+ "  VERSION: " + status.Version + "\n"
@@ -75,9 +72,9 @@ namespace KSP_MOCR
 		{
 			for (int i = 0; i < 5; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 2; i++) screenInputs.Add(null); // Initialize Inputs
-			for (int i = 0; i < 1; i++) screenButtons.Add(null); // Initialize Buttons
+			for (int i = 0; i < 2; i++) screenButtons.Add(null); // Initialize Buttons
 
-			screenLabels[0] = help.CreateLabel(1, 4, 58, 26); // Connection Status
+			screenLabels[0] = help.CreateLabel(1, 6, 58, 24); // Connection Status
 			screenLabels[0].Text = "NOT CONNECTED";
 			screenLabels[0].TextAlign = ContentAlignment.TopLeft;
 
@@ -92,6 +89,10 @@ namespace KSP_MOCR
 			screenButtons[0] = help.CreateButton(45, 2, 14); // Connect-button
 			screenButtons[0].Text = "Connect";
 			screenButtons[0].Click += form.ConnectToServer;
+
+			screenButtons[1] = help.CreateButton(45, 4, 14); // Connect-button
+			screenButtons[1].Text = "TCP TEST";
+			screenButtons[1].Click += form.tcpTest;
 
 			screenLabels[3] = help.CreateLabel(60, 0, 60, 20); // Help text
 			screenLabels[3].Text = "╥─── HELP ───\n"

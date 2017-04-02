@@ -45,6 +45,12 @@ namespace KSP_MOCR
 
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
 
+
+		DateTime start;
+		DateTime end;
+		TimeSpan dur;
+		int block = 1;
+
 		public Pilot1(Form1 form)
 		{
 			this.connection = form.connection;
@@ -62,12 +68,6 @@ namespace KSP_MOCR
 
 		public override void destroyStreams()
 		{
-			if (this.vessel_stream != null) this.vessel_stream.Remove();
-			if (this.flight_stream != null) this.flight_stream.Remove();
-			if (this.resources_stream != null) this.resources_stream.Remove();
-			if (this.control_stream != null) this.control_stream.Remove();
-			if (this.orbit_stream != null) this.orbit_stream.Remove();
-			if (this.vessel_resources_stage_stream != null) this.vessel_resources_stage_stream.Remove();
 		}
 
 		public override void makeElements()
@@ -344,6 +344,7 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+			block = 1;
 			// Re-usable data variable for graph data
 			//List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 
@@ -364,27 +365,39 @@ namespace KSP_MOCR
 
 			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
 			{
+
 				// INITIALIZE STREAMS
+				/*
 				if (this.vessel_stream == null) this.vessel_stream = connection.AddStream(() => spaceCenter.ActiveVessel);
 				if (this.flight_stream == null) this.flight_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
 				if (this.resources_stream == null) this.resources_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Resources);
 				if (this.control_stream == null) this.control_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Control);
 				if (this.orbit_stream == null) this.orbit_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Orbit);
 				if (this.vessel_resources_stage_stream == null) this.vessel_resources_stage_stream = connection.AddStream(() => spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage, false));
+				*/
 
-				// GET STREAM DATA
-				this.vessel = this.vessel_stream.Get();
-				this.flight = this.flight_stream.Get();
-				this.vessel_control = this.control_stream.Get();
-				this.vessel_resources = this.resources_stream.Get();
+				// GET DATA
+				start = DateTime.Now;
+
+
+				this.vessel = spaceCenter.ActiveVessel;
+				this.flight = spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame);
+				this.vessel_control = spaceCenter.ActiveVessel.Control;
+				this.vessel_resources = spaceCenter.ActiveVessel.Resources;
 				//this.orbit = this.orbit_stream.Get();
-				this.vessel_resources_stage = this.vessel_resources_stage_stream.Get();
-				
+				this.vessel_resources_stage = spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage);
+				end = DateTime.Now;
+				dur = end - start;
+				Console.WriteLine("Time getting data: " + (int)dur.TotalMilliseconds);
+
+				start = DateTime.Now;
 
 				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
 
 				// THROTTLE
 				screenLabels[16].Text = help.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, helper.Align.RIGHT);
+
+				logBlock("MET + Throttle");
 
 				// ROTATION READOUT
 				double cR = flight.Roll;
@@ -398,10 +411,11 @@ namespace KSP_MOCR
 				double? nR;
 				double? nP;
 				double? nY;
-				
+
+				logBlock("Rot Readout get data");
 
 				// IF IN LOCK MODE SHOW LOCK ANGLES
-				if(controlMode == 2)
+				if (controlMode == 2)
 				{
 					nR = lockRotR;
 					nP = lockRotP;
@@ -417,8 +431,15 @@ namespace KSP_MOCR
 				screenLabels[21].Text = "P: " + help.prtlen(help.toFixed(sP, 1), 6) + "  " + help.prtlen(help.toFixed(cP, 1), 6) + "  " + help.prtlen(help.toFixed(nP, 1), 6);
 				screenLabels[22].Text = "Y: " + help.prtlen(help.toFixed(sY, 1), 6) + "  " + help.prtlen(help.toFixed(cY, 1), 6) + "  " + help.prtlen(help.toFixed(nY, 1), 6);
 
+				logBlock("Rot Readout show data");
+
 				// STAGE LABEL
-				screenLabels[25].Text = "CUR: " + help.prtlen(vessel_control.CurrentStage.ToString(), 2);
+				String stageTxt = vessel_control.CurrentStage.ToString();
+				logBlock("Stage Data");
+
+				screenLabels[25].Text = "CUR: " + help.prtlen(stageTxt, 2);
+
+				logBlock("Stage Print");
 
 				// Status
 				if (vessel_control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
@@ -429,6 +450,8 @@ namespace KSP_MOCR
 				if (vessel_control.Abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
 
 				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
+
+				logBlock("Status indicators");
 
 				float maxR = vessel_resources.Max("ElectricCharge");
 				float curR = vessel_resources.Amount("ElectricCharge");
@@ -446,9 +469,11 @@ namespace KSP_MOCR
 				maxR = vessel_resources_stage.Max("Oxidizer");
 				curR = vessel_resources_stage.Amount("Oxidizer");
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
-				
+
+				logBlock("Resource indicators");
+
 				// Check for autopilot
-				switch(controlMode)
+				switch (controlMode)
 				{
 					case 0:
 						screenIndicators[25].setStatus(0);
@@ -822,6 +847,17 @@ namespace KSP_MOCR
 			}
 
 			if (done) { controlMode = 1; }
+		}
+
+		private void logBlock() { logBlock(""); }
+		private void logBlock(String name)
+		{
+			end = DateTime.Now;
+			dur = end - start;
+			String outName = "";
+			if (name != "") outName = "(" + name + ")";
+			Console.WriteLine("Block " + block++ + outName + ": " + (int)dur.TotalMilliseconds);
+			start = DateTime.Now;
 		}
 	}
 }
