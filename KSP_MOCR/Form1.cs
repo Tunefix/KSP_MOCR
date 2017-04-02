@@ -188,10 +188,14 @@ namespace KSP_MOCR
 
 		public void screenTick(object sender, EventArgs e)
 		{
+			Console.WriteLine("Starting ScreenTick");
 			updateStart = DateTime.Now;
-			
-			updateActiveScreen(sender, e);
-			
+
+			if (activeScreen != null)
+			{
+				activeScreen.updateElements(sender, e);
+			}
+
 			updateEnd = DateTime.Now;
 
 			TimeSpan updateDuration = updateEnd - updateStart;
@@ -202,14 +206,6 @@ namespace KSP_MOCR
 
 			screenTimer.Interval = remainTime;
 			screenTimer.Start();
-		}
-
-		public void updateActiveScreen(object sender, EventArgs e)
-		{
-			if(activeScreen != null)
-			{
-				activeScreen.updateElements(sender, e);
-			}
 		}
 
 		public void ConnectToServer(object sender, EventArgs e)
@@ -237,6 +233,7 @@ namespace KSP_MOCR
 
 				activeScreen.screenLabels[0].Text = "Connected v. ";// + status.Version;
 				connected = true;
+				Console.WriteLine("CONNECTED");
 			}
 			catch(System.Net.Sockets.SocketException)
 			{
