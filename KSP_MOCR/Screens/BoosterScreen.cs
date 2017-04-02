@@ -17,7 +17,7 @@ namespace KSP_MOCR
 	{
 		KRPC.Client.Services.SpaceCenter.Vessel vessel;
 		KRPC.Client.Services.SpaceCenter.Flight flight;
-		KRPC.Client.Services.SpaceCenter.Orbit orbit;
+		//KRPC.Client.Services.SpaceCenter.Orbit orbit;
 
 		public BoosterScreen(Form1 form)
 		{
@@ -131,7 +131,7 @@ namespace KSP_MOCR
 			{
 				vessel = spaceCenter.ActiveVessel;
 				flight = vessel.Flight();
-				orbit = vessel.Orbit;
+				//orbit = vessel.Orbit;
 
 
 				screenLabels[0].Text = " LT: " + help.timeString(DateTime.Now.TimeOfDay.TotalSeconds);

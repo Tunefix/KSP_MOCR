@@ -20,7 +20,7 @@ namespace KSP_MOCR
 		private KRPC.Client.Services.SpaceCenter.Flight flight;
 		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources;
 		private KRPC.Client.Services.SpaceCenter.Control vessel_control;
-		private KRPC.Client.Services.SpaceCenter.Orbit orbit;
+		//private KRPC.Client.Services.SpaceCenter.Orbit orbit;
 		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources_stage;
 
 
