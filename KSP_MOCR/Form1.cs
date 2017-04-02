@@ -224,7 +224,7 @@ namespace KSP_MOCR
 
 
 				//System.Net.IPAddress IP = System.Net.IPAddress.Parse(activeScreen.screenInputs[0].Text);
-				String name = activeScreen.screenInputs[1].Text;
+				String name = activeScreen.screenInputs[0].Text;
 
 				connection = new Connection(name: name, address: IP);
 
