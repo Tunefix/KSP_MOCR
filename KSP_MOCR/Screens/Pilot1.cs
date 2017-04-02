@@ -344,6 +344,7 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+			block = 1;
 			// Re-usable data variable for graph data
 			//List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 

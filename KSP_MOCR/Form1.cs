@@ -87,6 +87,18 @@ namespace KSP_MOCR
 			return new Font(fontCol.Families[0], size, style);
 		}
 
+		Font CreateFont(string fontFile, float size, FontStyle style)
+		{
+			using (var pfc = new PrivateFontCollection())
+			{
+				pfc.AddFontFile(fontFile);
+				using (var fontFamily = new FontFamily(pfc.Families[0].Name, pfc))
+				{
+					return new Font(fontFamily, size, style);
+				}
+			}
+		}
+
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			Console.WriteLine("FORM LOADING");
@@ -98,8 +110,10 @@ namespace KSP_MOCR
 			this.KeyPreview = true;
 
 			// Load font
-			font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
-			buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
+			//font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
+			//buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
+			font = CreateFont("consola.otf", 12, FontStyle.Regular);
+			buttonFont = CreateFont("consola.otf", 8, FontStyle.Regular);
 
 			/*
 			try
@@ -378,6 +392,11 @@ namespace KSP_MOCR
 				}
 				screenCallup = "";
 			}
+		}
+
+		public void tcpTest(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
