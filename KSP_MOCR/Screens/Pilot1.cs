@@ -358,6 +358,10 @@ namespace KSP_MOCR
 
 			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
 			{
+				DateTime start;
+				DateTime end;
+				TimeSpan dur;
+
 				// INITIALIZE STREAMS
 				/*
 				if (this.vessel_stream == null) this.vessel_stream = connection.AddStream(() => spaceCenter.ActiveVessel);
@@ -369,13 +373,16 @@ namespace KSP_MOCR
 				*/
 
 				// GET DATA
+				start = DateTime.Now;
 				this.vessel = spaceCenter.ActiveVessel;
 				this.flight = spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame);
 				this.vessel_control = spaceCenter.ActiveVessel.Control;
 				this.vessel_resources = spaceCenter.ActiveVessel.Resources;
 				//this.orbit = this.orbit_stream.Get();
 				this.vessel_resources_stage = spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage);
-				
+				end = DateTime.Now;
+				dur = end - start;
+				Console.WriteLine("Time getting data: " + (int)dur.TotalMilliseconds);
 
 				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
 
