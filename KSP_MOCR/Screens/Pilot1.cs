@@ -62,12 +62,6 @@ namespace KSP_MOCR
 
 		public override void destroyStreams()
 		{
-			if (this.vessel_stream != null) this.vessel_stream.Remove();
-			if (this.flight_stream != null) this.flight_stream.Remove();
-			if (this.resources_stream != null) this.resources_stream.Remove();
-			if (this.control_stream != null) this.control_stream.Remove();
-			if (this.orbit_stream != null) this.orbit_stream.Remove();
-			if (this.vessel_resources_stage_stream != null) this.vessel_resources_stage_stream.Remove();
 		}
 
 		public override void makeElements()
@@ -365,20 +359,22 @@ namespace KSP_MOCR
 			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
 			{
 				// INITIALIZE STREAMS
+				/*
 				if (this.vessel_stream == null) this.vessel_stream = connection.AddStream(() => spaceCenter.ActiveVessel);
 				if (this.flight_stream == null) this.flight_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
 				if (this.resources_stream == null) this.resources_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Resources);
 				if (this.control_stream == null) this.control_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Control);
 				if (this.orbit_stream == null) this.orbit_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Orbit);
 				if (this.vessel_resources_stage_stream == null) this.vessel_resources_stage_stream = connection.AddStream(() => spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage, false));
+				*/
 
-				// GET STREAM DATA
-				this.vessel = this.vessel_stream.Get();
-				this.flight = this.flight_stream.Get();
-				this.vessel_control = this.control_stream.Get();
-				this.vessel_resources = this.resources_stream.Get();
+				// GET DATA
+				this.vessel = spaceCenter.ActiveVessel;
+				this.flight = spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame);
+				this.vessel_control = spaceCenter.ActiveVessel.Control;
+				this.vessel_resources = spaceCenter.ActiveVessel.Resources;
 				//this.orbit = this.orbit_stream.Get();
-				this.vessel_resources_stage = this.vessel_resources_stage_stream.Get();
+				this.vessel_resources_stage = spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage);
 				
 
 				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);

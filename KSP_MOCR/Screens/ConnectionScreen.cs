@@ -42,14 +42,7 @@ namespace KSP_MOCR
 
 			if (form.connected && this.connection != null)
 			{
-				Console.WriteLine("Will now try to get status_stream");
-				if (status_stream == null) status_stream = connection.AddStream(() => krpc.GetStatus());
-
-				Console.WriteLine("Will now try to get status");
-				//status = krpc.GetStatus();
-				status = status_stream.Get();
-
-				Console.WriteLine("Status Gotten");
+				status = krpc.GetStatus();
 
 				screenLabels[0].Text = "CONNECTED\n\n"
 					+ "  VERSION: " + status.Version + "\n"
@@ -71,7 +64,6 @@ namespace KSP_MOCR
 					+ "  STREAM RPCS EXECUTED: " + status.StreamRpcsExecuted + "\n"
 					+ "  TIME PER RPC UPDATE: " + status.TimePerRpcUpdate + "\n"
 					+ "  TIME PER STREAM UPDATE: " + status.TimePerStreamUpdate + "\n";
-				//Console.WriteLine("Label updated");
 			}
 		}
 
