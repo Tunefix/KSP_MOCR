@@ -384,6 +384,8 @@ namespace KSP_MOCR
 				dur = end - start;
 				Console.WriteLine("Time getting data: " + (int)dur.TotalMilliseconds);
 
+				start = DateTime.Now;
+
 				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
 
 				// THROTTLE
@@ -449,9 +451,13 @@ namespace KSP_MOCR
 				maxR = vessel_resources_stage.Max("Oxidizer");
 				curR = vessel_resources_stage.Amount("Oxidizer");
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
-				
+
+				end = DateTime.Now;
+				dur = end - start;
+				Console.WriteLine("Block 2: " + (int)dur.TotalMilliseconds);
+
 				// Check for autopilot
-				switch(controlMode)
+				switch (controlMode)
 				{
 					case 0:
 						screenIndicators[25].setStatus(0);
