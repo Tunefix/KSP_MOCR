@@ -1,0 +1,17 @@
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KSP_MOCR.exe.config
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KSP_MOCR.exe.manifest
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KSP_MOCR.application
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KSP_MOCR.exe
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KSP_MOCR.pdb
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\Google.Protobuf.dll
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\KRPC.Client.dll
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Release\Google.Protobuf.xml
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.csprojResolveAssemblyReference.cache
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.Form1.resources
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.Properties.Resources.resources
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.csproj.GenerateResource.Cache
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.TrustInfo.xml
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.exe.manifest
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.application
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.exe
+C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\obj\Release\KSP_MOCR.pdb
