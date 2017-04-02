@@ -158,11 +158,12 @@ namespace KSP_MOCR
 			screenTimer.Elapsed += screenTick;
 
 			// Initiate Graph Timer
-			graphTimer = new System.Timers.Timer();
+			/*graphTimer = new System.Timers.Timer();
 			graphTimer.AutoReset = false;
 			graphTimer.Interval = 500;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
+			*/
 
 			// Load the connection screen
 			SetScreen(0);
