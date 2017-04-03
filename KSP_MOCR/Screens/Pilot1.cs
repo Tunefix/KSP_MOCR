@@ -20,17 +20,9 @@ namespace KSP_MOCR
 		private KRPC.Client.Services.SpaceCenter.Flight flight;
 		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources;
 		private KRPC.Client.Services.SpaceCenter.Control vessel_control;
-		//private KRPC.Client.Services.SpaceCenter.Orbit orbit;
+		private KRPC.Client.Services.SpaceCenter.Orbit orbit;
 		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources_stage;
 
-
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> resources_stream;
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Control> control_stream;
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
-		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> vessel_resources_stage_stream;
-		
 		private int setRotR = 0;
 		private int setRotP = 90;
 		private int setRotY = 90;

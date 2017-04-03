@@ -7,18 +7,17 @@ using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
 {
-	public class GetData
+	public static class GetData
 	{
-		private KRPC.Client.Services.SpaceCenter.Service spaceCenter;
+		private static KRPC.Client.Services.SpaceCenter.Service spaceCenter;
 
-		private Form1 form;
+		private static Form1 form;
 
-		public GetData(Form1 f)
-		{
-			form = f;
-		}
+		static public void setForm(Form1 f){GetData.form = f;}
 
-		public Flight getFlight()
+		static public void setSpaceCenter(KRPC.Client.Services.SpaceCenter.Service sc) { GetData.spaceCenter = sc; }
+
+		static public Flight getFlight()
 		{
 			KRPC.Client.Services.SpaceCenter.Flight flight = null;
 		    KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
@@ -41,7 +40,7 @@ namespace KSP_MOCR
 			return flight;
 		}
 
-		public Orbit getOrbit(Connection con)
+		static public Orbit getOrbit(Connection con)
 		{
 			KRPC.Client.Services.SpaceCenter.Orbit orbit = null;
 			KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
@@ -61,7 +60,7 @@ namespace KSP_MOCR
 			return orbit;
 		}
 
-		public Vessel getVessel(Connection con)
+		static public Vessel getVessel(Connection con)
 		{
 			KRPC.Client.Services.SpaceCenter.Vessel vessel = null;
 			KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;

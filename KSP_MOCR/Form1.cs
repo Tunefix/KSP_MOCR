@@ -61,9 +61,6 @@ namespace KSP_MOCR
 		enum Align { LEFT, RIGHT, CENTER };
 		enum Resource { ElectricCharge, MonoPropellant, LiquidFuel, Oxidizer, Ore };
 
-		KRPC.Schema.KRPC.Status status;
-		KRPC.Client.Stream<KRPC.Schema.KRPC.Status> status_stream;
-
 		public DateTime updateStart;
 		public DateTime updateEnd;
 
@@ -119,6 +116,9 @@ namespace KSP_MOCR
 
 			// Setup Helper
 			Helper.setForm(this);
+
+			// Setup GetData
+			GetData.setForm(this);
 
 			// Enable key preview
 			this.KeyPreview = true;
@@ -248,8 +248,6 @@ namespace KSP_MOCR
 				IPAddress[] adrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
 				System.Net.IPAddress IP = adrs[0]; // IPv4
 
-
-				//System.Net.IPAddress IP = System.Net.IPAddress.Parse(activeScreen.screenInputs[0].Text);
 				String name = activeScreen.screenInputs[0].Text;
 
 				connection = new Connection(name: name, address: IP);
@@ -257,12 +255,10 @@ namespace KSP_MOCR
 				krpc = connection.KRPC();
 				spaceCenter = connection.SpaceCenter();
 
-				//status_stream = connection.AddStream(() => krpc.GetStatus());
-				//status = status_stream.Get();
+				GetData.setSpaceCenter(spaceCenter);
 
-				activeScreen.screenLabels[0].Text = "Connected v. ";// + status.Version;
+				activeScreen.screenLabels[0].Text = "Connected";
 				connected = true;
-				//Console.WriteLine("CONNECTED");
 			}
 			catch(System.Net.Sockets.SocketException)
 			{

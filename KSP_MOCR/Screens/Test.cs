@@ -20,7 +20,6 @@ namespace KSP_MOCR
 		public TestScreen(Form1 form)
 		{
 			this.form = form;
-			getter = new GetData(form);
 
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
@@ -40,7 +39,7 @@ namespace KSP_MOCR
 			{
 
 				// GET DATA
-				flight = getter.getFlight();
+				flight = GetData.getFlight();
 				screenLabels[1].Text = flight.MeanAltitude.ToString();
 			}
 		}
