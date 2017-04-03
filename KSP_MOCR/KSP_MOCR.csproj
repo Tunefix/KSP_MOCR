@@ -123,7 +123,6 @@
     <Compile Include="Screens\Pilot1.cs" />
     <Compile Include="Screens\Terrain.cs" />
     <Compile Include="Screens\Test.cs" />
-    <Compile Include="Streams.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -149,6 +148,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="GetData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

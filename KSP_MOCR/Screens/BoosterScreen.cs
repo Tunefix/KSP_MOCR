@@ -24,7 +24,6 @@ namespace KSP_MOCR
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
 			this.spaceCenter = this.connection.SpaceCenter();
-			this.help = new KSP_MOCR.helper(form);
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -42,83 +41,83 @@ namespace KSP_MOCR
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 12; i++) screenIndicators.Add(null); // Initialize Indicators
 
-			screenLabels[0] = help.CreateLabel(16, 1, 13); // Local Time
-			screenLabels[1] = help.CreateLabel(0, 1, 14); // MET Time
-			screenLabels[2] = help.CreateLabel(39, 0, 42, 1, "============= BOOSTER MODULE ============="); // Screen Title
-			screenLabels[3] = help.CreateLabel(84, 0, 39, 1, "├───────────── STATUS ─────────────┤"); // Status Headline
-			screenLabels[4] = help.CreateLabel(84, 1, 1, 1, "│");
-			screenLabels[5] = help.CreateLabel(0, 2, 85, 1, "───────────────── ENGINES ──────────────────────────────────────────────────────────┤"); // Obrit/Position headline
-			screenLabels[6] = help.CreateLabel(44, 3, 1, 1, "│");
-			screenLabels[7] = help.CreateLabel(44, 4, 1, 1, "│");
-			screenLabels[8] = help.CreateLabel(44, 5, 1, 1, "│");
-			screenLabels[9] = help.CreateLabel(44, 6, 1, 1, "│");
-			screenLabels[10] = help.CreateLabel(44, 7, 1, 1, "│");
-			screenLabels[11] = help.CreateLabel(44, 8, 1, 1, "│");
-			screenLabels[12] = help.CreateLabel(44, 9, 1, 1, "│");
-			screenLabels[13] = help.CreateLabel(44, 10, 1, 1, "│");
-			screenLabels[14] = help.CreateLabel(44, 11, 1, 1, "│");
-			screenLabels[15] = help.CreateLabel(44, 12, 1, 1, "│");
-			screenLabels[16] = help.CreateLabel(84, 3, 1, 1, "│");
-			screenLabels[17] = help.CreateLabel(84, 4, 1, 1, "│");
-			screenLabels[18] = help.CreateLabel(84, 5, 1, 1, "│");
-			screenLabels[19] = help.CreateLabel(84, 6, 1, 1, "│");
-			screenLabels[20] = help.CreateLabel(84, 7, 36, 1, "│┌─────────── SUPPLIES ────────────┐");
-			screenLabels[21] = help.CreateLabel(84, 8, 1, 1, "│");
-			screenLabels[22] = help.CreateLabel(84, 9, 1, 1, "│");
-			screenLabels[23] = help.CreateLabel(84, 10, 1, 1, "│");
-			screenLabels[24] = help.CreateLabel(84, 11, 1, 1, "│");
-			screenLabels[25] = help.CreateLabel(84, 12, 1, 1, "│");
-			screenLabels[26] = help.CreateLabel(44, 13, 1, 1, "│");
-			screenLabels[27] = help.CreateLabel(44, 14, 1, 1, "│");
-			screenLabels[28] = help.CreateLabel(84, 13, 1, 1, "│");
-			screenLabels[29] = help.CreateLabel(84, 14, 1, 1, "│");
+			screenLabels[0] = Helper.CreateLabel(16, 1, 13); // Local Time
+			screenLabels[1] = Helper.CreateLabel(0, 1, 14); // MET Time
+			screenLabels[2] = Helper.CreateLabel(39, 0, 42, 1, "============= BOOSTER MODULE ============="); // Screen Title
+			screenLabels[3] = Helper.CreateLabel(84, 0, 39, 1, "├───────────── STATUS ─────────────┤"); // Status Headline
+			screenLabels[4] = Helper.CreateLabel(84, 1, 1, 1, "│");
+			screenLabels[5] = Helper.CreateLabel(0, 2, 85, 1, "───────────────── ENGINES ──────────────────────────────────────────────────────────┤"); // Obrit/Position headline
+			screenLabels[6] = Helper.CreateLabel(44, 3, 1, 1, "│");
+			screenLabels[7] = Helper.CreateLabel(44, 4, 1, 1, "│");
+			screenLabels[8] = Helper.CreateLabel(44, 5, 1, 1, "│");
+			screenLabels[9] = Helper.CreateLabel(44, 6, 1, 1, "│");
+			screenLabels[10] = Helper.CreateLabel(44, 7, 1, 1, "│");
+			screenLabels[11] = Helper.CreateLabel(44, 8, 1, 1, "│");
+			screenLabels[12] = Helper.CreateLabel(44, 9, 1, 1, "│");
+			screenLabels[13] = Helper.CreateLabel(44, 10, 1, 1, "│");
+			screenLabels[14] = Helper.CreateLabel(44, 11, 1, 1, "│");
+			screenLabels[15] = Helper.CreateLabel(44, 12, 1, 1, "│");
+			screenLabels[16] = Helper.CreateLabel(84, 3, 1, 1, "│");
+			screenLabels[17] = Helper.CreateLabel(84, 4, 1, 1, "│");
+			screenLabels[18] = Helper.CreateLabel(84, 5, 1, 1, "│");
+			screenLabels[19] = Helper.CreateLabel(84, 6, 1, 1, "│");
+			screenLabels[20] = Helper.CreateLabel(84, 7, 36, 1, "│┌─────────── SUPPLIES ────────────┐");
+			screenLabels[21] = Helper.CreateLabel(84, 8, 1, 1, "│");
+			screenLabels[22] = Helper.CreateLabel(84, 9, 1, 1, "│");
+			screenLabels[23] = Helper.CreateLabel(84, 10, 1, 1, "│");
+			screenLabels[24] = Helper.CreateLabel(84, 11, 1, 1, "│");
+			screenLabels[25] = Helper.CreateLabel(84, 12, 1, 1, "│");
+			screenLabels[26] = Helper.CreateLabel(44, 13, 1, 1, "│");
+			screenLabels[27] = Helper.CreateLabel(44, 14, 1, 1, "│");
+			screenLabels[28] = Helper.CreateLabel(84, 13, 1, 1, "│");
+			screenLabels[29] = Helper.CreateLabel(84, 14, 1, 1, "│");
 
 
 
 			// Engine data
-			screenLabels[40] = help.CreateLabel(45, 3, 30, 1, "      THRUST  MAX THR  vISP"); // Headline
-			screenLabels[41] = help.CreateLabel(45, 4, 30, 1, ""); // Engine 1
-			screenLabels[42] = help.CreateLabel(45, 5, 30, 1, ""); // Engine 2
-			screenLabels[43] = help.CreateLabel(45, 6, 30, 1, ""); // Engine 3
-			screenLabels[44] = help.CreateLabel(45, 7, 30, 1, ""); // Engine 4
-			screenLabels[45] = help.CreateLabel(45, 8, 30, 1, ""); // Engine 5
-			screenLabels[46] = help.CreateLabel(45, 9, 30, 1, ""); // Engine 6
-			screenLabels[47] = help.CreateLabel(45, 10, 30, 1, ""); // Engine 7
-			screenLabels[48] = help.CreateLabel(45, 11, 30, 1, ""); // Engine 8
-			screenLabels[49] = help.CreateLabel(45, 12, 30, 1, ""); // Engine 9
+			screenLabels[40] = Helper.CreateLabel(45, 3, 30, 1, "      THRUST  MAX THR  vISP"); // Headline
+			screenLabels[41] = Helper.CreateLabel(45, 4, 30, 1, ""); // Engine 1
+			screenLabels[42] = Helper.CreateLabel(45, 5, 30, 1, ""); // Engine 2
+			screenLabels[43] = Helper.CreateLabel(45, 6, 30, 1, ""); // Engine 3
+			screenLabels[44] = Helper.CreateLabel(45, 7, 30, 1, ""); // Engine 4
+			screenLabels[45] = Helper.CreateLabel(45, 8, 30, 1, ""); // Engine 5
+			screenLabels[46] = Helper.CreateLabel(45, 9, 30, 1, ""); // Engine 6
+			screenLabels[47] = Helper.CreateLabel(45, 10, 30, 1, ""); // Engine 7
+			screenLabels[48] = Helper.CreateLabel(45, 11, 30, 1, ""); // Engine 8
+			screenLabels[49] = Helper.CreateLabel(45, 12, 30, 1, ""); // Engine 9
 
 			// Weight and TWR
-			screenLabels[30] = help.CreateLabel(45, 13, 30, 1, ""); // Weight
-			screenLabels[31] = help.CreateLabel(45, 14, 30, 1, ""); // TWR
+			screenLabels[30] = Helper.CreateLabel(45, 13, 30, 1, ""); // Weight
+			screenLabels[31] = Helper.CreateLabel(45, 14, 30, 1, ""); // TWR
 
 			// Supplies
-			screenLabels[50] = help.CreateLabel(85, 8, 35, 1, "                     "); // Supply line 1
-			screenLabels[51] = help.CreateLabel(85, 9, 35, 1, "                     "); // Supply line 2
-			screenLabels[52] = help.CreateLabel(85, 10, 35, 1, "                     "); // Supply line 3
-			screenLabels[53] = help.CreateLabel(85, 11, 35, 1, "                     "); // Supply line 4
-			screenLabels[54] = help.CreateLabel(85, 12, 35, 1, "                     "); // Supply line 5
-			screenLabels[55] = help.CreateLabel(85, 13, 35, 1, "                     "); // Supply line 5
-			screenLabels[58] = help.CreateLabel(85, 14, 35, 1, "└─────────────────────────────────┘"); // Supply line 6
+			screenLabels[50] = Helper.CreateLabel(85, 8, 35, 1, "                     "); // Supply line 1
+			screenLabels[51] = Helper.CreateLabel(85, 9, 35, 1, "                     "); // Supply line 2
+			screenLabels[52] = Helper.CreateLabel(85, 10, 35, 1, "                     "); // Supply line 3
+			screenLabels[53] = Helper.CreateLabel(85, 11, 35, 1, "                     "); // Supply line 4
+			screenLabels[54] = Helper.CreateLabel(85, 12, 35, 1, "                     "); // Supply line 5
+			screenLabels[55] = Helper.CreateLabel(85, 13, 35, 1, "                     "); // Supply line 5
+			screenLabels[58] = Helper.CreateLabel(85, 14, 35, 1, "└─────────────────────────────────┘"); // Supply line 6
 
 			// Status
-			screenIndicators[0] = help.CreateIndicator(86, 1, 10, 1, "SAS");
-			screenIndicators[1] = help.CreateIndicator(97, 1, 10, 1, "RCS");
-			screenIndicators[2] = help.CreateIndicator(108, 1, 10, 1, "GEAR");
-			screenIndicators[3] = help.CreateIndicator(86, 2, 10, 1, "BRAKES");
-			screenIndicators[4] = help.CreateIndicator(97, 2, 10, 1, "LIGHTS");
-			screenIndicators[5] = help.CreateIndicator(108, 2, 10, 1, "ABORT");
-			screenIndicators[6] = help.CreateIndicator(86, 4, 10, 1, "POWER HI");
-			screenIndicators[7] = help.CreateIndicator(97, 4, 10, 1, "G HIGH");
-			screenIndicators[8] = help.CreateIndicator(108, 4, 10, 1, "LOX LOW");
-			screenIndicators[9] = help.CreateIndicator(86, 5, 10, 1, "POWER LOW");
-			screenIndicators[10] = help.CreateIndicator(97, 5, 10, 1, "MONO LOW");
-			screenIndicators[11] = help.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
+			screenIndicators[0] = Helper.CreateIndicator(86, 1, 10, 1, "SAS");
+			screenIndicators[1] = Helper.CreateIndicator(97, 1, 10, 1, "RCS");
+			screenIndicators[2] = Helper.CreateIndicator(108, 1, 10, 1, "GEAR");
+			screenIndicators[3] = Helper.CreateIndicator(86, 2, 10, 1, "BRAKES");
+			screenIndicators[4] = Helper.CreateIndicator(97, 2, 10, 1, "LIGHTS");
+			screenIndicators[5] = Helper.CreateIndicator(108, 2, 10, 1, "ABORT");
+			screenIndicators[6] = Helper.CreateIndicator(86, 4, 10, 1, "POWER HI");
+			screenIndicators[7] = Helper.CreateIndicator(97, 4, 10, 1, "G HIGH");
+			screenIndicators[8] = Helper.CreateIndicator(108, 4, 10, 1, "LOX LOW");
+			screenIndicators[9] = Helper.CreateIndicator(86, 5, 10, 1, "POWER LOW");
+			screenIndicators[10] = Helper.CreateIndicator(97, 5, 10, 1, "MONO LOW");
+			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
 
 			for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
 			// Gee-Force vs. Time Graph
-			form.screenCharts[0] = help.CreateChart(60, 15, 60, 15, 0, 600);
+			form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -134,8 +133,8 @@ namespace KSP_MOCR
 				//orbit = vessel.Orbit;
 
 
-				screenLabels[0].Text = " LT: " + help.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
-				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
+				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
+				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
 
 				/** 
 				 * Engines
@@ -175,7 +174,7 @@ namespace KSP_MOCR
 							if (screenEngines.Count < (n + 1))
 							{
 								screenEngines.Add(null);
-								screenEngines[n] = help.CreateEngine(2, 3, 6, 3, (n + 1).ToString());
+								screenEngines[n] = Helper.CreateEngine(2, 3, 6, 3, (n + 1).ToString());
 							}
 
 							screenEngines[n].offsetX = left;
@@ -185,10 +184,10 @@ namespace KSP_MOCR
 							else { screenEngines[n].setStatus(false); }
 
 							// Engine data
-							screenLabels[41 + n].Text = help.prtlen((n + 1).ToString(), 2, helper.Align.RIGHT) + ":"
-								+ "  " + help.prtlen(help.toFixed(eng.Thrust/1000, 1), 7, helper.Align.RIGHT)
-								+ "  " + help.prtlen(help.toFixed(eng.MaxThrust/1000, 1), 7, helper.Align.RIGHT)
-								+ "  " + help.prtlen(help.toFixed(eng.VacuumSpecificImpulse, 1), 5, helper.Align.RIGHT);
+							screenLabels[41 + n].Text = Helper.prtlen((n + 1).ToString(), 2, Helper.Align.RIGHT) + ":"
+								+ "  " + Helper.prtlen(Helper.toFixed(eng.Thrust/1000, 1), 7, Helper.Align.RIGHT)
+								+ "  " + Helper.prtlen(Helper.toFixed(eng.MaxThrust/1000, 1), 7, Helper.Align.RIGHT)
+								+ "  " + Helper.prtlen(Helper.toFixed(eng.VacuumSpecificImpulse, 1), 5, Helper.Align.RIGHT);
 
 							stageCurThr += eng.Thrust;
 							stageMaxThr += eng.MaxThrust;
@@ -228,9 +227,9 @@ namespace KSP_MOCR
 				double weight = vessel.Mass / 1000;
 				double TWRc = (stageCurThr / 1000) / (weight * 9.81);
 				double TWRm = (stageMaxThr / 1000) / (weight * 9.81); ;
-				screenLabels[30].Text = "Weight: " + help.prtlen(help.toFixed(weight, 1), 5, helper.Align.RIGHT) + "t";
-				screenLabels[31].Text = "   TWR: " + help.prtlen(help.toFixed(TWRc, 2), 4, helper.Align.RIGHT)
-					+ "  " + help.prtlen(help.toFixed(TWRm, 2), 4, helper.Align.RIGHT);
+				screenLabels[30].Text = "Weight: " + Helper.prtlen(Helper.toFixed(weight, 1), 5, Helper.Align.RIGHT) + "t";
+				screenLabels[31].Text = "   TWR: " + Helper.prtlen(Helper.toFixed(TWRc, 2), 4, Helper.Align.RIGHT)
+					+ "  " + Helper.prtlen(Helper.toFixed(TWRm, 2), 4, Helper.Align.RIGHT);
 
 
 				// Supplies
@@ -249,15 +248,15 @@ namespace KSP_MOCR
 
 				//screenLabels[50].Text = "         LF     LO     MP     EC";
 				/*screenLabels[51].Text = "STAGE:"
-										+ help.prtlen(Math.Round(cF).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round(cO).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(help.toFixed(cM, 2), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round(cE).ToString(), 7, helper.Align.RIGHT);
+										+ Helper.prtlen(Math.Round(cF).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round(cO).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Helper.toFixed(cM, 2), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round(cE).ToString(), 7, Helper.Align.RIGHT);
 				screenLabels[52].Text = "    %:"
-										+ help.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, helper.Align.RIGHT);
+										+ Helper.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
 
 				mF = vessel.Resources.Max("LiquidFuel");
 				cF = vessel.Resources.Amount("LiquidFuel");
@@ -272,15 +271,15 @@ namespace KSP_MOCR
 				cE = vessel.Resources.Amount("ElectricCharge");
 
 				screenLabels[54].Text = "  TOT:"
-										+ help.prtlen(Math.Round(cF).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round(cO).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(help.toFixed(cM, 2), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round(cE).ToString(), 7, helper.Align.RIGHT);
+										+ Helper.prtlen(Math.Round(cF).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round(cO).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Helper.toFixed(cM, 2), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round(cE).ToString(), 7, Helper.Align.RIGHT);
 				screenLabels[55].Text = "    %:"
-										+ help.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, helper.Align.RIGHT)
-										+ help.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, helper.Align.RIGHT);
+										+ Helper.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
+										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
 				*/
 
 				// Status

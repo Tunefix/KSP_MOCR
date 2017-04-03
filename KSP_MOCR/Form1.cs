@@ -28,6 +28,8 @@ namespace KSP_MOCR
 		public bool connected = false;
 
 		MocrScreen activeScreen;
+		public enum OS { UNIX, WINDOWS, OTHER }
+		public OS system;
 
 		private string screenCallup = "";
 		private bool ctrlDown = false;
@@ -104,8 +106,19 @@ namespace KSP_MOCR
 		{
 			Console.WriteLine("FORM LOADING");
 
-			// Setup stream handler
-			//streamHandler = new Streams();
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				system = OS.UNIX;
+				Console.WriteLine("SYSTEM SET TO UNIX");
+			}
+			else
+			{
+				system = OS.WINDOWS;
+				Console.WriteLine("SYSTEM SET TO WINDOWS");
+			}
+
+			// Setup Helper
+			Helper.setForm(this);
 
 			// Enable key preview
 			this.KeyPreview = true;

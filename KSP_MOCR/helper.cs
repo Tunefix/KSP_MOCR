@@ -9,21 +9,21 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace KSP_MOCR
 {
-	class helper
+	static class Helper
 	{
-		Form1 form;
+		static Form1 form;
 
 		public enum Align { LEFT, RIGHT, CENTER };
 
-		public helper(Form1 form)
+		static public void setForm(Form1 form)
 		{
-			this.form = form;
+			Helper.form = form;
 		}
 
-		public TextBox CreateInput(int x, int y) { return CreateInput(x, y, 8, 1, HorizontalAlignment.Left); }
-		public TextBox CreateInput(int x, int y, int w) { return CreateInput(x, y, w, 1, HorizontalAlignment.Left); }
-		public TextBox CreateInput(int x, int y, int w, int h) { return CreateInput(x, y, w, h, HorizontalAlignment.Left); }
-		public TextBox CreateInput(int x, int y, int w, int h, HorizontalAlignment align)
+		static public TextBox CreateInput(int x, int y) { return CreateInput(x, y, 8, 1, HorizontalAlignment.Left); }
+		static public TextBox CreateInput(int x, int y, int w) { return CreateInput(x, y, w, 1, HorizontalAlignment.Left); }
+		static public TextBox CreateInput(int x, int y, int w, int h) { return CreateInput(x, y, w, h, HorizontalAlignment.Left); }
+		static public TextBox CreateInput(int x, int y, int w, int h, HorizontalAlignment align)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine) - 1;
@@ -49,10 +49,10 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		public Label CreateLabel(int x, int y) { return CreateLabel(x, y, 8, 1, ""); }
-		public Label CreateLabel(int x, int y, int w) { return CreateLabel(x, y, w, 1, ""); }
-		public Label CreateLabel(int x, int y, int w, int h) { return CreateLabel(x, y, w, h, ""); }
-		public Label CreateLabel(int x, int y, int w, int h, String t)
+		static public Label CreateLabel(int x, int y) { return CreateLabel(x, y, 8, 1, ""); }
+		static public Label CreateLabel(int x, int y, int w) { return CreateLabel(x, y, w, 1, ""); }
+		static public Label CreateLabel(int x, int y, int w, int h) { return CreateLabel(x, y, w, h, ""); }
+		static public Label CreateLabel(int x, int y, int w, int h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -75,9 +75,9 @@ namespace KSP_MOCR
 		}
 
 
-		public Button CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, ""); }
-		public Button CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, ""); }
-		public Button CreateButton(double x, double y, double w, double h, String t)
+		static public Button CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, ""); }
+		static public Button CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, ""); }
+		static public Button CreateButton(double x, double y, double w, double h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -103,11 +103,11 @@ namespace KSP_MOCR
 		}
 
 
-		public Chart CreateChart(int x, int y, int w, int h) { return CreateChart(x, y, w, h, 0, -1, 0, -1); }
-		public Chart CreateChart(int x, int y, int w, int h, int minX) { return CreateChart(x, y, w, h, minX, -1, 0, -1); }
-		public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX) { return CreateChart(x, y, w, h, minX, maxX, 0, -1); }
-		public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX, int minY) { return CreateChart(x, y, w, h, minX, maxX, minY, -1); }
-		public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX, int minY, int maxY)
+		static public Chart CreateChart(int x, int y, int w, int h) { return CreateChart(x, y, w, h, 0, -1, 0, -1); }
+		static public Chart CreateChart(int x, int y, int w, int h, int minX) { return CreateChart(x, y, w, h, minX, -1, 0, -1); }
+		static public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX) { return CreateChart(x, y, w, h, minX, maxX, 0, -1); }
+		static public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX, int minY) { return CreateChart(x, y, w, h, minX, maxX, minY, -1); }
+		static public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX, int minY, int maxY)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -155,7 +155,7 @@ namespace KSP_MOCR
 		}
 
 
-		public Indicator CreateIndicator(int x, int y, int w, int h, String t)
+		static public Indicator CreateIndicator(int x, int y, int w, int h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -203,7 +203,7 @@ namespace KSP_MOCR
 			return label;
 		}
 
-		public EngineIndicator CreateEngine(int x, int y, int w, int h, String t)
+		static public EngineIndicator CreateEngine(int x, int y, int w, int h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -232,8 +232,8 @@ namespace KSP_MOCR
 		}
 
 
-		public String prtlen(String s, int l) { return prtlen(s, l, Align.RIGHT); }
-		public String prtlen(String s, int l, Align a)
+		static public String prtlen(String s, int l) { return prtlen(s, l, Align.RIGHT); }
+		static public String prtlen(String s, int l, Align a)
 		{
 			if (s.Length < l)
 			{
@@ -259,8 +259,8 @@ namespace KSP_MOCR
 		}
 
 
-		public String timeString(double t) { return timeString(t, 2); }
-		public String timeString(double t, int h_len)
+		static public String timeString(double t) { return timeString(t, 2); }
+		static public String timeString(double t, int h_len)
 		{
 			String output = "";
 			double hrs;
@@ -291,7 +291,7 @@ namespace KSP_MOCR
 		}
 
 
-		public String toFixed(double? d, int p)
+		static public String toFixed(double? d, int p)
 		{
 			String r;
 			if (d == null)

@@ -31,7 +31,7 @@ namespace KSP_MOCR
 
 		public Connection connection;
 		public Form1 form;
-		public helper help;
+		protected GetData getter;
 
 		public static MocrScreen Create(int id, Form1 form)
 		{

@@ -17,7 +17,6 @@ namespace KSP_MOCR
 		public ConnectionScreen(Form1 form)
 		{
 			this.form = form;
-			this.help = new KSP_MOCR.helper(form);
 
 			this.width = 120;
 			this.height = 30;
@@ -74,27 +73,27 @@ namespace KSP_MOCR
 			for (int i = 0; i < 2; i++) screenInputs.Add(null); // Initialize Inputs
 			for (int i = 0; i < 2; i++) screenButtons.Add(null); // Initialize Buttons
 
-			screenLabels[0] = help.CreateLabel(1, 6, 58, 24); // Connection Status
+			screenLabels[0] = Helper.CreateLabel(1, 6, 58, 24); // Connection Status
 			screenLabels[0].Text = "NOT CONNECTED";
 			screenLabels[0].TextAlign = ContentAlignment.TopLeft;
 
-			screenLabels[1] = help.CreateLabel(1, 1, 20, 1, "Server IP:"); // Input Label
-			screenInputs[0] = help.CreateInput(1, 2, 20, 1); // Server IP
+			screenLabels[1] = Helper.CreateLabel(1, 1, 20, 1, "Server IP:"); // Input Label
+			screenInputs[0] = Helper.CreateInput(1, 2, 20, 1); // Server IP
 			screenInputs[0].Text = "127.0.0.1";
 
-			screenLabels[2] = help.CreateLabel(23, 1, 20, 1, "Your ID:"); // Input Label
-			screenInputs[1] = help.CreateInput(23, 2, 20, 1); // Name
+			screenLabels[2] = Helper.CreateLabel(23, 1, 20, 1, "Your ID:"); // Input Label
+			screenInputs[1] = Helper.CreateInput(23, 2, 20, 1); // Name
 			screenInputs[1].Text = "Flight Director";
 
-			screenButtons[0] = help.CreateButton(45, 2, 14); // Connect-button
+			screenButtons[0] = Helper.CreateButton(45, 2, 14); // Connect-button
 			screenButtons[0].Text = "Connect";
 			screenButtons[0].Click += form.ConnectToServer;
 
-			screenButtons[1] = help.CreateButton(45, 4, 14); // Connect-button
+			screenButtons[1] = Helper.CreateButton(45, 4, 14); // Connect-button
 			screenButtons[1].Text = "TCP TEST";
 			screenButtons[1].Click += form.tcpTest;
 
-			screenLabels[3] = help.CreateLabel(60, 0, 60, 20); // Help text
+			screenLabels[3] = Helper.CreateLabel(60, 0, 60, 20); // Help text
 			screenLabels[3].Text = "╥─── HELP ───\n"
 									+ "║\n"
 									+ "║  To switch between the different screens,\n"
@@ -113,7 +112,7 @@ namespace KSP_MOCR
 									+ "║\n";
 			screenLabels[3].TextAlign = ContentAlignment.TopLeft;
 
-			screenLabels[4] = help.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
+			screenLabels[4] = Helper.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
 		}
 	}
 }

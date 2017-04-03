@@ -56,7 +56,6 @@ namespace KSP_MOCR
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
 			this.spaceCenter = this.connection.SpaceCenter();
-			this.help = new KSP_MOCR.helper(form);
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -78,268 +77,268 @@ namespace KSP_MOCR
 
 
 			// LABELS
-			screenLabels[0] = help.CreateLabel(16, 1, 13); // Local Time
-			screenLabels[1] = help.CreateLabel(0, 1, 14); // MET Time
-			screenLabels[2] = help.CreateLabel(39, 0, 42, 1, "============= PILOT MODULE #1 ============"); // Screen Title
-			screenLabels[3] = help.CreateLabel(84, 0, 39, 1, "├───────────── STATUS ─────────────┤"); // Status Headline
-			screenLabels[4] = help.CreateLabel(84, 1, 1, 1, "│");
-			screenLabels[5] = help.CreateLabel(0, 2, 85, 1, "────────────────────────────────────────────────────────────────────────────────────┤"); // Obrit/Position headline
-			screenLabels[6] = help.CreateLabel(0, 3, 38, 1, "┌───── TRANS ─────┐┌────── ROT ──────┐");
-			screenLabels[7] = help.CreateLabel(0, 10, 19, 1, "┌──── THROTTLE ───┐");
-			screenLabels[8] = help.CreateLabel(0, 14, 38, 1, "┌───────── READOUT ─────────┐┌ STAGE ┐");
-			screenLabels[9] = help.CreateLabel(0, 15, 25, 1, "      SET     CUR    LOCK");
-			screenLabels[10] = help.CreateLabel(0, 20, 80, 1, "───────── PROGRAMS ─────┬─── ACTION GROUPS ───┬─────── SAS SETTING ───────┐");
-			screenLabels[11] = help.CreateLabel(0, 21, 24, 1, "┌── ROLL ──┐┌── PITCH ─┐");
-			screenLabels[12] = help.CreateLabel(0, 29, 70, 1, "────────────────────────┴────────────┴────────────────────────────────────────┘");
+			screenLabels[0] = Helper.CreateLabel(16, 1, 13); // Local Time
+			screenLabels[1] = Helper.CreateLabel(0, 1, 14); // MET Time
+			screenLabels[2] = Helper.CreateLabel(39, 0, 42, 1, "============= PILOT MODULE #1 ============"); // Screen Title
+			screenLabels[3] = Helper.CreateLabel(84, 0, 39, 1, "├───────────── STATUS ─────────────┤"); // Status Headline
+			screenLabels[4] = Helper.CreateLabel(84, 1, 1, 1, "│");
+			screenLabels[5] = Helper.CreateLabel(0, 2, 85, 1, "────────────────────────────────────────────────────────────────────────────────────┤"); // Obrit/Position headline
+			screenLabels[6] = Helper.CreateLabel(0, 3, 38, 1, "┌───── TRANS ─────┐┌────── ROT ──────┐");
+			screenLabels[7] = Helper.CreateLabel(0, 10, 19, 1, "┌──── THROTTLE ───┐");
+			screenLabels[8] = Helper.CreateLabel(0, 14, 38, 1, "┌───────── READOUT ─────────┐┌ STAGE ┐");
+			screenLabels[9] = Helper.CreateLabel(0, 15, 25, 1, "      SET     CUR    LOCK");
+			screenLabels[10] = Helper.CreateLabel(0, 20, 80, 1, "───────── PROGRAMS ─────┬─── ACTION GROUPS ───┬─────── SAS SETTING ───────┐");
+			screenLabels[11] = Helper.CreateLabel(0, 21, 24, 1, "┌── ROLL ──┐┌── PITCH ─┐");
+			screenLabels[12] = Helper.CreateLabel(0, 29, 70, 1, "────────────────────────┴────────────┴────────────────────────────────────────┘");
 
 			// THROTTLE CONTROLS
-			screenButtons[0] = help.CreateButton(1, 12, 5, 1, "-10");
+			screenButtons[0] = Helper.CreateButton(1, 12, 5, 1, "-10");
 			screenButtons[0].Font = form.buttonFont;
 			screenButtons[0].Click += (sender, e) => this.changeThrottle(sender, e, -0.1);
-			screenButtons[1] = help.CreateButton(1, 11, 5, 1, "-1");
+			screenButtons[1] = Helper.CreateButton(1, 11, 5, 1, "-1");
 			screenButtons[1].Font = form.buttonFont;
 			screenButtons[1].Click += (sender, e) => this.changeThrottle(sender, e, -0.01);
-			screenButtons[2] = help.CreateButton(7, 11, 5, 1, "+1");
+			screenButtons[2] = Helper.CreateButton(7, 11, 5, 1, "+1");
 			screenButtons[2].Font = form.buttonFont;
 			screenButtons[2].Click += (sender, e) => this.changeThrottle(sender, e, 0.01);
-			screenButtons[3] = help.CreateButton(7, 12, 5, 1, "+10");
+			screenButtons[3] = Helper.CreateButton(7, 12, 5, 1, "+10");
 			screenButtons[3].Font = form.buttonFont;
 			screenButtons[3].Click += (sender, e) => this.changeThrottle(sender, e, 0.1);
-			screenButtons[16] = help.CreateButton(1, 13, 5, 1, "-100");
+			screenButtons[16] = Helper.CreateButton(1, 13, 5, 1, "-100");
 			screenButtons[16].Font = form.buttonFont;
 			screenButtons[16].Click += (sender, e) => this.changeThrottle(sender, e, -1);
-			screenButtons[17] = help.CreateButton(7, 13, 5, 1, "+100");
+			screenButtons[17] = Helper.CreateButton(7, 13, 5, 1, "+100");
 			screenButtons[17].Font = form.buttonFont;
 			screenButtons[17].Click += (sender, e) => this.changeThrottle(sender, e, 1);
 
 			// THROTTLE LABLES
-			screenLabels[15] = help.CreateLabel(13, 11, 4, 1, "CUR:");
-			screenLabels[16] = help.CreateLabel(13, 12, 4, 1, "100%");
+			screenLabels[15] = Helper.CreateLabel(13, 11, 4, 1, "CUR:");
+			screenLabels[16] = Helper.CreateLabel(13, 12, 4, 1, "100%");
 
 			// ROTATIONAL LABELS
-			screenLabels[17] = help.CreateLabel(33, 4, 4, 1, "RATE");
+			screenLabels[17] = Helper.CreateLabel(33, 4, 4, 1, "RATE");
 
 			// ROTATIONAL INDICATORS
-			screenIndicators[22] = help.CreateIndicator(33, 5, 2, 2, "");
-			screenIndicators[23] = help.CreateIndicator(33, 7, 2, 2, "");
+			screenIndicators[22] = Helper.CreateIndicator(33, 5, 2, 2, "");
+			screenIndicators[23] = Helper.CreateIndicator(33, 7, 2, 2, "");
 
 			// ROTATIONAL CONTROLS
-			screenButtons[4] = help.CreateButton(25, 4, 3, 2, "⭡");
+			screenButtons[4] = Helper.CreateButton(25, 4, 3, 2, "⭡");
 			screenButtons[4].Click += this.pitchUp;
-			screenButtons[5] = help.CreateButton(25, 7, 3, 2, "⭣");
+			screenButtons[5] = Helper.CreateButton(25, 7, 3, 2, "⭣");
 			screenButtons[5].Click += this.pitchDown;
-			screenButtons[6] = help.CreateButton(21, 7, 3, 2, "⭠");
+			screenButtons[6] = Helper.CreateButton(21, 7, 3, 2, "⭠");
 			screenButtons[6].Click += this.yawLeft;
-			screenButtons[7] = help.CreateButton(29, 7, 3, 2, "⭢");
+			screenButtons[7] = Helper.CreateButton(29, 7, 3, 2, "⭢");
 			screenButtons[7].Click += this.yawRight;
-			screenButtons[8] = help.CreateButton(21, 4, 3, 2, "⟲");
+			screenButtons[8] = Helper.CreateButton(21, 4, 3, 2, "⟲");
 			screenButtons[8].Click += this.rollLeft;
-			screenButtons[9] = help.CreateButton(29, 4, 3, 2, "⟳");
+			screenButtons[9] = Helper.CreateButton(29, 4, 3, 2, "⟳");
 			screenButtons[9].Click += this.rollRight;
 
-			screenButtons[10] = help.CreateButton(31, 10, 6, 1, "AUTO");
+			screenButtons[10] = Helper.CreateButton(31, 10, 6, 1, "AUTO");
 			screenButtons[10].Font = form.buttonFont;
 			screenButtons[10].Click += (sender, e) => this.setMode(sender, e, 1);
-			screenButtons[11] = help.CreateButton(31, 11, 6, 1, "FREE");
+			screenButtons[11] = Helper.CreateButton(31, 11, 6, 1, "FREE");
 			screenButtons[11].Font = form.buttonFont;
 			screenButtons[11].Click += (sender, e) => this.setMode(sender, e, 0);
-			screenButtons[12] = help.CreateButton(31, 12, 6, 1, "LOCK");
+			screenButtons[12] = Helper.CreateButton(31, 12, 6, 1, "LOCK");
 			screenButtons[12].Font = form.buttonFont;
 			screenButtons[12].Click += (sender, e) => this.setMode(sender, e, 2);
 
-			screenButtons[13] = help.CreateButton(35, 5, 2, 2, "1");
+			screenButtons[13] = Helper.CreateButton(35, 5, 2, 2, "1");
 			screenButtons[13].Font = form.buttonFont;
 			screenButtons[13].Click += (sender, e) => this.setRotRate(sender, e, 1);
 
-			screenButtons[14] = help.CreateButton(35, 7, 2, 2, "5");
+			screenButtons[14] = Helper.CreateButton(35, 7, 2, 2, "5");
 			screenButtons[14].Font = form.buttonFont;
 			screenButtons[14].Click += (sender, e) => this.setRotRate(sender, e, 5);
 
 			// READOUT LABELS
-			screenLabels[20] = help.CreateLabel(1, 16, 25, 1, "R: ±XXX.X  ±XXX.X  ±XXX.X");
-			screenLabels[21] = help.CreateLabel(1, 17, 25, 1, "P: ±XXX.X  ±XXX.X  ±XXX.X");
-			screenLabels[22] = help.CreateLabel(1, 18, 25, 1, "Y: ±XXX.X  ±XXX.X  ±XXX.X");
+			screenLabels[20] = Helper.CreateLabel(1, 16, 25, 1, "R: ±XXX.X  ±XXX.X  ±XXX.X");
+			screenLabels[21] = Helper.CreateLabel(1, 17, 25, 1, "P: ±XXX.X  ±XXX.X  ±XXX.X");
+			screenLabels[22] = Helper.CreateLabel(1, 18, 25, 1, "Y: ±XXX.X  ±XXX.X  ±XXX.X");
 
 			// STAGE LABEL
-			screenLabels[25] = help.CreateLabel(30, 15, 7, 1, "CUR: XX");
+			screenLabels[25] = Helper.CreateLabel(30, 15, 7, 1, "CUR: XX");
 
 			// STAGE BUTTON
-			screenButtons[15] = help.CreateButton(30, 17, 7, 2, "STAGE");
+			screenButtons[15] = Helper.CreateButton(30, 17, 7, 2, "STAGE");
 			screenButtons[15].Font = form.buttonFont;
 			screenButtons[15].Click += this.stage;
 
 			// PROGRAM LABEL
-			screenLabels[30] = help.CreateLabel(1, 22, 23, 1, "RAT: X.X/s   RAT X.X/s");
+			screenLabels[30] = Helper.CreateLabel(1, 22, 23, 1, "RAT: X.X/s   RAT X.X/s");
 
 			// PROGRAM BUTTONS
-			screenButtons[20] = help.CreateButton(2, 23, 3, 1, "-");
+			screenButtons[20] = Helper.CreateButton(2, 23, 3, 1, "-");
 			screenButtons[20].Font = form.buttonFont;
 			screenButtons[20].Click += this.rollRateMinus;
-			screenButtons[21] = help.CreateButton(7, 23, 3, 1, "+");
+			screenButtons[21] = Helper.CreateButton(7, 23, 3, 1, "+");
 			screenButtons[21].Font = form.buttonFont;
 			screenButtons[21].Click += this.rollRatePlus;
-			screenButtons[22] = help.CreateButton(14, 23, 3, 1, "-");
+			screenButtons[22] = Helper.CreateButton(14, 23, 3, 1, "-");
 			screenButtons[22].Font = form.buttonFont;
 			screenButtons[22].Click += this.pitchRateMinus;
-			screenButtons[23] = help.CreateButton(19, 23, 3, 1, "+");
+			screenButtons[23] = Helper.CreateButton(19, 23, 3, 1, "+");
 			screenButtons[23].Font = form.buttonFont;
 			screenButtons[23].Click += this.pitchRatePlus;
 
-			screenButtons[24] = help.CreateButton(1, 27, 10, 1, "RUN");
+			screenButtons[24] = Helper.CreateButton(1, 27, 10, 1, "RUN");
 			screenButtons[24].Font = form.buttonFont;
 			screenButtons[24].Click += this.rollProgramRun;
 
-			screenButtons[25] = help.CreateButton(13, 27, 10, 1, "RUN");
+			screenButtons[25] = Helper.CreateButton(13, 27, 10, 1, "RUN");
 			screenButtons[25].Font = form.buttonFont;
 			screenButtons[25].Click += this.pitchProgramRun;
 
 			// PROGRAM INDICATORS
-			screenIndicators[20] = help.CreateIndicator(1, 25, 10, 1, "ENGAGED");
-			screenIndicators[21] = help.CreateIndicator(13, 25, 10, 1, "ENGAGED");
+			screenIndicators[20] = Helper.CreateIndicator(1, 25, 10, 1, "ENGAGED");
+			screenIndicators[21] = Helper.CreateIndicator(13, 25, 10, 1, "ENGAGED");
 
 			// Status
-			screenIndicators[0] = help.CreateIndicator(86, 1, 10, 1, "SAS");
-			screenIndicators[1] = help.CreateIndicator(97, 1, 10, 1, "RCS");
-			screenIndicators[2] = help.CreateIndicator(108, 1, 10, 1, "GEAR");
-			screenIndicators[3] = help.CreateIndicator(86, 2, 10, 1, "BRAKES");
-			screenIndicators[4] = help.CreateIndicator(97, 2, 10, 1, "LIGHTS");
-			screenIndicators[5] = help.CreateIndicator(108, 2, 10, 1, "ABORT");
-			screenIndicators[6] = help.CreateIndicator(86, 4, 10, 1, "POWER HI");
-			screenIndicators[7] = help.CreateIndicator(97, 4, 10, 1, "G HIGH");
-			screenIndicators[8] = help.CreateIndicator(108, 4, 10, 1, "LOX LOW");
-			screenIndicators[9] = help.CreateIndicator(86, 5, 10, 1, "POWER LOW");
-			screenIndicators[10] = help.CreateIndicator(97, 5, 10, 1, "MONO LOW");
-			screenIndicators[11] = help.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
+			screenIndicators[0] = Helper.CreateIndicator(86, 1, 10, 1, "SAS");
+			screenIndicators[1] = Helper.CreateIndicator(97, 1, 10, 1, "RCS");
+			screenIndicators[2] = Helper.CreateIndicator(108, 1, 10, 1, "GEAR");
+			screenIndicators[3] = Helper.CreateIndicator(86, 2, 10, 1, "BRAKES");
+			screenIndicators[4] = Helper.CreateIndicator(97, 2, 10, 1, "LIGHTS");
+			screenIndicators[5] = Helper.CreateIndicator(108, 2, 10, 1, "ABORT");
+			screenIndicators[6] = Helper.CreateIndicator(86, 4, 10, 1, "POWER HI");
+			screenIndicators[7] = Helper.CreateIndicator(97, 4, 10, 1, "G HIGH");
+			screenIndicators[8] = Helper.CreateIndicator(108, 4, 10, 1, "LOX LOW");
+			screenIndicators[9] = Helper.CreateIndicator(86, 5, 10, 1, "POWER LOW");
+			screenIndicators[10] = Helper.CreateIndicator(97, 5, 10, 1, "MONO LOW");
+			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
-			screenIndicators[25] = help.CreateIndicator(20, 10, 10, 1, "AUTO");
-			screenIndicators[26] = help.CreateIndicator(20, 11, 10, 1, "FREE/SAS");
-			screenIndicators[27] = help.CreateIndicator(20, 12, 10, 1, "LOCK");
-			screenIndicators[28] = help.CreateIndicator(20, 13, 10, 1, "PROGRAM");
+			screenIndicators[25] = Helper.CreateIndicator(20, 10, 10, 1, "AUTO");
+			screenIndicators[26] = Helper.CreateIndicator(20, 11, 10, 1, "FREE/SAS");
+			screenIndicators[27] = Helper.CreateIndicator(20, 12, 10, 1, "LOCK");
+			screenIndicators[28] = Helper.CreateIndicator(20, 13, 10, 1, "PROGRAM");
 
 
 			// SAS BUTTONS
-			screenButtons[30] = help.CreateButton(48, 22, 7, 1, "PRO");
+			screenButtons[30] = Helper.CreateButton(48, 22, 7, 1, "PRO");
 			screenButtons[30].Font = form.buttonFont;
 			screenButtons[30].Click += (sender, e) => this.setSAS(sender, e, 1);
 
-			screenButtons[31] = help.CreateButton(57, 22, 7, 1, "RETRO");
+			screenButtons[31] = Helper.CreateButton(57, 22, 7, 1, "RETRO");
 			screenButtons[31].Font = form.buttonFont;
 			screenButtons[31].Click += (sender, e) => this.setSAS(sender, e, 2);
 
-			screenButtons[32] = help.CreateButton(66, 22, 7, 1, "STAB");
+			screenButtons[32] = Helper.CreateButton(66, 22, 7, 1, "STAB");
 			screenButtons[32].Font = form.buttonFont;
 			screenButtons[32].Click += (sender, e) => this.setSAS(sender, e, 0);
 
-			screenButtons[33] = help.CreateButton(48, 25, 7, 1, "NORM");
+			screenButtons[33] = Helper.CreateButton(48, 25, 7, 1, "NORM");
 			screenButtons[33].Font = form.buttonFont;
 			screenButtons[33].Click += (sender, e) => this.setSAS(sender, e, 3);
 
-			screenButtons[34] = help.CreateButton(57, 25, 7, 1, "A NOR");
+			screenButtons[34] = Helper.CreateButton(57, 25, 7, 1, "A NOR");
 			screenButtons[34].Font = form.buttonFont;
 			screenButtons[34].Click += (sender, e) => this.setSAS(sender, e, 4);
 
-			screenButtons[35] = help.CreateButton(66, 25, 7, 1, "SAS");
+			screenButtons[35] = Helper.CreateButton(66, 25, 7, 1, "SAS");
 			screenButtons[35].Font = form.buttonFont;
 			screenButtons[35].Click += (sender, e) => this.setSAS(sender, e, 11);
 
-			screenButtons[36] = help.CreateButton(48, 28, 7, 1, "R IN");
+			screenButtons[36] = Helper.CreateButton(48, 28, 7, 1, "R IN");
 			screenButtons[36].Font = form.buttonFont;
 			screenButtons[36].Click += (sender, e) => this.setSAS(sender, e, 5);
 
-			screenButtons[37] = help.CreateButton(57, 28, 7, 1, "R OUT");
+			screenButtons[37] = Helper.CreateButton(57, 28, 7, 1, "R OUT");
 			screenButtons[37].Font = form.buttonFont;
 			screenButtons[37].Click += (sender, e) => this.setSAS(sender, e, 6);
 
-			screenButtons[38] = help.CreateButton(66, 28, 7, 1, "RCS");
+			screenButtons[38] = Helper.CreateButton(66, 28, 7, 1, "RCS");
 			screenButtons[38].Font = form.buttonFont;
 			screenButtons[38].Click += (sender, e) => this.setSAS(sender, e, 10);
 
-			screenButtons[39] = help.CreateButton(39, 28, 7, 1, "NODE");
+			screenButtons[39] = Helper.CreateButton(39, 28, 7, 1, "NODE");
 			screenButtons[39].Font = form.buttonFont;
 			screenButtons[39].Click += (sender, e) => this.setSAS(sender, e, 7);
 
 
 			// SAS INDICATORS
-			screenIndicators[30] = help.CreateIndicator(48, 21, 7, 1, "PRO");
-			screenIndicators[31] = help.CreateIndicator(57, 21, 7, 1, "RETRO");
-			screenIndicators[32] = help.CreateIndicator(66, 21, 7, 1, "STAB");
-			screenIndicators[33] = help.CreateIndicator(48, 24, 7, 1, "NORM");
-			screenIndicators[34] = help.CreateIndicator(57, 24, 7, 1, "A NOR");
-			screenIndicators[35] = help.CreateIndicator(66, 24, 7, 1, "SAS");
-			screenIndicators[36] = help.CreateIndicator(48, 27, 7, 1, "R IN");
-			screenIndicators[37] = help.CreateIndicator(57, 27, 7, 1, "R OUT");
-			screenIndicators[38] = help.CreateIndicator(66, 27, 7, 1, "RCS");
-			screenIndicators[39] = help.CreateIndicator(39, 27, 7, 1, "NODE");
+			screenIndicators[30] = Helper.CreateIndicator(48, 21, 7, 1, "PRO");
+			screenIndicators[31] = Helper.CreateIndicator(57, 21, 7, 1, "RETRO");
+			screenIndicators[32] = Helper.CreateIndicator(66, 21, 7, 1, "STAB");
+			screenIndicators[33] = Helper.CreateIndicator(48, 24, 7, 1, "NORM");
+			screenIndicators[34] = Helper.CreateIndicator(57, 24, 7, 1, "A NOR");
+			screenIndicators[35] = Helper.CreateIndicator(66, 24, 7, 1, "SAS");
+			screenIndicators[36] = Helper.CreateIndicator(48, 27, 7, 1, "R IN");
+			screenIndicators[37] = Helper.CreateIndicator(57, 27, 7, 1, "R OUT");
+			screenIndicators[38] = Helper.CreateIndicator(66, 27, 7, 1, "RCS");
+			screenIndicators[39] = Helper.CreateIndicator(39, 27, 7, 1, "NODE");
 
 			// ACTION GROUP LABELS RIGHT
-			screenLabels[40] = help.CreateLabel(46, 21, 1, 1, "│");
-			screenLabels[41] = help.CreateLabel(46, 22, 1, 1, "│");
-			screenLabels[42] = help.CreateLabel(46, 23, 1, 1, "│");
-			screenLabels[43] = help.CreateLabel(46, 24, 1, 1, "│");
-			screenLabels[44] = help.CreateLabel(46, 25, 1, 1, "│");
-			screenLabels[45] = help.CreateLabel(37, 26, 10, 1, "┌────────┘");
-			screenLabels[46] = help.CreateLabel(37, 27, 1, 1, "│");
-			screenLabels[47] = help.CreateLabel(37, 28, 1, 1, "│");
+			screenLabels[40] = Helper.CreateLabel(46, 21, 1, 1, "│");
+			screenLabels[41] = Helper.CreateLabel(46, 22, 1, 1, "│");
+			screenLabels[42] = Helper.CreateLabel(46, 23, 1, 1, "│");
+			screenLabels[43] = Helper.CreateLabel(46, 24, 1, 1, "│");
+			screenLabels[44] = Helper.CreateLabel(46, 25, 1, 1, "│");
+			screenLabels[45] = Helper.CreateLabel(37, 26, 10, 1, "┌────────┘");
+			screenLabels[46] = Helper.CreateLabel(37, 27, 1, 1, "│");
+			screenLabels[47] = Helper.CreateLabel(37, 28, 1, 1, "│");
 
 			// ActionGroup INDICATORS
-			screenIndicators[40] = help.CreateIndicator(26, 21, 4, 1, "");
-			screenIndicators[41] = help.CreateIndicator(31, 21, 4, 1, "");
-			screenIndicators[42] = help.CreateIndicator(36, 21, 4, 1, "");
-			screenIndicators[43] = help.CreateIndicator(41, 21, 4, 1, "");
-			screenIndicators[44] = help.CreateIndicator(26, 24, 4, 1, "");
-			screenIndicators[45] = help.CreateIndicator(31, 24, 4, 1, "");
-			screenIndicators[46] = help.CreateIndicator(36, 24, 4, 1, "");
-			screenIndicators[47] = help.CreateIndicator(41, 24, 4, 1, "");
-			screenIndicators[48] = help.CreateIndicator(26, 27, 4, 1, "");
-			screenIndicators[49] = help.CreateIndicator(31, 27, 4, 1, "");
+			screenIndicators[40] = Helper.CreateIndicator(26, 21, 4, 1, "");
+			screenIndicators[41] = Helper.CreateIndicator(31, 21, 4, 1, "");
+			screenIndicators[42] = Helper.CreateIndicator(36, 21, 4, 1, "");
+			screenIndicators[43] = Helper.CreateIndicator(41, 21, 4, 1, "");
+			screenIndicators[44] = Helper.CreateIndicator(26, 24, 4, 1, "");
+			screenIndicators[45] = Helper.CreateIndicator(31, 24, 4, 1, "");
+			screenIndicators[46] = Helper.CreateIndicator(36, 24, 4, 1, "");
+			screenIndicators[47] = Helper.CreateIndicator(41, 24, 4, 1, "");
+			screenIndicators[48] = Helper.CreateIndicator(26, 27, 4, 1, "");
+			screenIndicators[49] = Helper.CreateIndicator(31, 27, 4, 1, "");
 
 
 			// ACTION GROUP BUTTONS
-			screenButtons[40] = help.CreateButton(26, 22, 4, 1, "1");
+			screenButtons[40] = Helper.CreateButton(26, 22, 4, 1, "1");
 			screenButtons[40].Font = form.buttonFont;
 			screenButtons[40].Click += (sender, e) => toggleActionGroup(sender, e, 1);
-			screenButtons[41] = help.CreateButton(31, 22, 4, 1, "2");
+			screenButtons[41] = Helper.CreateButton(31, 22, 4, 1, "2");
 			screenButtons[41].Font = form.buttonFont;
 			screenButtons[41].Click += (sender, e) => toggleActionGroup(sender, e, 2);
-			screenButtons[42] = help.CreateButton(36, 22, 4, 1, "3");
+			screenButtons[42] = Helper.CreateButton(36, 22, 4, 1, "3");
 			screenButtons[42].Font = form.buttonFont;
 			screenButtons[42].Click += (sender, e) => toggleActionGroup(sender, e, 3);
-			screenButtons[43] = help.CreateButton(41, 22, 4, 1, "4");
+			screenButtons[43] = Helper.CreateButton(41, 22, 4, 1, "4");
 			screenButtons[43].Font = form.buttonFont;
 			screenButtons[43].Click += (sender, e) => toggleActionGroup(sender, e, 4);
-			screenButtons[44] = help.CreateButton(26, 25, 4, 1, "5");
+			screenButtons[44] = Helper.CreateButton(26, 25, 4, 1, "5");
 			screenButtons[44].Font = form.buttonFont;
 			screenButtons[44].Click += (sender, e) => toggleActionGroup(sender, e, 5);
-			screenButtons[45] = help.CreateButton(31, 25, 4, 1, "6");
+			screenButtons[45] = Helper.CreateButton(31, 25, 4, 1, "6");
 			screenButtons[45].Font = form.buttonFont;
 			screenButtons[45].Click += (sender, e) => toggleActionGroup(sender, e, 6);
-			screenButtons[46] = help.CreateButton(36, 25, 4, 1, "7");
+			screenButtons[46] = Helper.CreateButton(36, 25, 4, 1, "7");
 			screenButtons[46].Font = form.buttonFont;
 			screenButtons[46].Click += (sender, e) => toggleActionGroup(sender, e, 7);
-			screenButtons[47] = help.CreateButton(41, 25, 4, 1, "8");
+			screenButtons[47] = Helper.CreateButton(41, 25, 4, 1, "8");
 			screenButtons[47].Font = form.buttonFont;
 			screenButtons[47].Click += (sender, e) => toggleActionGroup(sender, e, 8);
-			screenButtons[48] = help.CreateButton(26, 28, 4, 1, "9");
+			screenButtons[48] = Helper.CreateButton(26, 28, 4, 1, "9");
 			screenButtons[48].Font = form.buttonFont;
 			screenButtons[48].Click += (sender, e) => toggleActionGroup(sender, e, 9);
-			screenButtons[49] = help.CreateButton(31, 28, 4, 1, "0");
+			screenButtons[49] = Helper.CreateButton(31, 28, 4, 1, "0");
 			screenButtons[49].Font = form.buttonFont;
 			screenButtons[49].Click += (sender, e) => toggleActionGroup(sender, e, 0);
 
 			// ACTION GROUP LABELS LEFT
-			screenLabels[51] = help.CreateLabel(24, 21, 1, 1, "│");
-			screenLabels[52] = help.CreateLabel(24, 22, 1, 1, "│");
-			screenLabels[53] = help.CreateLabel(24, 23, 1, 1, "│");
-			screenLabels[54] = help.CreateLabel(24, 24, 1, 1, "│");
-			screenLabels[55] = help.CreateLabel(24, 25, 1, 1, "│");
-			screenLabels[56] = help.CreateLabel(24, 26, 1, 1, "│");
-			screenLabels[57] = help.CreateLabel(24, 27, 1, 1, "│");
-			screenLabels[58] = help.CreateLabel(24, 28, 1, 1, "│");
+			screenLabels[51] = Helper.CreateLabel(24, 21, 1, 1, "│");
+			screenLabels[52] = Helper.CreateLabel(24, 22, 1, 1, "│");
+			screenLabels[53] = Helper.CreateLabel(24, 23, 1, 1, "│");
+			screenLabels[54] = Helper.CreateLabel(24, 24, 1, 1, "│");
+			screenLabels[55] = Helper.CreateLabel(24, 25, 1, 1, "│");
+			screenLabels[56] = Helper.CreateLabel(24, 26, 1, 1, "│");
+			screenLabels[57] = Helper.CreateLabel(24, 27, 1, 1, "│");
+			screenLabels[58] = Helper.CreateLabel(24, 28, 1, 1, "│");
 
 			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
 			// Gee-Force vs. Time Graph
-			//form.screenCharts[0] = help.CreateChart(60, 15, 60, 15, 0, 600);
+			//form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -349,7 +348,7 @@ namespace KSP_MOCR
 			//List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 
 			// Always update Local Time
-			screenLabels[0].Text = " LT: " + help.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
+			screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 
 			// ROTATIONAL INDICATORS Are local, so always update these also
 			if (rotStep == 1)
@@ -392,10 +391,10 @@ namespace KSP_MOCR
 
 				start = DateTime.Now;
 
-				screenLabels[1].Text = "MET: " + help.timeString(vessel.MET, 3);
+				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
 
 				// THROTTLE
-				screenLabels[16].Text = help.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, helper.Align.RIGHT);
+				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
 
 				logBlock("MET + Throttle");
 
@@ -427,9 +426,9 @@ namespace KSP_MOCR
 					nP = null;
 					nY = null;
 				}
-				screenLabels[20].Text = "R: " + help.prtlen(help.toFixed(sR, 1), 6) + "  " + help.prtlen(help.toFixed(cR, 1), 6) + "  " + help.prtlen(help.toFixed(nR, 1), 6);
-				screenLabels[21].Text = "P: " + help.prtlen(help.toFixed(sP, 1), 6) + "  " + help.prtlen(help.toFixed(cP, 1), 6) + "  " + help.prtlen(help.toFixed(nP, 1), 6);
-				screenLabels[22].Text = "Y: " + help.prtlen(help.toFixed(sY, 1), 6) + "  " + help.prtlen(help.toFixed(cY, 1), 6) + "  " + help.prtlen(help.toFixed(nY, 1), 6);
+				screenLabels[20].Text = "R: " + Helper.prtlen(Helper.toFixed(sR, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(cR, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(nR, 1), 6);
+				screenLabels[21].Text = "P: " + Helper.prtlen(Helper.toFixed(sP, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(cP, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(nP, 1), 6);
+				screenLabels[22].Text = "Y: " + Helper.prtlen(Helper.toFixed(sY, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(cY, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(nY, 1), 6);
 
 				logBlock("Rot Readout show data");
 
@@ -437,7 +436,7 @@ namespace KSP_MOCR
 				String stageTxt = vessel_control.CurrentStage.ToString();
 				logBlock("Stage Data");
 
-				screenLabels[25].Text = "CUR: " + help.prtlen(stageTxt, 2);
+				screenLabels[25].Text = "CUR: " + Helper.prtlen(stageTxt, 2);
 
 				logBlock("Stage Print");
 
@@ -517,7 +516,7 @@ namespace KSP_MOCR
 						break;
 				}
 				// PROGRAM LABEL
-				screenLabels[30].Text = "RAT: " + help.toFixed(rollRate, 1) + "/s  RAT: " + help.toFixed(pitchRate, 1) + "/s";
+				screenLabels[30].Text = "RAT: " + Helper.toFixed(rollRate, 1) + "/s  RAT: " + Helper.toFixed(pitchRate, 1) + "/s";
 
 				// SAS INDICATORS
 				for(int i = 30; i < 40; i++)

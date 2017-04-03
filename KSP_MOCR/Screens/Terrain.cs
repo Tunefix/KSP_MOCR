@@ -17,7 +17,6 @@ namespace KSP_MOCR
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
 			this.form = form;
-			this.help = new KSP_MOCR.helper(form);
 			this.chartData = form.chartData;
 
 			this.width = 120;
@@ -49,7 +48,7 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
 			// Altitude vs. Time Graph
-			form.screenCharts[0] = help.CreateChart(0, 0, 120, 30, 0, 600,-100,3000);
+			form.screenCharts[0] = Helper.CreateChart(0, 0, 120, 30, 0, 600,-100,3000);
 		}
 	}
 }
