@@ -1,3 +1,0 @@
-Z:\DEV\KPRC\KPRC\bin\Debug\KSP_MOCR.exe.config
-Z:\DEV\KSP_MOCR\KSP_MOCR\bin\Debug\KSP_MOCR.exe.config
-C:\Users\Tonheim\Source\Repos\KSP_MOCR\KSP_MOCR\bin\Debug\KSP_MOCR.exe.config

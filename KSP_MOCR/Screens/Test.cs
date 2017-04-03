@@ -1,6 +1,7 @@
 ﻿using KRPC.Client;
 using KRPC.Client.Services;
 using KRPC.Client.Services.KRPC;
+using KRPC.Client.Services.SpaceCenter;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,26 +14,47 @@ namespace KSP_MOCR
 	class TestScreen : MocrScreen
 	{
 
-		//KRPC.Schema.KRPC.Status status;
-		//KRPC.Client.Stream<KRPC.Schema.KRPC.Status> stream;
+		KRPC.Schema.KRPC.Status status;
+		KRPC.Client.Stream<KRPC.Schema.KRPC.Status> stream;
+
+		private KRPC.Client.Services.SpaceCenter.Flight flight;
+		private KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
 
 		public TestScreen(Form1 form)
 		{
 			this.form = form;
 			this.help = new KSP_MOCR.helper(form);
 
+			this.connection = form.connection;
+			this.krpc = this.connection.KRPC();
+			this.spaceCenter = this.connection.SpaceCenter();
+
 			this.width = 120;
 			this.height = 30;
 
-			//stream = connection.AddStream(() => krpc.GetStatus());
+			stream = connection.AddStream(() => krpc.GetStatus());
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			if (form.connected && connection == null)
+			if (form.connected && connection != null)
 			{
-				//this.connection = form.connection;
-				//this.krpc = this.connection.KRPC();
+				status = stream.Get();
+				screenLabels[0].Text = status.BytesRead.ToString(); 
+			}
+
+			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+			{
+
+				// INITIALIZE STREAMS
+				if (this.flight_stream == null)
+				{
+					ReferenceFrame flightRef = spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame;
+					this.flight_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Flight(flightRef));
+				}
+
+				flight = flight_stream.Get();
+				screenLabels[1].Text = flight.MeanAltitude.ToString();
 			}
 		}
 
