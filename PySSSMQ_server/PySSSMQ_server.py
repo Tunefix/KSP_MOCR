@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
-# Pling (Application)
+# PySSSMQ_server (Server daemon)
 # Copyright (c) 2017 Lars Andre Landås (landas@gmail.com)
-
+#
+# TODO: Add option to make the debug message optional
+#
 
  
 import socket
@@ -92,7 +94,13 @@ class PySSSMQ_client_connection:
         while True:
              
             #Receiving from client
-            data = self.conn.recv(1024)
+            try:
+                data = self.conn.recv(1024)
+            except:
+                self.client_list.remove_client(self)
+                print "Client exited unexpected"
+                return
+
             reply = 'Data from ' + self.addr[0] + ': ' + data 
             if (not data) or (data.strip() == 'exit'): 
                 print 'Exit'
@@ -103,6 +111,7 @@ class PySSSMQ_client_connection:
             if dataobj is False:
                 print "Malformed data: " + data
             else:
+                print "Received data: " + data
                 if dataobj['command'] == "|":
                     self.client_list.message(dataobj["key"], dataobj["data"])
                 elif dataobj['command'] == "&":
@@ -127,8 +136,6 @@ class PySSSMQ_client_connection:
             return False
         if data[:1] == '&':
             return { 'command' : "&", 'length' : 0, 'key' : None, 'data' : None }
-
-        print "HER"
 
         if not self.is_int(data[11:15]):
             return False
@@ -166,6 +173,7 @@ class PySSSMQ_message_queue:
         self.data.set(key[:10],data)
 
         for client in self.clients:
+            print "Sendt to ", client.addr[0], ": ", data;
             client.send(data, len(data), key)
 
 class PySSSMQ_data:
