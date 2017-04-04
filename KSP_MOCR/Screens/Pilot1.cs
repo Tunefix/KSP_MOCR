@@ -37,7 +37,6 @@ namespace KSP_MOCR
 
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
 
-
 		DateTime start;
 		DateTime end;
 		TimeSpan dur;
@@ -48,6 +47,12 @@ namespace KSP_MOCR
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
 			this.spaceCenter = this.connection.SpaceCenter();
+
+			if(this.krpcData == null)
+			{
+				this.krpcData = new KrpcData(this.krpc, this.spaceCenter);
+			}
+
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -354,7 +359,7 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(4);
 			}
 
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+			if (form.connected && this.krpcData.CurrentGameScene == GameScene.Flight)
 			{
 
 				// INITIALIZE STREAMS
@@ -383,7 +388,7 @@ namespace KSP_MOCR
 
 				start = DateTime.Now;
 
-				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
+				screenLabels[1].Text = "MET: " + Helper.timeString(this.krpcData.ActiveVessel_MET, 3);
 
 				// THROTTLE
 				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
