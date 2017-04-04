@@ -68,6 +68,7 @@ public class KrpcData
 			}
 
 			this.fetch_data_lock = false;
+			System.Threading.Thread.Sleep(25);
 
 		}
 	}
