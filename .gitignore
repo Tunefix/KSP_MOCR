@@ -1,3 +1,5 @@
 # Ignore build directories
 KSP_MOCR/bin*
 KSP_MOCR/obj/*
+*CSTest.exe*
+
