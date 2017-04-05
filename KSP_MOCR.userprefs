@@ -6,13 +6,11 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR Status">
     <Files>
-      <File FileName="KSP_MOCR\Screens\Test.cs" Line="36" Column="39" />
+      <File FileName="KSP_MOCR\Screens\Test.cs" Line="40" Column="47" />
       <File FileName="KSP_MOCR\Form1.cs" Line="9" Column="1" />
       <File FileName="KSP_MOCR\MocrScreen.cs" Line="33" Column="21" />
       <File FileName="KSP_MOCR\GetData.cs" Line="24" Column="7" />
       <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="88" Column="18" />
-      <File FileName="KSP_MOCR\KrpcData.cs" Line="5" Column="40" />
-      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="368" Column="170" />
       <File FileName="KSP_MOCR Status" />
     </Files>
     <Pads>
@@ -23,6 +21,7 @@
               <Node name="Screens" expanded="True">
                 <Node name="ConnectionScreen.cs" selected="True" />
               </Node>
+              <Node name="Form1.cs" expanded="True" />
             </Node>
           </Node>
         </State>

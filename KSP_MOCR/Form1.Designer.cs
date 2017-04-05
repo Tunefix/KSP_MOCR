@@ -30,8 +30,7 @@ namespace KSP_MOCR
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.SuspendLayout();
+			this.SuspendLayout();
             // 
             // Form1
             // 

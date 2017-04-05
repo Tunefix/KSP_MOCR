@@ -85,15 +85,11 @@ namespace KSP_MOCR
 			screenLabels[2] = Helper.CreateLabel(23, 1, 20, 1, "Your ID:"); // Input Label
 			screenInputs[1] = Helper.CreateInput(23, 2, 20, 1); // Name
 			screenInputs[1].Text = "Flight Director";
-			screenInputs[2].KeyDown += checkForEnter;
+			screenInputs[1].KeyDown += checkForEnter;
 
 			screenButtons[0] = Helper.CreateButton(45, 2, 14); // Connect-button
 			screenButtons[0].Text = "Connect";
 			screenButtons[0].Click += form.ConnectToServer;
-
-			screenButtons[1] = Helper.CreateButton(45, 4, 14); // Connect-button
-			screenButtons[1].Text = "TCP TEST";
-			screenButtons[1].Click += form.tcpTest;
 
 			screenLabels[3] = Helper.CreateLabel(60, 0, 60, 20); // Help text
 			screenLabels[3].Text = "╥─── HELP ───\n"
