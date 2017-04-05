@@ -4,14 +4,30 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR\MocrScreen.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR Status">
     <Files>
-      <File FileName="KSP_MOCR\Screens\Test.cs" Line="14" Column="31" />
-      <File FileName="KSP_MOCR\Form1.cs" Line="250" Column="5" />
+      <File FileName="KSP_MOCR\Screens\Test.cs" Line="36" Column="39" />
+      <File FileName="KSP_MOCR\Form1.cs" Line="9" Column="1" />
       <File FileName="KSP_MOCR\MocrScreen.cs" Line="33" Column="21" />
-      <File FileName="KSP_MOCR\GetData.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="14" Column="34" />
+      <File FileName="KSP_MOCR\GetData.cs" Line="24" Column="7" />
+      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="88" Column="18" />
+      <File FileName="KSP_MOCR\KrpcData.cs" Line="5" Column="40" />
+      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="368" Column="170" />
+      <File FileName="KSP_MOCR Status" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="KSP_MOCR" expanded="True">
+            <Node name="KSP_MOCR" expanded="True">
+              <Node name="Screens" expanded="True">
+                <Node name="ConnectionScreen.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.KSP__MOCR PreferredExecutionTarget="MonoDevelop.Default" />

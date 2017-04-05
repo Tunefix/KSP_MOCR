@@ -3,6 +3,7 @@ using KRPC.Client.Services.KRPC;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,10 +80,12 @@ namespace KSP_MOCR
 			screenLabels[1] = Helper.CreateLabel(1, 1, 20, 1, "Server IP:"); // Input Label
 			screenInputs[0] = Helper.CreateInput(1, 2, 20, 1); // Server IP
 			screenInputs[0].Text = "127.0.0.1";
+			screenInputs[0].KeyDown += checkForEnter;
 
 			screenLabels[2] = Helper.CreateLabel(23, 1, 20, 1, "Your ID:"); // Input Label
 			screenInputs[1] = Helper.CreateInput(23, 2, 20, 1); // Name
 			screenInputs[1].Text = "Flight Director";
+			screenInputs[2].KeyDown += checkForEnter;
 
 			screenButtons[0] = Helper.CreateButton(45, 2, 14); // Connect-button
 			screenButtons[0].Text = "Connect";
@@ -112,6 +115,14 @@ namespace KSP_MOCR
 			screenLabels[3].TextAlign = ContentAlignment.TopLeft;
 
 			screenLabels[4] = Helper.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
+		}
+
+		private void checkForEnter(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter || e.KeyData == Keys.Return)
+			{
+				form.ConnectToServer(sender, e);
+			}
 		}
 	}
 }

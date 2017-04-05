@@ -16,31 +16,52 @@ namespace KSP_MOCR
 
 		KRPC.Schema.KRPC.Status status;
 		private KRPC.Client.Services.SpaceCenter.Flight flight;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
 
 		public TestScreen(Form1 form)
 		{
 			this.form = form;
 
-			this.connection = form.connection;
-			this.krpc = this.connection.KRPC();
-			this.spaceCenter = this.connection.SpaceCenter();
-
 			this.width = 120;
 			this.height = 30;
+
+			var vessel = this.form.spaceCenter.ActiveVessel;
+			Console.WriteLine("Vessel: " + vessel.ToString());
+			var refframe = vessel.Orbit.Body.ReferenceFrame;
+			Console.WriteLine("RefFrame: " + refframe.ToString());
+
+			Console.WriteLine("Adding stream");
+			try
+			{
+				this.flight_stream = this.form.connection.AddStream(() => vessel.Flight(refframe));
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Ex: " + ex.ToString());
+			}
+			Console.WriteLine("Stream added");
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			if (form.connected && connection != null)
+			if (form.connected && form.connection != null)
 			{
 			}
 
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight) // krpc.CurrentGameScene is 1 RPC
 			{
-
 				// GET DATA
-				flight = GetData.getFlight();
+				Console.WriteLine("Getting data");
+				flight = flight_stream.Get();
+				Console.WriteLine("Got Data");
+
 				screenLabels[1].Text = flight.MeanAltitude.ToString();
+
+
+				//flight = GetData.getFlight(); // 7 RPC
+				//screenLabels[1].Text = flight.MeanAltitude.ToString(); // 7 RPC
+
+				//screenLabels[1].Text = connection.SpaceCenter().ActiveVessel.Flight().MeanAltitude.ToString(); // 3 RPC
 			}
 		}
 
