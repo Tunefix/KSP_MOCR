@@ -9,9 +9,10 @@ namespace KSP_MOCR
 {
 	public static class GetData
 	{
-		private static KRPC.Client.Services.SpaceCenter.Service spaceCenter;
+		static KRPC.Client.Services.SpaceCenter.Service spaceCenter;
+		static Form1 form;
 
-		private static Form1 form;
+
 
 		static public void setForm(Form1 f){GetData.form = f;}
 
@@ -22,7 +23,6 @@ namespace KSP_MOCR
 			KRPC.Client.Services.SpaceCenter.Flight flight = null;
 		    KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
 
-			spaceCenter = form.connection.SpaceCenter();
 			ReferenceFrame flightRef = spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame;
 
 			if (form.system == Form1.OS.UNIX)
@@ -40,16 +40,14 @@ namespace KSP_MOCR
 			return flight;
 		}
 
-		static public Orbit getOrbit(Connection con)
+		static public Orbit getOrbit()
 		{
 			KRPC.Client.Services.SpaceCenter.Orbit orbit = null;
 			KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
 
-			spaceCenter = con.SpaceCenter();
-
 			try
 			{
-				orbit_stream = con.AddStream(() => spaceCenter.ActiveVessel.Orbit);
+				orbit_stream = form.connection.AddStream(() => spaceCenter.ActiveVessel.Orbit);
 				orbit = orbit_stream.Get();
 			}
 			catch (Exception)
@@ -60,16 +58,14 @@ namespace KSP_MOCR
 			return orbit;
 		}
 
-		static public Vessel getVessel(Connection con)
+		static public Vessel getVessel()
 		{
 			KRPC.Client.Services.SpaceCenter.Vessel vessel = null;
 			KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
 
-			spaceCenter = con.SpaceCenter();
-
 			try
 			{
-				vessel_stream = con.AddStream(() => spaceCenter.ActiveVessel);
+				vessel_stream = form.connection.AddStream(() => spaceCenter.ActiveVessel);
 				vessel = vessel_stream.Get();
 			}
 			catch (Exception)
