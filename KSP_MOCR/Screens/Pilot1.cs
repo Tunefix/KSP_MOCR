@@ -51,6 +51,7 @@ namespace KSP_MOCR
 			if(this.krpcData == null)
 			{
 				this.krpcData = new KrpcData(this.krpc, this.spaceCenter);
+				this.krpcData.Run();
 			}
 
 			this.form = form;
@@ -359,8 +360,11 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(4);
 			}
 
+			Console.WriteLine("Check if connected in Pilot");
+
 			if (form.connected && this.krpcData.CurrentGameScene == GameScene.Flight)
 			{
+				Console.WriteLine("Connected in Pilot");
 
 				// INITIALIZE STREAMS
 				/*

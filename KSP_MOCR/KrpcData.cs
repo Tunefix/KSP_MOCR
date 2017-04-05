@@ -25,6 +25,7 @@ public class KrpcData
 	private KRPC.Client.Services.KRPC.GameScene _CurrentGameScene;
 	private bool _Isset_CurrentGameScene = false;
 	private double _ActiveVessel_MET = -1;
+	private uint count = 0;
 
 	public KrpcData(KRPC.Client.Services.KRPC.Service arg_krpc, KRPC.Client.Services.SpaceCenter.Service arg_spaceCenter)
 	{
@@ -68,7 +69,7 @@ public class KrpcData
 			}
 
 			this.fetch_data_lock = false;
-			System.Threading.Thread.Sleep(25);
+			System.Threading.Thread.Sleep(1000);
 
 		}
 	}
@@ -79,6 +80,7 @@ public class KrpcData
 		xthread = new Thread(new ThreadStart(func));
 		xthread.IsBackground = true;
 		xthread.Start();
+		++this.count;
 	}
 
 	/* CurrentGameScene */
