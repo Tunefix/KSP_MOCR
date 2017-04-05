@@ -28,7 +28,6 @@ namespace KSP_MOCR
 		
 		public KRPC.Client.Services.KRPC.Service krpc;
 		public KRPC.Client.Services.SpaceCenter.Service spaceCenter;
-		public KrpcData krpcData = null;
 
 		public Connection connection;
 		public Form1 form;
