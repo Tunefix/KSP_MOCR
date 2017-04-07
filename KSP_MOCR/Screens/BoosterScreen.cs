@@ -19,11 +19,11 @@ namespace KSP_MOCR
 		KRPC.Client.Services.SpaceCenter.Flight flight;
 		//KRPC.Client.Services.SpaceCenter.Orbit orbit;
 
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
+
 		public BoosterScreen(Form1 form)
 		{
-			this.connection = form.connection;
-			this.krpc = this.connection.KRPC();
-			this.spaceCenter = this.connection.SpaceCenter();
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -114,10 +114,10 @@ namespace KSP_MOCR
 			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
 
-			for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
+			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
 			// Gee-Force vs. Time Graph
-			form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
+			//form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -126,10 +126,14 @@ namespace KSP_MOCR
 			List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 
 
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				vessel = spaceCenter.ActiveVessel;
-				flight = vessel.Flight();
+				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
+				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
+
+
+				vessel = vessel_stream.Get();
+				flight = flight_stream.Get();
 				//orbit = vessel.Orbit;
 
 
@@ -311,9 +315,9 @@ namespace KSP_MOCR
 
 
 				// Graphs
-				data = new List<Dictionary<int, Nullable<double>>>();
-				data.Add(chartData["geeTime"]);
-				form.showData(0, data, false);
+				//data = new List<Dictionary<int, Nullable<double>>>();
+				//data.Add(chartData["geeTime"]);
+				//form.showData(0, data, false);
 			}
 		}
 	}

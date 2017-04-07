@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -23,6 +23,12 @@ namespace KSP_MOCR
 		private KRPC.Client.Services.SpaceCenter.Orbit orbit;
 		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources_stage;
 
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> resources_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> resources_stage_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Control> control_stream;
+
 		private int setRotR = 0;
 		private int setRotP = 90;
 		private int setRotY = 90;
@@ -45,9 +51,12 @@ namespace KSP_MOCR
 
 		public Pilot1(Form1 form)
 		{
+<<<<<<< HEAD
 			this.connection = form.connection;
 			this.krpc = this.connection.KRPC();
 			this.spaceCenter = this.connection.SpaceCenter();
+=======
+>>>>>>> 142fb43... A lot of cleanup. All screens running on streams. Added monospace font for Unix-systems. Graphs are broken (don't work with mono) On Unix you can only select new screen once. (No idea why)
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -354,29 +363,34 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(4);
 			}
 
+<<<<<<< HEAD
 			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+=======
+			Console.WriteLine("Check if connected in Pilot");
+
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+>>>>>>> 142fb43... A lot of cleanup. All screens running on streams. Added monospace font for Unix-systems. Graphs are broken (don't work with mono) On Unix you can only select new screen once. (No idea why)
 			{
 
 				// INITIALIZE STREAMS
-				/*
-				if (this.vessel_stream == null) this.vessel_stream = connection.AddStream(() => spaceCenter.ActiveVessel);
-				if (this.flight_stream == null) this.flight_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
-				if (this.resources_stream == null) this.resources_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Resources);
-				if (this.control_stream == null) this.control_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Control);
-				if (this.orbit_stream == null) this.orbit_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Orbit);
-				if (this.vessel_resources_stage_stream == null) this.vessel_resources_stage_stream = connection.AddStream(() => spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage, false));
-				*/
+				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
+				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
+				if (this.resources_stream == null) this.resources_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Resources);
+				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Control);
+				//if (this.orbit_stream == null) this.orbit_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Orbit);
+				if (this.resources_stage_stream == null) this.resources_stage_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.ResourcesInDecoupleStage(form.spaceCenter.ActiveVessel.Control.CurrentStage, false));
+
 
 				// GET DATA
 				start = DateTime.Now;
 
-
-				this.vessel = spaceCenter.ActiveVessel;
-				this.flight = spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame);
-				this.vessel_control = spaceCenter.ActiveVessel.Control;
-				this.vessel_resources = spaceCenter.ActiveVessel.Resources;
+				this.vessel = vessel_stream.Get();
+				this.flight = flight_stream.Get();
+				this.vessel_control = control_stream.Get();
+				this.vessel_resources = resources_stream.Get();
 				//this.orbit = this.orbit_stream.Get();
-				this.vessel_resources_stage = spaceCenter.ActiveVessel.ResourcesInDecoupleStage(spaceCenter.ActiveVessel.Control.CurrentStage);
+				this.vessel_resources_stage = resources_stage_stream.Get();
+
 				end = DateTime.Now;
 				dur = end - start;
 				Console.WriteLine("Time getting data: " + (int)dur.TotalMilliseconds);

@@ -7,17 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 using KRPC.Client;
 using KRPC.Client.Services.KRPC;
 using KRPC.Client.Services.SpaceCenter;
 using System.Drawing.Text;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Net;
 
 namespace KSP_MOCR
 {
+	
 	public partial class Form1 : Form
 	{
 		public Connection connection;
@@ -32,14 +33,16 @@ namespace KSP_MOCR
 		public OS system;
 
 		private string screenCallup = "";
-		private bool ctrlDown = false;
+		public bool ctrlDown = false;
 
 		static private List<PrivateFontCollection> _fontCollections;
 		public Font font;
 		public Font buttonFont;
 
-		public double pxPrChar = 9.0;
-		public double pxPrLine = 19;
+		public double pxPrChar;
+		public double pxPrLine;
+		public double charOffset;
+		public double lineOffset;
 
 		public int padding_top = 4;
 		public int padding_right = 4;
@@ -69,7 +72,6 @@ namespace KSP_MOCR
 
 		public Form1()
 		{
-
 			InitializeComponent();
 		}
 
@@ -78,7 +80,7 @@ namespace KSP_MOCR
 			if (_fontCollections == null) _fontCollections = new List<PrivateFontCollection>();
 			PrivateFontCollection fontCol = new PrivateFontCollection();
 			IntPtr fontPtr = Marshal.AllocCoTaskMem(fontData.Length);
-			
+
 			Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
 			fontCol.AddMemoryFont(fontPtr, fontData.Length);
 			Marshal.FreeCoTaskMem(fontPtr); //<-- It works!
@@ -86,62 +88,28 @@ namespace KSP_MOCR
 			return new Font(fontCol.Families[0], size, style);
 		}
 
-		Font CreateFont(string fontFile, float size, FontStyle style)
+		public static byte[] GetBytesFromFile(string fullFilePath)
 		{
-			using (var pfc = new PrivateFontCollection())
+			// this method is limited to 2^32 byte files (4.2 GB)
+
+			FileStream fs = File.OpenRead(fullFilePath);
+			try
 			{
-				Console.WriteLine(Path.GetFullPath(fontFile));
-				pfc.AddFontFile(fontFile);
-				using (var fontFamily = new FontFamily(pfc.Families[0].Name, pfc))
-				{
-					return new Font(fontFamily, size, style);
-				}
+				byte[] bytes = new byte[fs.Length];
+				fs.Read(bytes, 0, Convert.ToInt32(fs.Length));
+				fs.Close();
+				return bytes;
 			}
+			finally
+			{
+				fs.Close();
+			}
+
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			Console.WriteLine("FORM LOADING");
-
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				system = OS.UNIX;
-				Console.WriteLine("SYSTEM SET TO UNIX");
-			}
-			else
-			{
-				system = OS.WINDOWS;
-				Console.WriteLine("SYSTEM SET TO WINDOWS");
-			}
-
-			// Setup Helper
-			Helper.setForm(this);
-
-			// Setup GetData
-			GetData.setForm(this);
-
-			// Enable key preview
-			this.KeyPreview = true;
-
-			// Load font
-			font = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 12, FontStyle.Regular);
-			buttonFont = GetCustomFont(KSP_MOCR.Properties.Resources.consola, 10, FontStyle.Regular);
-
-			//font = CreateFont(AppDomain.CurrentDomain.BaseDirectory + "/consola.otf", 12, FontStyle.Regular);
-			//buttonFont = CreateFont(AppDomain.CurrentDomain.BaseDirectory + "/consola.otf", 8, FontStyle.Regular);
-
-			/*
-			try
-			{
-				this.Icon = KPRC.Properties.Resources.MOCR;
-			}
-			catch (Exception ex) { }
-			*/
-
-			// Setup form style
-			this.BackColor = Color.FromArgb(255, 16, 16, 16);
-			this.ForeColor = foreColor;
-			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
 
 			// Init indicator images
 			for (int i = 0; i < 11; i++)
@@ -153,20 +121,86 @@ namespace KSP_MOCR
 				}
 			}
 
-			// Load Images
-			indicatorImage = new Bitmap(KSP_MOCR.Properties.Resources.Indicator);
-			indicatorImages[9][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator9x1);
-			indicatorImages[8][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator8x1);
-			indicatorImages[7][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator7x1);
-			indicatorImages[6][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator6x1);
-			indicatorImages[5][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator5x1);
-			indicatorImages[4][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator4x1);
-			indicatorImages[3][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator3x1);
-			indicatorImages[2][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator2x1);
-			indicatorImages[1][1] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator1x1);
-			indicatorImages[2][2] = new Bitmap(KSP_MOCR.Properties.Resources.Indicator2x2);
-			engineOn = new Bitmap(KSP_MOCR.Properties.Resources.EngineOn);
-			engineOff = new Bitmap(KSP_MOCR.Properties.Resources.EngineOff);
+
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				system = OS.UNIX;
+				Console.WriteLine("SYSTEM SET TO UNIX");
+
+				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
+				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
+
+				pxPrChar = 8;
+				pxPrLine = 16;
+				charOffset = -1;
+				lineOffset = -1;
+
+				// Load Images
+				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator.png");
+				indicatorImages[9][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator9x1.png");
+				indicatorImages[8][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator8x1.png");
+				indicatorImages[7][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator7x1.png");
+				indicatorImages[6][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator6x1.png");
+				indicatorImages[5][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator5x1.png");
+				indicatorImages[4][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator4x1.png");
+				indicatorImages[3][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator3x1.png");
+				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x1.png");
+				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator1x1.png");
+				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x2.png");
+				engineOn = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/EngineOn.png");
+				engineOff = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/EngineOff.png");
+			}
+			else
+			{
+				system = OS.WINDOWS;
+				Console.WriteLine("SYSTEM SET TO WINDOWS");
+
+				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
+				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
+
+				pxPrChar = 9;
+				pxPrLine = 19;
+				charOffset = -2.5;
+				lineOffset = 0;
+
+				try
+				{
+					this.Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "Resources\\MOCR.ico");
+				}
+				catch (Exception ex) { }
+
+				// Load Images
+				Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
+				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
+				indicatorImages[9][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator9x1.png");
+				indicatorImages[8][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator8x1.png");
+				indicatorImages[7][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator7x1.png");
+				indicatorImages[6][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator6x1.png");
+				indicatorImages[5][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator5x1.png");
+				indicatorImages[4][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator4x1.png");
+				indicatorImages[3][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator3x1.png");
+				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x1.png");
+				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator1x1.png");
+				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x2.png");
+				engineOn = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\EngineOn.png");
+				engineOff = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\EngineOff.png");
+			}
+
+			// Setup Helper
+			Helper.setForm(this);
+
+			// Enable key preview
+			this.KeyPreview = true;
+
+
+			// Setup form style
+			this.BackColor = Color.FromArgb(255, 16, 16, 16);
+			this.ForeColor = foreColor;
+			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
+
+
+
+
 
 			// Fill the chartLineColors
 			chartLineColors.Add(Color.FromArgb(255, 204, 51, 0));
@@ -255,8 +289,6 @@ namespace KSP_MOCR
 				krpc = connection.KRPC();
 				spaceCenter = connection.SpaceCenter();
 
-				GetData.setSpaceCenter(spaceCenter);
-
 				activeScreen.screenLabels[0].Text = "Connected";
 				connected = true;
 			}
@@ -308,6 +340,9 @@ namespace KSP_MOCR
 				activeScreen.makeElements();
 				activeScreen.resizeForm();
 
+				// Draw screen
+				this.Invalidate();
+
 				// Start the update process
 				screenTimer.Start();
 			}
@@ -347,7 +382,7 @@ namespace KSP_MOCR
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			//Console.WriteLine("KD: " + e.KeyValue);
+			Console.WriteLine("KC: " + e.KeyCode.ToString());
 
 			int x = e.KeyValue & 0x000000ff;
 
@@ -386,19 +421,18 @@ namespace KSP_MOCR
 				}
 				catch(Exception ex)
 				{
+					Console.WriteLine(ex.ToString());
 					if(ex is ArgumentNullException)
 					{
-						// Do nothing
 					}
 
 					if (ex is FormatException)
 					{
-						// Do nothing
 					}
 
 					if (ex is OverflowException)
 					{
-						// Do nothing
+						
 					}
 				}
 				screenCallup = "";

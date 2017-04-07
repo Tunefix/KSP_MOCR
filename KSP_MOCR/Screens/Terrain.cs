@@ -14,8 +14,6 @@ namespace KSP_MOCR
 
 		public Terrain(Form1 form)
 		{
-			this.connection = form.connection;
-			this.krpc = this.connection.KRPC();
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -28,7 +26,7 @@ namespace KSP_MOCR
 			// Re-usable data variable for graph data
 			List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				data = new List<Dictionary<int, Nullable<double>>>();
 				data.Add(chartData["altitudeTime"]);

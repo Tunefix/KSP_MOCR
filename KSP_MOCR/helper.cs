@@ -9,6 +9,48 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace KSP_MOCR
 {
+	public class CustomLabel : Label
+	{
+		double charWidth = 9;
+		double lineHeight = 19;
+		double charOffset = -2.5;
+		double lineOffset = 0;
+
+		public CustomLabel()
+		{
+		}
+
+		public void setCharWidth(double w){this.charWidth = w;}
+		public void setlineHeight(double h) { this.lineHeight = h;}
+		public void setcharOffset(double o) { this.charOffset = o; }
+		public void setlineOffset(double o) { this.lineOffset = o; }
+
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			// Simple draw-line
+			//e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), -2.5f, 0);
+
+			// Draw each character on its own, to align everything
+			float yPos = (float)lineOffset;
+			double charsBack = 0;
+			for (int i = 0; i < Text.Length; i++)
+			{
+				String letter = Text.Substring(i, 1);
+
+				if (letter == "\n")
+				{
+					yPos += (float)lineHeight;
+					charsBack = (i+1) * charWidth;
+				}
+				else
+				{
+					float xPos = (float)(charOffset + (charWidth * i) - charsBack);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(ForeColor), xPos, yPos);
+				}
+			}
+		}
+	}
+
 	static class Helper
 	{
 		static Form1 form;
@@ -27,8 +69,8 @@ namespace KSP_MOCR
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine) - 1;
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			int top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
+			int left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
 
 			TextBox input = new TextBox();
 			input.Location = new Point(left, top);
@@ -56,19 +98,25 @@ namespace KSP_MOCR
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			int top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
+			int left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
 
 
-			Label label = new Label();
+			CustomLabel label = new CustomLabel();
+			label.setCharWidth(form.pxPrChar);
+			label.setlineHeight(form.pxPrLine);
+			label.setcharOffset(form.charOffset);
+			label.setlineOffset(form.lineOffset);
 			label.Font = form.font;
+			label.AutoSize = false;
+			label.TextAlign = ContentAlignment.TopCenter;
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
 			label.Text = t;
 			label.Padding = new Padding(0);
 			label.Margin = new Padding(0);
-			label.FlatStyle = FlatStyle.System;
-			label.UseCompatibleTextRendering = true;
+			label.FlatStyle = FlatStyle.Flat;
+			label.BorderStyle = BorderStyle.None;
 			label.ForeColor = form.foreColor;
 			form.Controls.Add(label);
 			return label;
@@ -115,33 +163,43 @@ namespace KSP_MOCR
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
 			Chart chart = new Chart();
-			chart.Legends.Clear();
-			chart.Series.Clear();
+			//chart.Legends.Clear();
+			//chart.Series.Clear();
 			chart.Size = new Size(width, height);
 			chart.Location = new Point(left, top);
 			chart.BackColor = form.BackColor;
 			chart.Padding = new Padding(0);
 
 			var chartArea = new ChartArea();
+			chartArea.AxisX = new Axis();
+			chartArea.AxisY = new Axis();
+			chartArea.AxisX.MajorGrid = new Grid();
+			chartArea.AxisY.MajorGrid = new Grid();
 			chartArea.AxisX.MajorGrid.LineColor = Color.LightGray;
 			chartArea.AxisY.MajorGrid.LineColor = Color.LightGray;
 			chartArea.BackColor = form.BackColor;
 			chartArea.Position = new ElementPosition(0, 0, 100, 100);
 
-			chartArea.AxisX.LabelStyle.Font = new Font("Consolas", 8);
+			chartArea.AxisX.LabelStyle = new LabelStyle();
+			chartArea.AxisX.LabelStyle.Font = form.buttonFont;
 			chartArea.AxisX.LineColor = form.chartAxisColor;
 			chartArea.AxisX.InterlacedColor = form.chartAxisColor;
 			chartArea.AxisX.LabelStyle.ForeColor = form.foreColor;
 			chartArea.AxisX.MajorGrid.LineColor = form.chartAxisColor;
+
+			chartArea.AxisX.MinorGrid = new Grid();
 			chartArea.AxisX.MinorGrid.LineColor = form.chartAxisColor;
 			if (maxX != -1) chartArea.AxisX.Maximum = maxX;
 			chartArea.AxisX.Minimum = minX;
 
-			chartArea.AxisY.LabelStyle.Font = new Font("Consolas", 8);
+			chartArea.AxisY.LabelStyle = new LabelStyle();
+			chartArea.AxisY.LabelStyle.Font = form.buttonFont;
 			chartArea.AxisY.LineColor = form.chartAxisColor;
 			chartArea.AxisY.InterlacedColor = form.chartAxisColor;
 			chartArea.AxisY.LabelStyle.ForeColor = form.foreColor;
 			chartArea.AxisY.MajorGrid.LineColor = form.chartAxisColor;
+
+			chartArea.AxisY.MinorGrid = new Grid();
 			chartArea.AxisY.MinorGrid.LineColor = form.chartAxisColor;
 			if (maxY != -1) chartArea.AxisY.Maximum = maxY;
 			chartArea.AxisY.Minimum = minY;

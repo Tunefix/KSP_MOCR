@@ -19,12 +19,12 @@ namespace KSP_MOCR
 		KRPC.Client.Services.SpaceCenter.Flight flight;
 		KRPC.Client.Services.SpaceCenter.Orbit orbit;
 
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
+
 
 		public AscentScreen(Form1 form)
 		{
-			this.connection = form.connection;
-			this.krpc = this.connection.KRPC();
-			this.spaceCenter = this.connection.SpaceCenter();
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -136,13 +136,13 @@ namespace KSP_MOCR
 			screenInputs[1].Text = "120000";
 
 
+			//for (int i = 0; i < 2; i++) form.screenCharts.Add(null); // Initialize Charts
 
-			for (int i = 0; i < 2; i++) form.screenCharts.Add(null); // Initialize Charts
-																		// Altitude vs. Time Graph
-			form.screenCharts[0] = Helper.CreateChart(0, 15, 60, 15, 0, 600);
+			// Altitude vs. Time Graph
+			//form.screenCharts[0] = Helper.CreateChart(0, 15, 60, 15, 0, 600);
 
 			// Gee-Force vs. Time Graph
-			form.screenCharts[1] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
+			//form.screenCharts[1] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -150,13 +150,39 @@ namespace KSP_MOCR
 			// Re-usable data variable for graph data
 			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
 
-
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
+		
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				vessel = spaceCenter.ActiveVessel;
-				flight = vessel.Flight();
-				orbit = vessel.Orbit;
+				vessel = form.spaceCenter.ActiveVessel;
 
+				if (flight_stream == null)
+				{
+					var refframe = vessel.Orbit.Body.ReferenceFrame;
+
+					try
+					{
+						this.flight_stream = this.form.connection.AddStream(() => vessel.Flight(refframe));
+					}
+					catch (Exception) { }
+				}
+
+				if (orbit_stream == null)
+				{
+					var refframe = vessel.Orbit.Body.ReferenceFrame;
+
+					try
+					{
+						this.orbit_stream = this.form.connection.AddStream(() => vessel.Orbit);
+					}
+					catch (Exception) { }
+				}
+
+				Console.WriteLine("GETTING DATA");
+
+				flight = flight_stream.Get();
+				orbit = orbit_stream.Get();
+
+				Console.WriteLine("PRINTING DATA");
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
@@ -284,6 +310,7 @@ namespace KSP_MOCR
 
 
 				// Graphs
+				/*
 				Dictionary<int, Nullable<double>> targetA = new Dictionary<int, Nullable<double>>();
 				targetA[0] = tgtA;
 				targetA[600] = tgtA;
@@ -304,6 +331,7 @@ namespace KSP_MOCR
 				data.Add(chartData["geeTime"]); 
 				data.Add(chartData["dynPresTime"]);
 				form.showData(1, data, true);
+				*/
 			}
 		}
 	}

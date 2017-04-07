@@ -29,19 +29,16 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			if(form.connected && this.connection == null)
+			if(form.connected && form.connection == null)
 			{
-				this.connection = form.connection;
-				this.krpc = form.krpc;
-
 				screenButtons[0].Text = "Disconnect";
 				screenButtons[0].Click -= form.ConnectToServer;
 				screenButtons[0].Click += form.DisconnectFromServer;
 			}
 
-			if (form.connected && this.connection != null)
+			if (form.connected && form.connection != null)
 			{
-				status = krpc.GetStatus();
+				status = form.krpc.GetStatus();
 
 				screenLabels[0].Text = "CONNECTED\n\n"
 					+ "  VERSION: " + status.Version + "\n"
@@ -101,12 +98,13 @@ namespace KSP_MOCR
 									+ "║     0 - CONNECTION [ESC]\n"
 									+ "║     1 - ASCENT\n"
 									+ "║     2 - BOOSTER\n"
+									+ "║     9 - FONT TEST/ALIGNMENT\n"
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║   100 - PILOT\n"
 									+ "║\n"
-									+ "║\n"
-									+ "║\n"
-									+ "║\n"
+									+ "║  NB: Charts are broken, so they are disabled\n"
+									+ "║  on most screens for now.\n"
+									+ "║  Trying to call screen 50 will crash the program.\n"
 									+ "║\n";
 			screenLabels[3].TextAlign = ContentAlignment.TopLeft;
 

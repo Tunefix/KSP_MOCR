@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -25,11 +25,13 @@ namespace KSP_MOCR
 		public int updateRate = 1000;
 
 		public Dictionary<String, Dictionary<int, Nullable<double>>> chartData;
+<<<<<<< HEAD
 		
 		public KRPC.Client.Services.KRPC.Service krpc;
 		public KRPC.Client.Services.SpaceCenter.Service spaceCenter;
+=======
+>>>>>>> 142fb43... A lot of cleanup. All screens running on streams. Added monospace font for Unix-systems. Graphs are broken (don't work with mono) On Unix you can only select new screen once. (No idea why)
 
-		public Connection connection;
 		public Form1 form;
 
 		public static MocrScreen Create(int id, Form1 form)
@@ -54,8 +56,8 @@ namespace KSP_MOCR
 
 		public void resizeForm()
 		{
-			int w = (int)Math.Ceiling(this.width * form.pxPrChar);
-			int h = (int)Math.Ceiling(this.height * form.pxPrLine);
+			int w = (int)Math.Ceiling(this.width * form.pxPrChar) + form.padding_left + form.padding_right;
+			int h = (int)Math.Ceiling(this.height * form.pxPrLine) + form.padding_top + form.padding_bottom;
 			this.form.ClientSize = new Size(w, h);
 		}
 

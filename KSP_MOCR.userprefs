@@ -4,29 +4,21 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR Status">
+  <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR\Form1.cs">
     <Files>
-      <File FileName="KSP_MOCR\Screens\Test.cs" Line="40" Column="47" />
-      <File FileName="KSP_MOCR\Form1.cs" Line="9" Column="1" />
-      <File FileName="KSP_MOCR\MocrScreen.cs" Line="33" Column="21" />
-      <File FileName="KSP_MOCR\GetData.cs" Line="24" Column="7" />
-      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="88" Column="18" />
+      <File FileName="KSP_MOCR\MocrScreen.cs" Line="28" Column="3" />
+      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="101" Column="42" />
+      <File FileName="KSP_MOCR\Program.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\helper.cs" Line="8" Column="54" />
+      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="372" Column="1" />
+      <File FileName="KSP_MOCR\Screens\Test.cs" Line="19" Column="3" />
+      <File FileName="KSP_MOCR\Form1.cs" Line="193" Column="4" />
+      <File FileName="KSP_MOCR\Screens\AscentScreen.cs" Line="139" Column="6" />
+      <File FileName="KSP_MOCR\Screens\BoosterScreen.cs" Line="120" Column="6" />
+      <File FileName="KSP_MOCR\Screens\Terrain.cs" Line="24" Column="71" />
+      <File FileName="KSP_MOCR\ChartData.cs" Line="1" Column="1" />
       <File FileName="KSP_MOCR Status" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="KSP_MOCR" expanded="True">
-            <Node name="KSP_MOCR" expanded="True">
-              <Node name="Screens" expanded="True">
-                <Node name="ConnectionScreen.cs" selected="True" />
-              </Node>
-              <Node name="Form1.cs" expanded="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.KSP__MOCR PreferredExecutionTarget="MonoDevelop.Default" />
