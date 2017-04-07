@@ -1,0 +1,6 @@
+Adding stream
+Ex: System.MissingMethodException: Method 'Array.Empty' not found.
+  at KRPC.Client.Connection.BuildRequest (System.Linq.Expressions.LambdaExpression expression) <0x41a1d3d0 + 0x00057> in <filename unknown>:0 
+  at KRPC.Client.Connection.AddStream[TResult] (System.Linq.Expressions.LambdaExpression expression) <0x41a1d340 + 0x00027> in <filename unknown>:0 
+  at KRPC.Client.Connection.AddStream[TResult] (System.Linq.Expressions.Expression`1 expression) <0x41a1d2f0 + 0x00037> in <filename unknown>:0 
+  at KSP_MOCR.TestScreen..ctor (KSP_MOCR.Form1 form) <0x41a179d0 + 0x0045b> in <filename unknown>:0 
