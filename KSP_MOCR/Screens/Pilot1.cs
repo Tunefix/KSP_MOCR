@@ -51,12 +51,6 @@ namespace KSP_MOCR
 
 		public Pilot1(Form1 form)
 		{
-<<<<<<< HEAD
-			this.connection = form.connection;
-			this.krpc = this.connection.KRPC();
-			this.spaceCenter = this.connection.SpaceCenter();
-=======
->>>>>>> 142fb43... A lot of cleanup. All screens running on streams. Added monospace font for Unix-systems. Graphs are broken (don't work with mono) On Unix you can only select new screen once. (No idea why)
 			this.form = form;
 			this.chartData = form.chartData;
 
@@ -363,14 +357,7 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(4);
 			}
 
-<<<<<<< HEAD
-			if (form.connected && krpc.CurrentGameScene == GameScene.Flight)
-=======
-			Console.WriteLine("Check if connected in Pilot");
-
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
->>>>>>> 142fb43... A lot of cleanup. All screens running on streams. Added monospace font for Unix-systems. Graphs are broken (don't work with mono) On Unix you can only select new screen once. (No idea why)
-			{
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight){
 
 				// INITIALIZE STREAMS
 				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
