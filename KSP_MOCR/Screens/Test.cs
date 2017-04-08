@@ -62,6 +62,12 @@ namespace KSP_MOCR
 		public override void makeElements()
 		{
 			for (int i = 0; i < 30; i++) screenLabels.Add(null); // Initialize Labels
+			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
+
+
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+
+
 
 			screenLabels[0] = Helper.CreateLabel(1, 4, 58, 1); // Connection Status
 			screenLabels[0].Text = "NOT CONNECTED";

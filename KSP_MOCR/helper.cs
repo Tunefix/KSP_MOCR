@@ -9,6 +9,10 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace KSP_MOCR
 {
+	/*
+	 * I am using this class for labels to have full controll over where the text is
+	 * rendered in the label-coordinate system. 
+	 * */
 	public class CustomLabel : Label
 	{
 		double charWidth = 9;

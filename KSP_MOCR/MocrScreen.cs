@@ -18,6 +18,7 @@ namespace KSP_MOCR
 		public List<Button> screenButtons = new List<Button>();
 		public List<Indicator> screenIndicators = new List<Indicator>();
 		public List<EngineIndicator> screenEngines = new List<EngineIndicator>();
+		public FDAI screenFDAI;
 
 		public int width = 120; // in chars
 		public int height = 30; // in rows
@@ -89,6 +90,13 @@ namespace KSP_MOCR
 			// Clear old EngineIndicators
 			foreach (EngineIndicator indicator in screenEngines) { if (indicator != null) { indicator.Dispose(); } }
 			screenEngines.Clear();
+
+			// Clear old FDAI
+			if (screenFDAI != null)
+			{
+				screenFDAI.Dispose();
+				screenFDAI = null;
+			}
 
 			// Clear all streams
 			//destroyStreams();

@@ -18,9 +18,11 @@ namespace KSP_MOCR
 		KRPC.Client.Services.SpaceCenter.Vessel vessel;
 		KRPC.Client.Services.SpaceCenter.Flight flight;
 		//KRPC.Client.Services.SpaceCenter.Orbit orbit;
+		KRPC.Client.Services.SpaceCenter.Control control;
 
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
+		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Control> control_stream;
 
 		public BoosterScreen(Form1 form)
 		{
@@ -40,6 +42,11 @@ namespace KSP_MOCR
 		{
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 12; i++) screenIndicators.Add(null); // Initialize Indicators
+			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
+
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+
+
 
 			screenLabels[0] = Helper.CreateLabel(16, 1, 13); // Local Time
 			screenLabels[1] = Helper.CreateLabel(0, 1, 14); // MET Time
@@ -130,23 +137,30 @@ namespace KSP_MOCR
 			{
 				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
 				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
+				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Control);
+				
 
 
-				vessel = vessel_stream.Get();
-				flight = flight_stream.Get();
+				vessel = vessel_stream.Get(); // 1 RPC
+				flight = flight_stream.Get(); // 1 RPC
+				control = control_stream.Get(); // 1 RPC
 				//orbit = vessel.Orbit;
 
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
-				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
+				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3); // 0 RPC
 
 				/** 
 				 * Engines
 				 **/
 
 				//  Get parts in current stage
-				screenLabels[50].Text = "Stage: " + vessel.Control.CurrentStage.ToString();
-				int stage = vessel.Control.CurrentStage;
+
+
+				int stage = control.CurrentStage; // 1 RPC
+
+				screenLabels[50].Text = "Stage: " + control.CurrentStage.ToString(); // 0 RPC
+
 				bool foundEngine = false;
 				double multiplier = 91;
 				double maxDev = 0;
@@ -218,7 +232,7 @@ namespace KSP_MOCR
 						break;
 					}
 				}
-
+				/*
 				// Disable other engineIndicators
 				while(n < screenEngines.Count)
 				{
@@ -235,7 +249,7 @@ namespace KSP_MOCR
 				screenLabels[31].Text = "   TWR: " + Helper.prtlen(Helper.toFixed(TWRc, 2), 4, Helper.Align.RIGHT)
 					+ "  " + Helper.prtlen(Helper.toFixed(TWRm, 2), 4, Helper.Align.RIGHT);
 
-
+				/**/
 				// Supplies
 				/*
 				double mF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
@@ -287,6 +301,7 @@ namespace KSP_MOCR
 				*/
 
 				// Status
+				/*
 				if (vessel.Control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
 				if (vessel.Control.RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
 				if (vessel.Control.Gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
@@ -313,7 +328,7 @@ namespace KSP_MOCR
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
 				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
 
-
+				/**/
 				// Graphs
 				//data = new List<Dictionary<int, Nullable<double>>>();
 				//data.Add(chartData["geeTime"]);

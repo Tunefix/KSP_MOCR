@@ -54,7 +54,7 @@ namespace KSP_MOCR
 			this.form = form;
 			this.chartData = form.chartData;
 
-			this.updateRate = 250;
+			this.updateRate = 100;
 
 			this.width = 120;
 			this.height = 30;
@@ -69,6 +69,16 @@ namespace KSP_MOCR
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 50; i++) screenIndicators.Add(null); // Initialize Indicators
 			for (int i = 0; i < 50; i++) screenButtons.Add(null); // Initialize Buttons
+			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
+
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+
+			screenFDAI = new FDAI();
+			screenFDAI.Font = form.buttonFont;
+			screenFDAI.Location = new Point((int)(39 * form.pxPrChar), (int)(3 * form.pxPrLine));
+			screenFDAI.Size = new Size((int)(44 * form.pxPrChar), (int)(17 * form.pxPrLine));
+			form.Controls.Add(screenFDAI);
+
 
 
 			// LABELS
@@ -338,7 +348,6 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			block = 1;
 			// Re-usable data variable for graph data
 			//List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
 
@@ -359,29 +368,28 @@ namespace KSP_MOCR
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight){
 
-				// INITIALIZE STREAMS
+				// INITIALIZE STREAMS AND/OR GET DATA
 				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
-				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
-				if (this.resources_stream == null) this.resources_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Resources);
-				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Control);
+				this.vessel = vessel_stream.Get();
+
+				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(vessel.SurfaceReferenceFrame));
+				this.flight = flight_stream.Get();
+
+
+				if (this.resources_stream == null) this.resources_stream = form.connection.AddStream(() => vessel.Resources);
+				this.vessel_resources = resources_stream.Get();
+
+				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => vessel.Control);
+				this.vessel_control = control_stream.Get();
+
 				//if (this.orbit_stream == null) this.orbit_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Orbit);
-				if (this.resources_stage_stream == null) this.resources_stage_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.ResourcesInDecoupleStage(form.spaceCenter.ActiveVessel.Control.CurrentStage, false));
+				//this.orbit = this.orbit_stream.Get();
+
+				if (this.resources_stage_stream == null) this.resources_stage_stream = form.connection.AddStream(() => vessel.ResourcesInDecoupleStage(vessel_control.CurrentStage, false));
+				this.vessel_resources_stage = resources_stage_stream.Get();
 
 
 				// GET DATA
-				start = DateTime.Now;
-
-				this.vessel = vessel_stream.Get();
-				this.flight = flight_stream.Get();
-				this.vessel_control = control_stream.Get();
-				this.vessel_resources = resources_stream.Get();
-				//this.orbit = this.orbit_stream.Get();
-				this.vessel_resources_stage = resources_stage_stream.Get();
-
-				end = DateTime.Now;
-				dur = end - start;
-				Console.WriteLine("Time getting data: " + (int)dur.TotalMilliseconds);
-
 				start = DateTime.Now;
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
@@ -389,7 +397,10 @@ namespace KSP_MOCR
 				// THROTTLE
 				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
 
-				logBlock("MET + Throttle");
+				// FDAI
+				screenFDAI.setAttitude(flight.Pitch, flight.Roll, flight.Heading);
+				screenFDAI.Invalidate();
+
 
 				// ROTATION READOUT
 				double cR = flight.Roll;
@@ -404,7 +415,6 @@ namespace KSP_MOCR
 				double? nP;
 				double? nY;
 
-				logBlock("Rot Readout get data");
 
 				// IF IN LOCK MODE SHOW LOCK ANGLES
 				if (controlMode == 2)
@@ -423,15 +433,12 @@ namespace KSP_MOCR
 				screenLabels[21].Text = "P: " + Helper.prtlen(Helper.toFixed(sP, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(cP, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(nP, 1), 6);
 				screenLabels[22].Text = "Y: " + Helper.prtlen(Helper.toFixed(sY, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(cY, 1), 6) + "  " + Helper.prtlen(Helper.toFixed(nY, 1), 6);
 
-				logBlock("Rot Readout show data");
 
 				// STAGE LABEL
 				String stageTxt = vessel_control.CurrentStage.ToString();
-				logBlock("Stage Data");
 
 				screenLabels[25].Text = "CUR: " + Helper.prtlen(stageTxt, 2);
 
-				logBlock("Stage Print");
 
 				// Status
 				if (vessel_control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
@@ -443,7 +450,6 @@ namespace KSP_MOCR
 
 				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
 
-				logBlock("Status indicators");
 
 				float maxR = vessel_resources.Max("ElectricCharge");
 				float curR = vessel_resources.Amount("ElectricCharge");
@@ -462,7 +468,6 @@ namespace KSP_MOCR
 				curR = vessel_resources_stage.Amount("Oxidizer");
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
 
-				logBlock("Resource indicators");
 
 				// Check for autopilot
 				switch (controlMode)
@@ -588,12 +593,12 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void pitchUp(object sender, EventArgs e){ this.setRotP += this.rotStep; }
-		private void pitchDown(object sender, EventArgs e) { this.setRotP -= this.rotStep; }
-		private void yawLeft(object sender, EventArgs e) { this.setRotY += this.rotStep; }
-		private void yawRight(object sender, EventArgs e) { this.setRotY -= this.rotStep; }
-		private void rollLeft(object sender, EventArgs e) { this.setRotR += this.rotStep; }
-		private void rollRight(object sender, EventArgs e) { this.setRotR -= this.rotStep; }
+		private void pitchUp(object sender, EventArgs e){ this.setRotP += this.rotStep; if (setRotP > 90) setRotP = (setRotP - ((setRotP - 90) * 2));}
+		private void pitchDown(object sender, EventArgs e) { this.setRotP -= this.rotStep; if (setRotP < -90) setRotP = (setRotP - ((setRotP + 90) * 2));}
+		private void yawLeft(object sender, EventArgs e) { this.setRotY -= this.rotStep; if (setRotY < 0) setRotY += 360;}
+		private void yawRight(object sender, EventArgs e) { this.setRotY += this.rotStep; if (setRotY >= 360) setRotY -= 360;}
+		private void rollLeft(object sender, EventArgs e) { this.setRotR -= this.rotStep; if (setRotR < -180) setRotR += 360;}
+		private void rollRight(object sender, EventArgs e) { this.setRotR += this.rotStep; if (setRotR > 180) setRotR -= 360;}
 
 		private void setMode(object sender, EventArgs e, int mode)
 		{

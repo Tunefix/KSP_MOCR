@@ -31,7 +31,6 @@
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <CodePage>65001</CodePage>
-    <UseMSBuildEngine>false</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -184,6 +183,7 @@
       <LogicalName>MOCR</LogicalName>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="FDAI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

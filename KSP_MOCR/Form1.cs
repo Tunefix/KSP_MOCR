@@ -121,7 +121,7 @@ namespace KSP_MOCR
 				}
 			}
 
-
+			// Set up fonts and graphics
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				system = OS.UNIX;
@@ -198,10 +198,6 @@ namespace KSP_MOCR
 			this.ForeColor = foreColor;
 			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
 
-
-
-
-
 			// Fill the chartLineColors
 			chartLineColors.Add(Color.FromArgb(255, 204, 51, 0));
 			chartLineColors.Add(Color.FromArgb(255, 0, 51, 204));
@@ -210,7 +206,7 @@ namespace KSP_MOCR
 			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
 
 			// Setup graphable data
-			setupChartData();
+			//setupChartData();
 
 			// Initiate Screen Timer
 			screenTimer = new System.Timers.Timer();
@@ -278,7 +274,6 @@ namespace KSP_MOCR
 
 			try
 			{
-
 				IPAddress[] adrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
 				System.Net.IPAddress IP = adrs[0]; // IPv4
 
@@ -340,8 +335,8 @@ namespace KSP_MOCR
 				activeScreen.makeElements();
 				activeScreen.resizeForm();
 
-				// Draw screen
-				this.Invalidate();
+				// Set focus to input 0
+				activeScreen.screenInputs[0].Focus();
 
 				// Start the update process
 				screenTimer.Start();
@@ -353,10 +348,9 @@ namespace KSP_MOCR
 			}
 		}
 
-
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			//Console.WriteLine("CK: " + keyData.ToString());
+			Console.WriteLine("CK: " + keyData.ToString());
 			switch (keyData)
 			{
 				case Keys.F1:
@@ -377,12 +371,14 @@ namespace KSP_MOCR
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (graphTimer != null && graphTimer.Enabled) { graphTimer.Stop(); }
+			if (screenTimer != null && screenTimer.Enabled) { screenTimer.Stop(); }
 			if (connection != null) { connection.Dispose(); }
 		}
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			Console.WriteLine("KC: " + e.KeyCode.ToString());
+			Console.WriteLine("KD: " + e.KeyCode.ToString());
 
 			int x = e.KeyValue & 0x000000ff;
 
@@ -413,35 +409,32 @@ namespace KSP_MOCR
 				{
 					screenCallup = screenCallup.Substring(1);
 				}
-				// Console.WriteLine(screenCallup);
+
 				try
 				{
-					Console.WriteLine("CALLING: " + screenCallup.ToString());
-					SetScreen(int.Parse(screenCallup));
+					Console.WriteLine("CALLING: " + screenCallup);
+					int screenID = int.Parse(screenCallup);
+					SetScreen(screenID);
 				}
 				catch(Exception ex)
 				{
-					Console.WriteLine(ex.ToString());
 					if(ex is ArgumentNullException)
 					{
+						Console.WriteLine(ex.ToString());
 					}
 
 					if (ex is FormatException)
 					{
+						// Do nothing
 					}
 
 					if (ex is OverflowException)
 					{
-						
+						Console.WriteLine(ex.ToString());
 					}
 				}
 				screenCallup = "";
 			}
-		}
-
-		public void tcpTest(object sender, EventArgs e)
-		{
-
 		}
 	}
 }

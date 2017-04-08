@@ -84,15 +84,6 @@ namespace KSP_MOCR
 			screenLabels[37] = Helper.CreateLabel(2, 12, 20, 1, " Orb. Vel: "); // Orbit Velocity
 			screenLabels[38] = Helper.CreateLabel(2, 13, 20, 1, " Sur. Vel: "); // Surface Velocity
 
-			// Orbit Targets and Deltas
-			screenLabels[60] = Helper.CreateLabel(24, 10, 8, 1, ""); // Target Eccentricity
-			screenLabels[61] = Helper.CreateLabel(24, 12, 8, 1, ""); // Target Orbital Velocity
-
-			screenLabels[65] = Helper.CreateLabel(34, 5, 8, 1, ""); // Delta Apoapsis
-			screenLabels[66] = Helper.CreateLabel(34, 6, 8, 1, ""); // Delta Periapsis
-			screenLabels[67] = Helper.CreateLabel(34, 10, 8, 1, ""); // Delta Eccentricity
-			screenLabels[68] = Helper.CreateLabel(34, 12, 8, 1, ""); // Delta Orbital Velocty
-
 			// Position data
 			screenLabels[40] = Helper.CreateLabel(44, 4, 20, 1, "  Body: "); // Sphere of Influence
 			screenLabels[41] = Helper.CreateLabel(44, 5, 20, 1, "   Lat: "); // Latitude
@@ -113,6 +104,15 @@ namespace KSP_MOCR
 			screenLabels[54] = Helper.CreateLabel(85, 12, 35, 1, "                     "); // Supply line 5
 			screenLabels[55] = Helper.CreateLabel(85, 13, 35, 1, "                     "); // Supply line 5
 			screenLabels[58] = Helper.CreateLabel(85, 14, 35, 1, "└─────────────────────────────────┘"); // Supply line 6
+
+			// Orbit Targets and Deltas
+			screenLabels[60] = Helper.CreateLabel(24, 10, 8, 1, ""); // Target Eccentricity
+			screenLabels[61] = Helper.CreateLabel(24, 12, 8, 1, ""); // Target Orbital Velocity
+
+			screenLabels[65] = Helper.CreateLabel(34, 5, 8, 1, ""); // Delta Apoapsis
+			screenLabels[66] = Helper.CreateLabel(34, 6, 8, 1, ""); // Delta Periapsis
+			screenLabels[67] = Helper.CreateLabel(34, 10, 8, 1, ""); // Delta Eccentricity
+			screenLabels[68] = Helper.CreateLabel(34, 12, 8, 1, ""); // Delta Orbital Velocty
 
 			// Status
 			screenIndicators[0] = Helper.CreateIndicator(86, 1, 10, 1, "SAS");

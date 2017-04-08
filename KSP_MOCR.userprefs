@@ -1,22 +1,17 @@
 ﻿<Properties StartupConfiguration="{DE7BC0B1-19E9-4395-8D4F-D6EC12425720}|Default">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" ActiveRuntime="Mono 4.8.0 (Visual)" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR Status">
     <Files>
-      <File FileName="KSP_MOCR\MocrScreen.cs" Line="28" Column="3" />
-      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="101" Column="42" />
-      <File FileName="KSP_MOCR\Program.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\helper.cs" Line="8" Column="54" />
-      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="372" Column="1" />
-      <File FileName="KSP_MOCR\Screens\Test.cs" Line="19" Column="3" />
-      <File FileName="KSP_MOCR\Form1.cs" Line="291" Column="1" />
-      <File FileName="KSP_MOCR\Screens\AscentScreen.cs" Line="139" Column="6" />
-      <File FileName="KSP_MOCR\Screens\BoosterScreen.cs" Line="120" Column="6" />
-      <File FileName="KSP_MOCR\Screens\Terrain.cs" Line="24" Column="71" />
-      <File FileName="KSP_MOCR\ChartData.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Form1.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\MocrScreen.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\helper.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Form1.Designer.cs" Line="49" Column="86" />
+      <File FileName="KSP_MOCR\Program.cs" Line="19" Column="42" />
       <File FileName="KSP_MOCR Status" />
     </Files>
   </MonoDevelop.Ide.Workbench>
