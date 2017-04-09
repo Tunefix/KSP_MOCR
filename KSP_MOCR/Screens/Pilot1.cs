@@ -54,7 +54,7 @@ namespace KSP_MOCR
 			this.form = form;
 			this.chartData = form.chartData;
 
-			this.updateRate = 100;
+			this.updateRate = 200;
 
 			this.width = 120;
 			this.height = 30;
@@ -775,6 +775,7 @@ namespace KSP_MOCR
 			while (curRoll != dstRoll && controlMode == 3)
 			{
 				//Console.WriteLine("ROLLING " + dstRoll.ToString() + ":" + curRoll.ToString() + ":" + rate.ToString());
+				loopTime.Restart();
 				curRoll = Math.Round(curRoll + (rate / 10), 2);
 
 				vessel.AutoPilot.TargetRoll = (float)curRoll;
@@ -787,6 +788,8 @@ namespace KSP_MOCR
 					vessel.AutoPilot.TargetPitch = (float)curRoll;
 					done = true;
 				}
+
+				loopTime.Stop();
 
 				sleepTime = (int)(100 - (double)loopTime.ElapsedMilliseconds);
 				if (sleepTime < 5) { sleepTime = 5; }

@@ -27,7 +27,7 @@ namespace KSP_MOCR
 		private double xScaler;
 		private double yScaler;
 
-		private List<Dictionary<int, double?>> series;
+		private Dictionary<int, double?>[] series;
 		private bool multiAxis = false;
 		double[] axisData;
 
@@ -64,7 +64,7 @@ namespace KSP_MOCR
 
 		public void setData(List<Dictionary<int, double?>> data, bool multipleYaxis)
 		{
-			series = data.GetRange(0, data.Count);
+			series = data.ToArray();
 			multiAxis = multipleYaxis;
 			this.Invalidate();
 		}
@@ -118,7 +118,7 @@ namespace KSP_MOCR
 				}
 				else
 				{
-					plotLeft = YAxisWidth * series.Count;
+					plotLeft = YAxisWidth * series.Length;
 					plotWidth = plotRight - plotLeft;
 					plotHeight = plotBottom - plotTop;
 				}
@@ -179,7 +179,7 @@ namespace KSP_MOCR
 					 */
 					linePen = new Pen(chartLineColors[n], 2.0f);
 					bool started = false;
-					foreach (KeyValuePair<int, double?> point in serie)
+					foreach (KeyValuePair<int, double?> point in new Dictionary<int, double?>(serie))
 					{
 						if(point.Value != null && !started)
 						{

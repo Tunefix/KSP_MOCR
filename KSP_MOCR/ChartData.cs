@@ -104,13 +104,20 @@ namespace KSP_MOCR
 		{
 			if (connected && krpc.CurrentGameScene == KRPC.Client.Services.KRPC.GameScene.Flight)
 			{
-				if (this.flight_stream == null) this.flight_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Flight(spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
-				if (this.orbit_stream == null) this.orbit_stream = connection.AddStream(() => spaceCenter.ActiveVessel.Orbit);
 				if (this.vessel_stream == null) this.vessel_stream = connection.AddStream(() => spaceCenter.ActiveVessel);
-
-				this.flight = this.flight_stream.Get();
-				this.orbit = this.orbit_stream.Get();
 				this.vessel = this.vessel_stream.Get();
+
+				if (this.flight_stream == null) this.flight_stream = connection.AddStream(() => vessel.Flight(vessel.SurfaceReferenceFrame));
+                this.flight = this.flight_stream.Get();
+
+				if (this.orbit_stream == null) this.orbit_stream = connection.AddStream(() => vessel.Orbit);
+				this.orbit = this.orbit_stream.Get();
+
+
+				Console.WriteLine(flight.MeanAltitude);
+				Console.WriteLine(flight.BedrockAltitude);
+				Console.WriteLine(flight.SurfaceAltitude);
+				Console.WriteLine((flight.MeanAltitude - flight.BedrockAltitude).ToString() );
 
 				if (vessel.MET > 600)
 				{
