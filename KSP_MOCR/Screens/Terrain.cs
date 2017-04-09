@@ -23,15 +23,16 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+
 			// Re-usable data variable for graph data
-			List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
+			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				data = new List<Dictionary<int, Nullable<double>>>();
+				data = new List<Dictionary<int, double?>>();
 				data.Add(chartData["altitudeTime"]);
 				data.Add(chartData["terrainTime"]);
-				form.showData(0, data, false);
+				screenCharts[0].setData(data, false);
 			}
 		}
 
@@ -43,10 +44,15 @@ namespace KSP_MOCR
 
 		public override void makeElements()
 		{
-			for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
+			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Charts
+
+			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
+
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+
 
 			// Altitude vs. Time Graph
-			form.screenCharts[0] = Helper.CreateChart(0, 0, 120, 30, 0, 600,-100,3000);
+			screenCharts[0] = Helper.CreatePlot(0, 0, 120, 30, 0, 600,-100,3000);
 		}
 	}
 }

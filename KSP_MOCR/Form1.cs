@@ -15,6 +15,7 @@ using System.Drawing.Text;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Net;
+using System.Threading;
 
 namespace KSP_MOCR
 {
@@ -53,7 +54,6 @@ namespace KSP_MOCR
 		public Color chartAxisColor = Color.FromArgb(255, 119, 102, 51);
 
 		public List<Color> chartLineColors = new List<Color>();
-		public List<Chart> screenCharts = new List<Chart>();
 
 		public List<List<Bitmap>> indicatorImages = new List<List<Bitmap>>();
 
@@ -192,21 +192,13 @@ namespace KSP_MOCR
 			// Enable key preview
 			this.KeyPreview = true;
 
-
 			// Setup form style
 			this.BackColor = Color.FromArgb(255, 16, 16, 16);
 			this.ForeColor = foreColor;
 			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
 
-			// Fill the chartLineColors
-			chartLineColors.Add(Color.FromArgb(255, 204, 51, 0));
-			chartLineColors.Add(Color.FromArgb(255, 0, 51, 204));
-			chartLineColors.Add(Color.FromArgb(255, 0, 169, 51));
-			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
-			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
-
 			// Setup graphable data
-			//setupChartData();
+			setupChartData();
 
 			// Initiate Screen Timer
 			screenTimer = new System.Timers.Timer();
@@ -217,12 +209,12 @@ namespace KSP_MOCR
 			screenTimer.Elapsed += screenTick;
 
 			// Initiate Graph Timer
-			/*graphTimer = new System.Timers.Timer();
+			graphTimer = new System.Timers.Timer();
+			screenTimer.SynchronizingObject = this;
 			graphTimer.AutoReset = false;
-			graphTimer.Interval = 500;
+			graphTimer.Interval = 1000;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
-			*/
 
 			// Load the connection screen
 			SetScreen(0);
@@ -237,7 +229,7 @@ namespace KSP_MOCR
 			DateTime end = DateTime.Now;
 
 			TimeSpan duration = end - start;
-			int remainTime = 500 - (int)duration.TotalMilliseconds;
+			int remainTime = 1000 - (int)duration.TotalMilliseconds;
 
 			if (remainTime < 10) { remainTime = 10; }
 
@@ -321,10 +313,12 @@ namespace KSP_MOCR
 			screenTimer.Stop();
 
 			// Dispose of old elements
-			if (activeScreen != null) { activeScreen.destroy(); }
+			if (activeScreen != null) { activeScreen.destroy();}
 
 			// Destroy old screen
 			activeScreen = null;
+
+            this.Invalidate();
 
 			// Get Screen
 			activeScreen = MocrScreen.Create(id, this);
@@ -332,8 +326,8 @@ namespace KSP_MOCR
 			// If Screen exists: Make Elementes and resize
 			if (activeScreen != null)
 			{
-				activeScreen.makeElements();
 				activeScreen.resizeForm();
+				activeScreen.makeElements();
 
 				// Set focus to input 0
 				activeScreen.screenInputs[0].Focus();
@@ -350,7 +344,7 @@ namespace KSP_MOCR
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			Console.WriteLine("CK: " + keyData.ToString());
+			//Console.WriteLine("CK: " + keyData.ToString());
 			switch (keyData)
 			{
 				case Keys.F1:
@@ -378,7 +372,7 @@ namespace KSP_MOCR
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			Console.WriteLine("KD: " + e.KeyCode.ToString());
+			//Console.WriteLine("KD: " + e.KeyCode.ToString());
 
 			int x = e.KeyValue & 0x000000ff;
 

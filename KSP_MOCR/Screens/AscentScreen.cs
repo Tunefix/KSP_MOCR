@@ -136,13 +136,18 @@ namespace KSP_MOCR
 			screenInputs[1].Text = "120000";
 
 
-			//for (int i = 0; i < 2; i++) form.screenCharts.Add(null); // Initialize Charts
+			for (int i = 0; i < 2; i++) screenCharts.Add(null); // Initialize Charts
 
 			// Altitude vs. Time Graph
-			//form.screenCharts[0] = Helper.CreateChart(0, 15, 60, 15, 0, 600);
+			screenCharts[0] = Helper.CreatePlot(0, 15, 60, 15, 0, 600);
+			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 251, 251));
+			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 251, 251, 251));
+			screenCharts[0].setSeriesColor(2, Color.FromArgb(200, 0, 169, 51));
+			screenCharts[0].setSeriesColor(3, Color.FromArgb(200, 0, 51, 204));
+			screenCharts[0].setSeriesColor(4, Color.FromArgb(200, 204, 51, 0));
 
 			// Gee-Force vs. Time Graph
-			//form.screenCharts[1] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
+			screenCharts[1] = Helper.CreatePlot(60, 15, 60, 15, 0, 600);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -177,12 +182,8 @@ namespace KSP_MOCR
 					catch (Exception) { }
 				}
 
-				Console.WriteLine("GETTING DATA");
-
 				flight = flight_stream.Get();
 				orbit = orbit_stream.Get();
-
-				Console.WriteLine("PRINTING DATA");
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
@@ -310,28 +311,26 @@ namespace KSP_MOCR
 
 
 				// Graphs
-				/*
-				Dictionary<int, Nullable<double>> targetA = new Dictionary<int, Nullable<double>>();
+				Dictionary<int, double?> targetA = new Dictionary<int, double?>();
 				targetA[0] = tgtA;
 				targetA[600] = tgtA;
 
-				Dictionary<int, Nullable<double>> targetP = new Dictionary<int, Nullable<double>>();
+				Dictionary<int, double?> targetP = new Dictionary<int, double?>();
 				targetP[0] = tgtP;
 				targetP[600] = tgtP;
 
-				data = new List<Dictionary<int, Nullable<double>>>();
-				data.Add(chartData["altitudeTime"]);
-				data.Add(chartData["apoapsisTime"]);
-				data.Add(chartData["periapsisTime"]);
+				data = new List<Dictionary<int, double?>>();
 				data.Add(targetA);
 				data.Add(targetP);
-				form.showData(0, data, false);
+				data.Add(chartData["apoapsisTime"]);
+				data.Add(chartData["periapsisTime"]);
+				data.Add(chartData["altitudeTime"]);
+				screenCharts[0].setData(data, false);
 
-				data = new List<Dictionary<int, Nullable<double>>>();
+				data = new List<Dictionary<int, double?>>();
 				data.Add(chartData["geeTime"]); 
 				data.Add(chartData["dynPresTime"]);
-				form.showData(1, data, true);
-				*/
+				screenCharts[1].setData(data, true);
 			}
 		}
 	}

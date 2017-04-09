@@ -155,6 +155,39 @@ namespace KSP_MOCR
 		}
 
 
+		static public Plot CreatePlot(int x, int y, int w, int h) { return CreatePlot(x, y, w, h, 0, -1, 0, -1); }
+		static public Plot CreatePlot(int x, int y, int w, int h, int minX) { return CreatePlot(x, y, w, h, minX, -1, 0, -1); }
+		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX) { return CreatePlot(x, y, w, h, minX, maxX, 0, -1); }
+		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX, int minY) { return CreatePlot(x, y, w, h, minX, maxX, minY, -1); }
+		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX, int minY, int maxY)
+		{
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			Plot plot = new Plot();
+			plot.Size = new Size(width, height);
+			plot.Location = new Point(left, top);
+			plot.BackColor = form.BackColor;
+			plot.Padding = new Padding(0);
+			plot.Margin = new Padding(12);
+			plot.Font = form.buttonFont;
+			plot.gridColor = form.chartAxisColor;
+			plot.labelColor = form.foreColor;
+			plot.minX = minX;
+			plot.maxX = maxX;
+			plot.minY = minY;
+			plot.maxY = maxY;
+
+			plot.Invalidate();
+
+			form.Controls.Add(plot);
+
+			return plot;
+		}
+
+
 		static public Chart CreateChart(int x, int y, int w, int h) { return CreateChart(x, y, w, h, 0, -1, 0, -1); }
 		static public Chart CreateChart(int x, int y, int w, int h, int minX) { return CreateChart(x, y, w, h, minX, -1, 0, -1); }
 		static public Chart CreateChart(int x, int y, int w, int h, int minX, int maxX) { return CreateChart(x, y, w, h, minX, maxX, 0, -1); }

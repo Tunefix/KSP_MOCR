@@ -184,6 +184,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="FDAI.cs" />
+    <Compile Include="Plot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

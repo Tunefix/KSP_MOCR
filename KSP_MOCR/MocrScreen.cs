@@ -18,6 +18,7 @@ namespace KSP_MOCR
 		public List<Button> screenButtons = new List<Button>();
 		public List<Indicator> screenIndicators = new List<Indicator>();
 		public List<EngineIndicator> screenEngines = new List<EngineIndicator>();
+		public List<Plot> screenCharts = new List<Plot>();
 		public FDAI screenFDAI;
 
 		public int width = 120; // in chars
@@ -70,26 +71,32 @@ namespace KSP_MOCR
 			// Clear old lables
 			foreach (Label label in screenLabels) { if (label != null) { label.Dispose(); } }
 			screenLabels.Clear();
+			screenLabels.TrimExcess();
 
 			// Clear old Inputs
 			foreach (TextBox box in screenInputs) { if (box != null) { box.Dispose(); } }
 			screenInputs.Clear();
+			screenInputs.TrimExcess();
 
 			// Clear old Buttons
 			foreach (Button button in screenButtons) { if (button != null) { button.Dispose(); } }
 			screenButtons.Clear();
+			screenButtons.TrimExcess();
 
 			// Clear old charts
-			foreach (Chart chart in form.screenCharts) { if (chart != null) { chart.Dispose(); } }
-			form.screenCharts.Clear();
+			foreach (Plot chart in screenCharts) { if (chart != null) { chart.Dispose(); } }
+			screenCharts.Clear();
+			screenCharts.TrimExcess();
 
 			// Clear old indicators
 			foreach (Indicator indicator in screenIndicators) { if (indicator != null) { indicator.Dispose(); } }
 			screenIndicators.Clear();
+			screenIndicators.TrimExcess();
 
 			// Clear old EngineIndicators
 			foreach (EngineIndicator indicator in screenEngines) { if (indicator != null) { indicator.Dispose(); } }
 			screenEngines.Clear();
+			screenEngines.TrimExcess();
 
 			// Clear old FDAI
 			if (screenFDAI != null)

@@ -8,10 +8,13 @@
     <Files>
       <File FileName="KSP_MOCR\Form1.cs" Line="1" Column="1" />
       <File FileName="KSP_MOCR\MocrScreen.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Screens\AscentScreen.cs" Line="1" Column="1" />
       <File FileName="KSP_MOCR\helper.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Form1.Designer.cs" Line="49" Column="86" />
-      <File FileName="KSP_MOCR\Program.cs" Line="19" Column="42" />
+      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="75" Column="1" />
+      <File FileName="KSP_MOCR\ChartData.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Screens\Terrain.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\FDAI.cs" Line="251" Column="24" />
+      <File FileName="KSP_MOCR\Screens\ConnectionScreen.cs" Line="1" Column="1" />
       <File FileName="KSP_MOCR Status" />
     </Files>
   </MonoDevelop.Ide.Workbench>

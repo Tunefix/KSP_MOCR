@@ -102,9 +102,9 @@ namespace KSP_MOCR
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║   100 - PILOT\n"
 									+ "║\n"
-									+ "║  NB: Charts are broken, so they are disabled\n"
-									+ "║  on most screens for now.\n"
-									+ "║  Trying to call screen 50 will crash the program.\n"
+									+ "║\n"
+									+ "║\n"
+									+ "║\n"
 									+ "║\n";
 			screenLabels[3].TextAlign = ContentAlignment.TopLeft;
 

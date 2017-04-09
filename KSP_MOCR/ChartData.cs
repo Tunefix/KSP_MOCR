@@ -43,6 +43,7 @@ namespace KSP_MOCR
 
 		public void showData(int chartID, List<Dictionary<int, Nullable<double>>> data, bool multiAxis)
 		{
+			/*
 			Chart chart = screenCharts[chartID];
 			// Clear out old lines
 			chart.Series.Clear();
@@ -96,6 +97,7 @@ namespace KSP_MOCR
 					i++;
 				}
 			}
+			*/
 		}
 
 		public void updateChartData(object sender, EventArgs e)
