@@ -14,12 +14,9 @@ namespace KSP_MOCR
 	class TestScreen : MocrScreen
 	{
 
-		KRPC.Schema.KRPC.Status status;
-		private KRPC.Client.Services.SpaceCenter.Flight flight;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
-
 		public TestScreen(Form1 form)
 		{
+			screenStreams = new StreamCollection(form.connection);
 			this.form = form;
 
 			this.width = 120;
@@ -30,33 +27,17 @@ namespace KSP_MOCR
 		{
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight) // krpc.CurrentGameScene is 1 RPC
 			{
-
-				if (flight_stream == null)
-				{
-					var vessel = this.form.spaceCenter.ActiveVessel;
-					var refframe = vessel.Orbit.Body.ReferenceFrame;
-
-					try
-					{
-						this.flight_stream = this.form.connection.AddStream(() => vessel.Flight(refframe));
-					}
-					catch (Exception) { }
-				}
-
-
 				// GET DATA
-				flight = flight_stream.Get();
+				double meanAltitude = screenStreams.GetData(DataType.flight_meanAltitude); // 0 RPC
+				Tuple<double,double,double> vel = screenStreams.GetData(DataType.flight_velocity);
 
-				screenLabels[1].Text = flight.MeanAltitude.ToString();
 
 				//flight = GetData.getFlight(); // 7 RPC
 				//screenLabels[1].Text = flight.MeanAltitude.ToString(); // 7 RPC
 
-				//screenLabels[1].Text = connection.SpaceCenter().ActiveVessel.Flight().MeanAltitude.ToString(); // 3 RPC
+				screenLabels[1].Text = meanAltitude.ToString();
+				screenLabels[2].Text = vel.Item1.ToString();
 			}
-
-			screenLabels[9].Text = "CTRL STATUS: " + form.ctrlDown.ToString();
-
 		}
 
 		public override void makeElements()

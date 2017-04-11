@@ -16,19 +16,6 @@ namespace KSP_MOCR
 {
 	class Pilot1 : MocrScreen
 	{
-		private KRPC.Client.Services.SpaceCenter.Vessel vessel;
-		private KRPC.Client.Services.SpaceCenter.Flight flight;
-		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources;
-		private KRPC.Client.Services.SpaceCenter.Control vessel_control;
-		private KRPC.Client.Services.SpaceCenter.Orbit orbit;
-		private KRPC.Client.Services.SpaceCenter.Resources vessel_resources_stage;
-
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Vessel> vessel_stream;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> resources_stream;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Resources> resources_stage_stream;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Control> control_stream;
-
 		private int setRotR = 0;
 		private int setRotP = 90;
 		private int setRotY = 90;
@@ -37,6 +24,10 @@ namespace KSP_MOCR
 		private int lockRotR;
 		private int lockRotP;
 		private int lockRotY;
+
+		private float pitch;
+		private float roll;
+		private float yaw;
 
 		private double rollRate = 1;
 		private double pitchRate = 1;
@@ -53,6 +44,7 @@ namespace KSP_MOCR
 		{
 			this.form = form;
 			this.chartData = form.chartData;
+			screenStreams = new StreamCollection(form.connection);
 
 			this.updateRate = 200;
 
@@ -368,44 +360,61 @@ namespace KSP_MOCR
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight){
 
-				// INITIALIZE STREAMS AND/OR GET DATA
-				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
-				this.vessel = vessel_stream.Get();
-
-				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(vessel.SurfaceReferenceFrame));
-				this.flight = flight_stream.Get();
-
-
-				if (this.resources_stream == null) this.resources_stream = form.connection.AddStream(() => vessel.Resources);
-				this.vessel_resources = resources_stream.Get();
-
-				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => vessel.Control);
-				this.vessel_control = control_stream.Get();
-
-				//if (this.orbit_stream == null) this.orbit_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Orbit);
-				//this.orbit = this.orbit_stream.Get();
-
-				if (this.resources_stage_stream == null) this.resources_stage_stream = form.connection.AddStream(() => vessel.ResourcesInDecoupleStage(vessel_control.CurrentStage, false));
-				this.vessel_resources_stage = resources_stage_stream.Get();
-
-
 				// GET DATA
 				start = DateTime.Now;
+				double meanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
+				double MET = screenStreams.GetData(DataType.vessel_MET);
+				float throttle = screenStreams.GetData(DataType.control_throttle);
+				pitch = screenStreams.GetData(DataType.flight_pitch);
+				roll = screenStreams.GetData(DataType.flight_roll);
+				yaw = screenStreams.GetData(DataType.flight_heading);
+				int currentStage = screenStreams.GetData(DataType.control_currentStage);
+				bool SAS = screenStreams.GetData(DataType.control_SAS);
+				bool RCS = screenStreams.GetData(DataType.control_RCS);
+				bool gear = screenStreams.GetData(DataType.control_gear);
+				bool brakes = screenStreams.GetData(DataType.control_brakes);
+				bool lights = screenStreams.GetData(DataType.control_lights);
+				bool abort = screenStreams.GetData(DataType.control_abort);
+				float gForce = screenStreams.GetData(DataType.flight_gForce);
+				float maxElectric = screenStreams.GetData(DataType.resource_total_max_electricCharge);
+				float curElectric = screenStreams.GetData(DataType.resource_total_amount_electricCharge);
+				float maxMonopropellant = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
+				float curMonopropellant = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
+				float maxStageFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
+				float curStageFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
+				float maxStageOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
+				float curStageOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
+				SASMode sasMode = screenStreams.GetData(DataType.control_SASmode);
+				bool actionGroup0 = screenStreams.GetData(DataType.control_actionGroup0);
+				bool actionGroup1 = screenStreams.GetData(DataType.control_actionGroup1);
+				bool actionGroup2 = screenStreams.GetData(DataType.control_actionGroup2);
+				bool actionGroup3 = screenStreams.GetData(DataType.control_actionGroup3);
+				bool actionGroup4 = screenStreams.GetData(DataType.control_actionGroup4);
+				bool actionGroup5 = screenStreams.GetData(DataType.control_actionGroup5);
+				bool actionGroup6 = screenStreams.GetData(DataType.control_actionGroup6);
+				bool actionGroup7 = screenStreams.GetData(DataType.control_actionGroup7);
+				bool actionGroup8 = screenStreams.GetData(DataType.control_actionGroup8);
+				bool actionGroup9 = screenStreams.GetData(DataType.control_actionGroup9);
 
-				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
+
+
+					
+
+
+				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
 				// THROTTLE
-				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(vessel_control.Throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
+				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
 
 				// FDAI
-				screenFDAI.setAttitude(flight.Pitch, flight.Roll, flight.Heading);
+				screenFDAI.setAttitude(pitch, roll, yaw);
 				screenFDAI.Invalidate();
 
 
 				// ROTATION READOUT
-				double cR = flight.Roll;
-				double cP = flight.Pitch;
-				double cY = flight.Heading;
+				double cR = roll;
+				double cP = pitch;
+				double cY = yaw;
 
 				double sR = this.setRotR;
 				double sP = this.setRotP;
@@ -435,37 +444,37 @@ namespace KSP_MOCR
 
 
 				// STAGE LABEL
-				String stageTxt = vessel_control.CurrentStage.ToString();
+				String stageTxt = currentStage.ToString();
 
 				screenLabels[25].Text = "CUR: " + Helper.prtlen(stageTxt, 2);
 
 
 				// Status
-				if (vessel_control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
-				if (vessel_control.RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
-				if (vessel_control.Gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
-				if (vessel_control.Brakes) { screenIndicators[3].setStatus(2); } else { screenIndicators[3].setStatus(0); } // Break
-				if (vessel_control.Lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
-				if (vessel_control.Abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
+				if (SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
+				if (RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
+				if (gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
+				if (brakes) { screenIndicators[3].setStatus(2); } else { screenIndicators[3].setStatus(0); } // Break
+				if (lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
+				if (abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
 
-				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
+				if (gForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
 
 
-				float maxR = vessel_resources.Max("ElectricCharge");
-				float curR = vessel_resources.Amount("ElectricCharge");
+				float maxR = maxElectric;
+				float curR = curElectric;
 				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(1); } else { screenIndicators[6].setStatus(0); } // Power High
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[9].setStatus(2); } else { screenIndicators[9].setStatus(0); } // Power Low
 
-				maxR = vessel_resources.Max("MonoPropellant");
-				curR = vessel_resources.Amount("MonoPropellant");
+				maxR = maxMonopropellant;
+				curR = curMonopropellant;
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[10].setStatus(2); } else { screenIndicators[10].setStatus(0); } // Monopropellant Low
 
-				maxR = vessel_resources_stage.Max("LiquidFuel");
-				curR = vessel_resources_stage.Amount("LiquidFuel");
+				maxR = maxStageFuel;
+				curR = curStageFuel;
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[11].setStatus(2); } else { screenIndicators[11].setStatus(0); } // Fuel Low
 
-				maxR = vessel_resources_stage.Max("Oxidizer");
-				curR = vessel_resources_stage.Amount("Oxidizer");
+				maxR = maxStageOx;
+				curR = curStageOx;
 				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
 
 
@@ -522,7 +531,7 @@ namespace KSP_MOCR
 					screenIndicators[i].setStatus(0);
 				}
 
-				switch (vessel_control.SASMode)
+				switch (sasMode)
 				{
 					case SASMode.Prograde:
 						screenIndicators[30].setStatus(4);
@@ -550,25 +559,22 @@ namespace KSP_MOCR
 						break;
 				}
 
-				if (vessel_control.SAS) { screenIndicators[35].setStatus(4); } else { screenIndicators[35].setStatus(0); }
-				if (vessel_control.RCS) { screenIndicators[38].setStatus(4); } else { screenIndicators[38].setStatus(0); }
+				if (SAS) { screenIndicators[35].setStatus(4); } else { screenIndicators[35].setStatus(0); }
+				if (RCS) { screenIndicators[38].setStatus(4); } else { screenIndicators[38].setStatus(0); }
 
 
 				// Action Group Indicators
-				for (uint i = 0; i < 10; i++)
-				{
-					uint g = i;
-					if (i == 0) { g = 10; }
+				if (actionGroup0) { screenIndicators[39].setStatus(4); } else { screenIndicators[39].setStatus(0); }
+				if (actionGroup1) { screenIndicators[40].setStatus(4); } else { screenIndicators[40].setStatus(0); }
+				if (actionGroup2) { screenIndicators[41].setStatus(4); } else { screenIndicators[41].setStatus(0); }
+				if (actionGroup3) { screenIndicators[42].setStatus(4); } else { screenIndicators[42].setStatus(0); }
+				if (actionGroup4) { screenIndicators[43].setStatus(4); } else { screenIndicators[43].setStatus(0); }
+				if (actionGroup5) { screenIndicators[44].setStatus(4); } else { screenIndicators[44].setStatus(0); }
+				if (actionGroup6) { screenIndicators[45].setStatus(4); } else { screenIndicators[45].setStatus(0); }
+				if (actionGroup7) { screenIndicators[46].setStatus(4); } else { screenIndicators[46].setStatus(0); }
+				if (actionGroup8) { screenIndicators[47].setStatus(4); } else { screenIndicators[47].setStatus(0); }
+				if (actionGroup9) { screenIndicators[48].setStatus(4); } else { screenIndicators[48].setStatus(0); }
 
-					if (vessel_control.GetActionGroup(i))
-					{
-						screenIndicators[(int)(39 + g)].setStatus(4);
-					}
-					else
-					{
-						screenIndicators[(int)(39 + g)].setStatus(0);
-					}
-				}
 
 
 				// Graphs
@@ -579,15 +585,15 @@ namespace KSP_MOCR
 				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
 				if (controlMode == 1)
 				{
-					vessel.AutoPilot.TargetPitch = this.setRotP;
-					vessel.AutoPilot.TargetRoll = this.setRotR;
-					vessel.AutoPilot.TargetHeading = this.setRotY;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.setRotP;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = this.setRotR;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = this.setRotY;
 				}
 				else if (controlMode == 2)
 				{
-					vessel.AutoPilot.TargetPitch = this.lockRotP;
-					vessel.AutoPilot.TargetRoll = this.lockRotR;
-					vessel.AutoPilot.TargetHeading = this.lockRotY;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.lockRotP;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = this.lockRotR;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = this.lockRotY;
 				}
 				/**/
 			}
@@ -605,11 +611,11 @@ namespace KSP_MOCR
 			switch(mode)
 			{
 				case 0: // FREE
-					vessel.AutoPilot.Disengage();
+					form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
 					this.controlMode = 0;
 					break;
 				case 1: // AUTOPILOT
-					vessel.AutoPilot.Engage();
+					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 1;
 					break;
 				case 2: // LOCK
@@ -617,15 +623,15 @@ namespace KSP_MOCR
 					lockRotP = setRotP;
 					lockRotY = setRotY;
 
-					vessel.AutoPilot.Engage();
+					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 2;
 					break;
 				case 3: // Roll Program
-					vessel.AutoPilot.Engage();
+					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 3;
 					break;
 				case 4: // Pitch Program
-					vessel.AutoPilot.Engage();
+					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 4;
 					break;
 			}
@@ -638,16 +644,16 @@ namespace KSP_MOCR
 
 		private void stage(object sender, EventArgs e)
 		{
-			vessel.Control.ActivateNextStage();
+			form.spaceCenter.ActiveVessel.Control.ActivateNextStage();
 		}
 
 		private void toggleActionGroup(object sender, EventArgs e, uint group)
 		{
 			// Get action group status
-			bool active = vessel.Control.GetActionGroup(group);
+			bool active = form.spaceCenter.ActiveVessel.Control.GetActionGroup(group);
 
-			if (active) { vessel.Control.SetActionGroup(group, false); }
-			else { vessel.Control.SetActionGroup(group, true); }
+			if (active) { form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, false); }
+			else { form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, true); }
 		}
 
 		private void rollRateMinus(object sender, EventArgs e)
@@ -688,11 +694,11 @@ namespace KSP_MOCR
 
 		private void changeThrottle(object sender, EventArgs e, double change)
 		{
-			double cThr = vessel.Control.Throttle;
+			double cThr = form.spaceCenter.ActiveVessel.Control.Throttle;
 			double nThr = cThr + change;
 			if(nThr > 100){ nThr = 100; }
 			if (nThr < 0) { nThr = 0; }
-			vessel.Control.Throttle = (float)nThr;
+			form.spaceCenter.ActiveVessel.Control.Throttle = (float)nThr;
 		}
 
 		private void setSAS(object sender, EventArgs e, int mode)
@@ -700,51 +706,51 @@ namespace KSP_MOCR
 			switch(mode)
 			{
 				case 0:
-					vessel.Control.SASMode = SASMode.StabilityAssist;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.StabilityAssist;
 					break;
 				case 1:
-					vessel.Control.SASMode = SASMode.Prograde;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Prograde;
 					break;
 				case 2:
-					vessel.Control.SASMode = SASMode.Retrograde;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Retrograde;
 					break;
 				case 3:
-					vessel.Control.SASMode = SASMode.Normal;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Normal;
 					break;
 				case 4:
-					vessel.Control.SASMode = SASMode.AntiNormal;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiNormal;
 					break;
 				case 5:
-					vessel.Control.SASMode = SASMode.Radial;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Radial;
 					break;
 				case 6:
-					vessel.Control.SASMode = SASMode.AntiRadial;
+					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiRadial;
 					break;
 				case 7:
-					if (vessel.Control.Nodes.Count > 0)
+					if (form.spaceCenter.ActiveVessel.Control.Nodes.Count > 0)
 					{
-						vessel.Control.SASMode = SASMode.Maneuver;
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Maneuver;
 					}
 					break;
 				case 10:
-					if (vessel.Control.RCS)
+					if (form.spaceCenter.ActiveVessel.Control.RCS)
 					{
-						vessel.Control.RCS = false;
+						form.spaceCenter.ActiveVessel.Control.RCS = false;
 					}
 					else
 					{
-						vessel.Control.RCS = true;
+						form.spaceCenter.ActiveVessel.Control.RCS = true;
 					}
 					break;
 				case 11:
-					if (vessel.Control.SAS)
+					if (form.spaceCenter.ActiveVessel.Control.SAS)
 					{
-						vessel.Control.SAS = false;
+						form.spaceCenter.ActiveVessel.Control.SAS = false;
 					}
 					else
 					{
-						vessel.Control.SAS = true;
-						vessel.AutoPilot.Disengage();
+						form.spaceCenter.ActiveVessel.Control.SAS = true;
+						form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
 						controlMode = 0;
 					}
 					break;
@@ -754,7 +760,7 @@ namespace KSP_MOCR
 		private void rollProgram()
 		{
 			//Console.WriteLine("ROLL PROGRAM");
-			double curRoll = Math.Round(flight.Roll);
+			double curRoll = Math.Round(roll);
 			double dstRoll = setRotR;
 			double rate;
 			bool done = false;
@@ -768,7 +774,7 @@ namespace KSP_MOCR
 				rate = rollRate * -1;
 			}
 
-			vessel.AutoPilot.Engage();
+			form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 			Stopwatch loopTime = new Stopwatch();
 			int sleepTime;
 
@@ -778,14 +784,14 @@ namespace KSP_MOCR
 				loopTime.Restart();
 				curRoll = Math.Round(curRoll + (rate / 10), 2);
 
-				vessel.AutoPilot.TargetRoll = (float)curRoll;
-				vessel.AutoPilot.TargetPitch = setRotP;
-				vessel.AutoPilot.TargetHeading= setRotY;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)curRoll;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = setRotP;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading= setRotY;
 
 				if (Math.Round(curRoll) == dstRoll)
 				{
 					curRoll = Math.Round(curRoll);
-					vessel.AutoPilot.TargetPitch = (float)curRoll;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curRoll;
 					done = true;
 				}
 
@@ -802,7 +808,7 @@ namespace KSP_MOCR
 		private void pitchProgram()
 		{
 			//Console.WriteLine("PITCH PROGRAM");
-			double curPitch = Math.Round(flight.Pitch);
+			double curPitch = Math.Round(pitch);
 			double dstPitch = setRotP;
 			double rate;
 			bool done = false;
@@ -816,7 +822,7 @@ namespace KSP_MOCR
 				rate = pitchRate * -1;
 			}
 
-			vessel.AutoPilot.Engage();
+			form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 
 			Stopwatch loopTime = new Stopwatch();
 			int sleepTime;
@@ -828,14 +834,14 @@ namespace KSP_MOCR
 				//Console.WriteLine("ROLLING " + dstPitch.ToString() + ":" + curPitch.ToString() + ":" + rate.ToString());
 				curPitch = Math.Round(curPitch + (rate / 10), 2);
 
-				vessel.AutoPilot.TargetPitch = (float)curPitch;
-				vessel.AutoPilot.TargetRoll = setRotR;
-				vessel.AutoPilot.TargetHeading = setRotY;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = setRotR;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = setRotY;
 
 				if(Math.Round(curPitch) == dstPitch)
 				{
 					curPitch = Math.Round(curPitch);
-					vessel.AutoPilot.TargetPitch = (float)curPitch;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
 					done = true;
 				}
 

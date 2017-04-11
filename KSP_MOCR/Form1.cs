@@ -209,12 +209,14 @@ namespace KSP_MOCR
 			screenTimer.Elapsed += screenTick;
 
 			// Initiate Graph Timer
+			/*
 			graphTimer = new System.Timers.Timer();
 			screenTimer.SynchronizingObject = this;
 			graphTimer.AutoReset = false;
 			graphTimer.Interval = 1000;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
+			*/
 
 			// Load the connection screen
 			SetScreen(0);
@@ -318,9 +320,7 @@ namespace KSP_MOCR
 			// Destroy old screen
 			activeScreen = null;
 
-            this.Invalidate();
-
-			// Get Screen
+            // Get Screen
 			activeScreen = MocrScreen.Create(id, this);
 
 			// If Screen exists: Make Elementes and resize

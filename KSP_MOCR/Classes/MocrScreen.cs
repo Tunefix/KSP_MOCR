@@ -21,6 +21,8 @@ namespace KSP_MOCR
 		public List<Plot> screenCharts = new List<Plot>();
 		public FDAI screenFDAI;
 
+		protected StreamCollection screenStreams;
+
 		public int width = 120; // in chars
 		public int height = 30; // in rows
 
@@ -41,6 +43,7 @@ namespace KSP_MOCR
 				case 2:
 					return new BoosterScreen(form);
 				case 9:
+					Console.WriteLine("MAKING TEST");
 					return new TestScreen(form);
 				case 50:
 					return new Terrain(form);
@@ -106,7 +109,11 @@ namespace KSP_MOCR
 			}
 
 			// Clear all streams
-			//destroyStreams();
+			if (screenStreams != null)
+			{
+				screenStreams.CloseStreams();
+				screenStreams = null;
+			}
 		}
 	}
 }
