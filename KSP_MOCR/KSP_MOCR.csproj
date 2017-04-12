@@ -188,6 +188,8 @@
     <Compile Include="Classes\StreamCollection.cs" />
     <Compile Include="Classes\DataType.cs" />
     <Compile Include="Classes\Kstream.cs" />
+    <Compile Include="Screens\AltVel.cs" />
+    <Compile Include="Screens\Resources.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

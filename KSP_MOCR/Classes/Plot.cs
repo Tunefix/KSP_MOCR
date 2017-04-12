@@ -13,6 +13,8 @@ namespace KSP_MOCR
 		public int maxX { get; set; }
 		public int minY { get; set; }
 		public int maxY { get; set; }
+		private bool autoX = false;
+		private bool autoY = false;
 
 		private int plotTop;
 		private int plotRight;
@@ -80,8 +82,8 @@ namespace KSP_MOCR
 				Graphics g = e.Graphics;
 				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-				if (maxX == -1) { maxX = findMaxX(); }
-				if (minX == -1) { minX = findMinX(); }
+				if (maxX == -1 || autoX) { maxX = findMaxX(); autoX = true;}
+				if (minX == -1 || autoY) { minX = findMinX(); autoY = true;}
 
 				plotTop = Margin.Top;
 				plotRight = Size.Width - Margin.Right;
@@ -89,8 +91,8 @@ namespace KSP_MOCR
 
 				if (!multiAxis)
 				{
-					if (maxY == -1) { maxY = findMaxY(); }
-					if (minY == -1) { minY = findMinY(); }
+					if (maxY == -1 || autoX) { maxY = findMaxY(); autoX = true;}
+					if (minY == -1 || autoY) { minY = findMinY(); autoY = true;}
 					plotLeft = YAxisWidth;
 					plotWidth = plotRight - plotLeft;
 					plotHeight = plotBottom - plotTop;
@@ -150,8 +152,8 @@ namespace KSP_MOCR
 				{
 					if (multiAxis)
 					{
-						if (maxY == -1) { maxY = findMaxY(serie); }
-						if (minY == -1) { minY = findMinY(serie); }
+						if (maxY == -1 || autoX) { maxY = findMaxY(serie); autoX = true;}
+						if (minY == -1 || autoY) { minY = findMinY(serie); autoX = true;}
 
 						// Draw THIS YAxis with Labels
 						// Determine best grid-size
@@ -181,14 +183,14 @@ namespace KSP_MOCR
 					bool started = false;
 					foreach (KeyValuePair<int, double?> point in new Dictionary<int, double?>(serie))
 					{
-						if(point.Value != null && !started)
+						if(point.Value != null && !started && yScaler != 0)
 						{
 							started = true;
 							int x = (int)Math.Round((point.Key / xScaler) + plotLeft + (minX / xScaler));
 							float y = (float)(plotBottom - (point.Value / yScaler) + (minY / yScaler));
 							line[0] = new PointF(x, y);
 						}
-						else if (point.Value != null && started)
+						else if (point.Value != null && started && yScaler != 0)
 						{
 							int x = (int)Math.Round((point.Key / xScaler) + plotLeft + (minX / xScaler));
 							float y = (float)(plotBottom - (point.Value / yScaler) + (minY / yScaler));
@@ -298,6 +300,11 @@ namespace KSP_MOCR
 						tMax = point.Value;
 					}
 				}
+			}
+
+			if (tMax == null)
+			{
+				return 0;
 			}
 			return (int)Math.Ceiling((double)tMax);
 		}

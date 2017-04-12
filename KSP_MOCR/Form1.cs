@@ -197,9 +197,6 @@ namespace KSP_MOCR
 			this.ForeColor = foreColor;
 			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
 
-			// Setup graphable data
-			setupChartData();
-
 			// Initiate Screen Timer
 			screenTimer = new System.Timers.Timer();
 			screenTimer.SynchronizingObject = this;
@@ -209,14 +206,13 @@ namespace KSP_MOCR
 			screenTimer.Elapsed += screenTick;
 
 			// Initiate Graph Timer
-			/*
 			graphTimer = new System.Timers.Timer();
 			screenTimer.SynchronizingObject = this;
 			graphTimer.AutoReset = false;
 			graphTimer.Interval = 1000;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
-			*/
+
 
 			// Load the connection screen
 			SetScreen(0);
@@ -233,7 +229,7 @@ namespace KSP_MOCR
 			TimeSpan duration = end - start;
 			int remainTime = 1000 - (int)duration.TotalMilliseconds;
 
-			if (remainTime < 10) { remainTime = 10; }
+			if (remainTime < 100) { remainTime = 100; }
 
 			graphTimer.Interval = remainTime;
 			graphTimer.Start();
@@ -277,6 +273,9 @@ namespace KSP_MOCR
 
 				krpc = connection.KRPC();
 				spaceCenter = connection.SpaceCenter();
+
+				// Setup graphable data
+				setupChartData();
 
 				activeScreen.screenLabels[0].Text = "Connected";
 				connected = true;

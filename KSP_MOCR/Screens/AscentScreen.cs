@@ -32,11 +32,6 @@ namespace KSP_MOCR
 			this.height = 30;
 		}
 
-		public override void destroyStreams()
-		{
-			
-		}
-
 		public override void makeElements()
 		{
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels

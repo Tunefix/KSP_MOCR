@@ -42,11 +42,15 @@ namespace KSP_MOCR
 					return new AscentScreen(form);
 				case 2:
 					return new BoosterScreen(form);
+				case 3:
+					return new ResourcesScreen(form);
 				case 9:
 					Console.WriteLine("MAKING TEST");
 					return new TestScreen(form);
 				case 50:
 					return new Terrain(form);
+				case 51:
+					return new AltVel(form);
 				case 100:
 					return new Pilot1(form);
 			}
@@ -67,7 +71,7 @@ namespace KSP_MOCR
 
 		abstract public void updateLocalElements(object sender, EventArgs e);
 		abstract public void makeElements();
-		abstract public void destroyStreams();
+		//abstract public void destroyStreams();
 
 		public void destroy()
 		{

@@ -83,6 +83,29 @@ namespace KSP_MOCR
 		flight_totalAirTemperature,
 		flight_staticAirTemperature,
 
+		orbit_celestialBody, // CelestialBody
+		orbit_apoapsis, // double
+		orbit_periapsis, // double
+		orbit_apoapsisAltitude, // double
+		orbit_periapsisAltitude, // double
+		orbit_semiMajorAxis, // double
+		orbit_semiMinorAxis, // double
+		orbit_radius, // double
+		orbit_speed, // double
+		orbit_period, // double
+		orbit_timeToApoapsis, // double
+		orbit_timeToPeriapsis, // double
+		orbit_eccentricity, // double
+		orbit_inclination, // double
+		orbit_longitudeOfAscendingNode, // double
+		orbit_argumentOfPeriapsis, // double
+		orbit_meanAnomalyAtEpoch, // double
+		orbit_epoch, // double
+		orbit_meanAnomaly, // double
+		orbit_eccentricAnomaly, // double
+		orbit_trueAnomaly, // double
+		orbit_orbitalSpeed, // double
+
 		resource_total_max_electricCharge,
 		resource_total_max_monoPropellant,
 		resource_total_max_liquidFuel,

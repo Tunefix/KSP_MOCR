@@ -1,20 +1,14 @@
-﻿using KRPC.Client;
-using KRPC.Client.Services.KRPC;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KRPC.Client.Services.KRPC;
 
 namespace KSP_MOCR
 {
-	class Terrain : MocrScreen
+	class AltVel : MocrScreen
 	{
-
-		public Terrain(Form1 form)
+		public AltVel(Form1 form)
 		{
-			this.form = form;
+            this.form = form;
 			this.chartData = form.chartData;
 
 			this.width = 120;
@@ -30,8 +24,7 @@ namespace KSP_MOCR
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				data = new List<Dictionary<int, double?>>();
-				data.Add(chartData["altitudeTime"]);
-				data.Add(chartData["terrainTime"]);
+				data.Add(chartData["altitudeSpeed"]);
 				screenCharts[0].setData(data, false);
 			}
 		}
@@ -39,14 +32,15 @@ namespace KSP_MOCR
 		public override void makeElements()
 		{
 			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Charts
-
-			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
+			for (int i = 0; i < 1; i++) screenLabels.Add(null); // Initialize Labels
+			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
+			screenLabels[0] = Helper.CreateLabel(39, 0, 42, 1, "======= ALTITUDE/INERTIAL VELOCITY =======");
 
-			// Altitude vs. Time Graph
-			screenCharts[0] = Helper.CreatePlot(0, 0, 120, 30, 0, 600,-100,3000);
+			// Altitude vs. Orbital Speed
+			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, 3000, 0, -1);
 		}
 	}
 }

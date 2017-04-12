@@ -95,10 +95,5 @@ namespace KSP_MOCR
 			screenLabels[25].BackColor = Color.Maroon;
 
 		}
-
-		public override void destroyStreams()
-		{
-			
-		}
 	}
 }

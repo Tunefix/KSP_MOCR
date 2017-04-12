@@ -48,6 +48,7 @@ namespace KSP_MOCR
 			Flight flight = connection.SpaceCenter().ActiveVessel.Flight();
 			Vessel vessel = connection.SpaceCenter().ActiveVessel;
 			Control control = connection.SpaceCenter().ActiveVessel.Control;
+			Orbit orbit = connection.SpaceCenter().ActiveVessel.Orbit;
 			Resources resources = connection.SpaceCenter().ActiveVessel.Resources;
 			int stage = control.CurrentStage;
 			Resources resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
@@ -217,6 +218,20 @@ namespace KSP_MOCR
 					break;
 
 
+				///// ORBIT DATA /////
+
+				case DataType.orbit_apoapsisAltitude:
+					stream = new doubleStream(connection.AddStream(() => orbit.ApoapsisAltitude));
+					break;
+
+				case DataType.orbit_periapsisAltitude:
+					stream = new doubleStream(connection.AddStream(() => orbit.PeriapsisAltitude));
+					break;
+
+				case DataType.orbit_speed:
+					stream = new doubleStream(connection.AddStream(() => orbit.Speed));
+					break;
+
 				///// RESOURCE DATA /////
 
 				case DataType.resource_total_max_electricCharge:
@@ -227,12 +242,38 @@ namespace KSP_MOCR
 					stream = new floatStream(connection.AddStream(() => resources.Amount("ElectricCharge")));
 					break;
 
+				case DataType.resource_stage_max_electricCharge:
+					stream = new floatStream(connection.AddStream(() => resources_stage.Max("ElectricCharge")));
+					break;
+
+				case DataType.resource_stage_amount_electricCharge:
+					stream = new floatStream(connection.AddStream(() => resources_stage.Amount("ElectricCharge")));
+					break;
+
+
 				case DataType.resource_total_max_monoPropellant:
 					stream = new floatStream(connection.AddStream(() => resources.Max("MonoPropellant")));
 					break;
 
 				case DataType.resource_total_amount_monoPropellant:
 					stream = new floatStream(connection.AddStream(() => resources.Amount("MonoPropellant")));
+					break;
+
+				case DataType.resource_stage_max_monoPropellant:
+					stream = new floatStream(connection.AddStream(() => resources_stage.Max("MonoPropellant")));
+					break;
+
+				case DataType.resource_stage_amount_monoPropellant:
+					stream = new floatStream(connection.AddStream(() => resources_stage.Amount("MonoPropellant")));
+					break;
+
+
+				case DataType.resource_total_max_liquidFuel:
+					stream = new floatStream(connection.AddStream(() => resources.Max("LiquidFuel")));
+					break;
+
+				case DataType.resource_total_amount_liquidFuel:
+					stream = new floatStream(connection.AddStream(() => resources.Amount("LiquidFuel")));
 					break;
 
 				case DataType.resource_stage_max_liquidFuel:
