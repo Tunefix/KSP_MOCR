@@ -5,7 +5,7 @@ namespace KSP_MOCR
 {
 	abstract class Kstream
 	{
-		abstract public IComparable Get();
+		abstract public dynamic Get();
 		abstract public void Remove();
 	}
 
@@ -18,7 +18,7 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
@@ -35,7 +35,7 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
@@ -52,12 +52,13 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
 
-		public override void Remove() { stream.Remove(); }	}
+		public override void Remove() { stream.Remove(); }
+	}
 
 	class boolStream : Kstream
 	{
@@ -68,12 +69,13 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
 
-		public override void Remove() { stream.Remove(); }	}
+		public override void Remove() { stream.Remove(); }
+	}
 
 	class tuple3Stream : Kstream
 	{
@@ -84,12 +86,13 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
 
-		public override void Remove() { stream.Remove(); }	}
+		public override void Remove() { stream.Remove(); }
+	}
 
 	class tuple4Stream : Kstream
 	{
@@ -100,12 +103,13 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}
 
-		public override void Remove() { stream.Remove(); }	}
+		public override void Remove() { stream.Remove(); }
+	}
 
 	class sasModeStream : Kstream
 	{
@@ -116,7 +120,24 @@ namespace KSP_MOCR
 			stream = s;
 		}
 
-		public override IComparable Get()
+		public override dynamic Get()
+		{
+			return stream.Get();
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
+
+	class celestialBodyStream : Kstream
+	{
+		KRPC.Client.Stream<CelestialBody> stream { get; set; }
+
+		public celestialBodyStream(KRPC.Client.Stream<CelestialBody> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
 		{
 			return stream.Get();
 		}

@@ -190,6 +190,8 @@
     <Compile Include="Classes\Kstream.cs" />
     <Compile Include="Screens\AltVel.cs" />
     <Compile Include="Screens\Resources.cs" />
+    <Compile Include="Screens\FDO.cs" />
+    <Compile Include="Classes\Orbit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

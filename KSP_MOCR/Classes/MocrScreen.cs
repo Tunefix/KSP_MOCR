@@ -20,6 +20,7 @@ namespace KSP_MOCR
 		public List<EngineIndicator> screenEngines = new List<EngineIndicator>();
 		public List<Plot> screenCharts = new List<Plot>();
 		public FDAI screenFDAI;
+		public OrbitGraph screenOrbit;
 
 		protected StreamCollection screenStreams;
 
@@ -44,6 +45,8 @@ namespace KSP_MOCR
 					return new BoosterScreen(form);
 				case 3:
 					return new ResourcesScreen(form);
+				case 4:
+					return new FDO(form);
 				case 9:
 					Console.WriteLine("MAKING TEST");
 					return new TestScreen(form);
@@ -110,6 +113,13 @@ namespace KSP_MOCR
 			{
 				screenFDAI.Dispose();
 				screenFDAI = null;
+			}
+
+			// Clear old Orbit
+			if (screenOrbit != null)
+			{
+				screenOrbit.Dispose();
+				screenOrbit = null;
 			}
 
 			// Clear all streams

@@ -25,6 +25,7 @@ namespace KSP_MOCR
 
 		public FDAI()
 		{
+            this.DoubleBuffered = true;
 		}
 
 		public void setAttitude(float pitch, float roll, float yaw)

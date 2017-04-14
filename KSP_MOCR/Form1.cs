@@ -39,6 +39,7 @@ namespace KSP_MOCR
 		static private List<PrivateFontCollection> _fontCollections;
 		public Font font;
 		public Font buttonFont;
+		public Font smallFont;
 
 		public double pxPrChar;
 		public double pxPrLine;
@@ -129,6 +130,7 @@ namespace KSP_MOCR
 
 				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
 				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
+				smallFont = new Font("Ubuntu Mono", 8, FontStyle.Regular);
 
 				pxPrChar = 8;
 				pxPrLine = 16;
@@ -157,6 +159,7 @@ namespace KSP_MOCR
 
 				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
 				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
+				smallFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Regular);
 
 				pxPrChar = 9;
 				pxPrLine = 19;
@@ -167,7 +170,7 @@ namespace KSP_MOCR
 				{
 					this.Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "Resources\\MOCR.ico");
 				}
-				catch (Exception ex) { }
+				catch (Exception) { }
 
 				// Load Images
 				Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");

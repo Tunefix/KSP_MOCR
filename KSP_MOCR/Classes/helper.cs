@@ -326,6 +326,22 @@ namespace KSP_MOCR
 			return label;
 		}
 
+		static public OrbitGraph CreateOrbit(int x, int y, int w, int h)
+		{
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			
+			OrbitGraph orbit = new OrbitGraph(form.buttonFont);
+			orbit.Location = new Point(left, top);
+			orbit.Size = new Size(width, height);
+
+			form.Controls.Add(orbit);
+
+			return orbit;
+		}
+
 
 		static public String prtlen(String s, int l) { return prtlen(s, l, Align.RIGHT); }
 		static public String prtlen(String s, int l, Align a)
@@ -412,6 +428,16 @@ namespace KSP_MOCR
 				}
 			}
 			return r;
+		}
+
+		static public double rad2deg(double rad)
+		{
+			return rad * (180 / Math.PI);
+		}
+
+		static public double deg2rad(double deg)
+		{
+			return deg * (Math.PI / 180);
 		}
 	}
 }

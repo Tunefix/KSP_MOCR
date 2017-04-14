@@ -224,13 +224,51 @@ namespace KSP_MOCR
 					stream = new doubleStream(connection.AddStream(() => orbit.ApoapsisAltitude));
 					break;
 
+				case DataType.orbit_apoapsis:
+					stream = new doubleStream(connection.AddStream(() => orbit.Apoapsis));
+					break;
+
 				case DataType.orbit_periapsisAltitude:
 					stream = new doubleStream(connection.AddStream(() => orbit.PeriapsisAltitude));
+					break;
+
+				case DataType.orbit_periapsis:
+					stream = new doubleStream(connection.AddStream(() => orbit.Periapsis));
+					break;
+
+				case DataType.orbit_radius:
+					stream = new doubleStream(connection.AddStream(() => orbit.Radius));
 					break;
 
 				case DataType.orbit_speed:
 					stream = new doubleStream(connection.AddStream(() => orbit.Speed));
 					break;
+
+				case DataType.orbit_celestialBody:
+					stream = new celestialBodyStream(connection.AddStream(() => orbit.Body));
+					break;
+
+				case DataType.orbit_semiMajorAxis:
+					stream = new doubleStream(connection.AddStream(() => orbit.SemiMajorAxis));
+					break;
+
+				case DataType.orbit_semiMinorAxis:
+					stream = new doubleStream(connection.AddStream(() => orbit.SemiMinorAxis));
+					break;
+
+				case DataType.orbit_argumentOfPeriapsis:
+					stream = new doubleStream(connection.AddStream(() => orbit.ArgumentOfPeriapsis));
+					break;
+
+				case DataType.orbit_longitudeOfAscendingNode:
+					stream = new doubleStream(connection.AddStream(() => orbit.LongitudeOfAscendingNode));
+					break;
+
+				case DataType.orbit_trueAnomaly:
+					stream = new doubleStream(connection.AddStream(() => orbit.TrueAnomaly));
+					break;
+
+
 
 				///// RESOURCE DATA /////
 
