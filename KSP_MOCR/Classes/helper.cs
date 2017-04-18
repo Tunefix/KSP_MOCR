@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,10 +96,10 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		static public Label CreateLabel(int x, int y) { return CreateLabel(x, y, 8, 1, ""); }
-		static public Label CreateLabel(int x, int y, int w) { return CreateLabel(x, y, w, 1, ""); }
-		static public Label CreateLabel(int x, int y, int w, int h) { return CreateLabel(x, y, w, h, ""); }
-		static public Label CreateLabel(int x, int y, int w, int h, String t)
+		static public Label CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, ""); }
+		static public Label CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, ""); }
+		static public Label CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, ""); }
+		static public Label CreateLabel(double x, double y, double w, double h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -326,6 +327,67 @@ namespace KSP_MOCR
 			return label;
 		}
 
+		static public VerticalMeter CreateVMeter(int x, int y){return CreateVMeter(x, y, false);}
+		static public VerticalMeter CreateVMeter(int x, int y, bool doubleMeter)
+		{
+			int w = 0;
+			int h = 9;
+			if (doubleMeter) { w = 10; } else { w = 6; }
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			Color fColor = form.foreColor;
+			VerticalMeter label = new VerticalMeter(form.smallFont);
+			label.Font = form.font;
+			label.doubleMeter = doubleMeter;
+			label.Location = new Point(left, top);
+			label.Size = new Size(width, height);
+			label.Padding = new Padding(0);
+			label.Margin = new Padding(0);
+			label.ForeColor = Color.FromArgb(128, fColor.R, fColor.G, fColor.B);
+
+			form.Controls.Add(label);
+
+			return label;
+		}
+		
+		
+		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed)
+		{
+			int w;
+			if (signed)
+			{
+				 w = (length + 1) * 3;
+			}
+			else
+			{
+				w = length * 3;
+			}
+			int h = 2;
+			
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			Color fColor = form.foreColor;
+			SegDisp label = new SegDisp(length, signed);
+			label.Font = form.font;
+			label.Location = new Point(left, top);
+			label.Size = new Size(width, height);
+			label.Padding = new Padding(0);
+			label.Margin = new Padding(0);
+			label.ForeColor = Color.FromArgb(128, fColor.R, fColor.G, fColor.B);
+			label.pxPrDigitW = (float)(form.pxPrChar * 3);
+			label.pxPrDigitH = (float)(form.pxPrLine * 2);
+
+			form.Controls.Add(label);
+
+			return label;
+		}
+
 		static public OrbitGraph CreateOrbit(int x, int y, int w, int h)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
@@ -404,6 +466,11 @@ namespace KSP_MOCR
 
 		static public String toFixed(double? d, int p)
 		{
+			NumberFormatInfo format = new NumberFormatInfo();
+			format.NumberGroupSeparator = "";
+			format.NumberDecimalDigits = 10;
+			format.NumberDecimalSeparator = ".";
+			
 			String r;
 			if (d == null)
 			{
@@ -412,11 +479,11 @@ namespace KSP_MOCR
 			else
 			{
 				double d2  = d.Value;
-				String b = Math.Round(d2).ToString();
-				r = Math.Round(d2, p).ToString();
+				String b = Math.Round(d2).ToString(format);
+				r = Math.Round(d2, p).ToString(format);
 
-				// Check that d isn't whole number, if so; add ','
-				int index = r.IndexOf(",");
+				// Check that d isn't whole number, if so; add '.'
+				int index = r.IndexOf(".");
 				if (index == -1)
 				{
 					r += ",";

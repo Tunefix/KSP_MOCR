@@ -38,7 +38,7 @@ namespace KSP_MOCR
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			Console.WriteLine("Painting FDAI");
+			//Console.WriteLine("Painting FDAI");
 			Graphics g = e.Graphics;
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 

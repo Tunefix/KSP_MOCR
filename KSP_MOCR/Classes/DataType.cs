@@ -119,6 +119,7 @@ namespace KSP_MOCR
 		resource_stage_max_electricCharge,
 		resource_stage_max_monoPropellant,
 		resource_stage_max_liquidFuel,
+		resource_stage_3_max_liquidFuel,
 		resource_stage_max_oxidizer,
 
 		resource_stage_amount_electricCharge,

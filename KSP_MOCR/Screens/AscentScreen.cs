@@ -157,7 +157,7 @@ namespace KSP_MOCR
 
 				if (flight_stream == null)
 				{
-					var refframe = vessel.Orbit.Body.ReferenceFrame;
+					var refframe = vessel.SurfaceReferenceFrame;
 
 					try
 					{
@@ -168,7 +168,7 @@ namespace KSP_MOCR
 
 				if (orbit_stream == null)
 				{
-					var refframe = vessel.Orbit.Body.ReferenceFrame;
+					var refframe = vessel.SurfaceReferenceFrame;
 
 					try
 					{

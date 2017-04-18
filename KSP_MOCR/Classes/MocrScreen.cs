@@ -18,6 +18,8 @@ namespace KSP_MOCR
 		public List<Button> screenButtons = new List<Button>();
 		public List<Indicator> screenIndicators = new List<Indicator>();
 		public List<EngineIndicator> screenEngines = new List<EngineIndicator>();
+		public List<VerticalMeter> screenVMeters = new List<VerticalMeter>();
+		public List<SegDisp> screenSegDisps = new List<SegDisp>();
 		public List<Plot> screenCharts = new List<Plot>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
@@ -74,6 +76,9 @@ namespace KSP_MOCR
 
 		abstract public void updateLocalElements(object sender, EventArgs e);
 		abstract public void makeElements();
+
+		public virtual void keyDown(object sender, KeyEventArgs e) { }
+		public virtual void keyUp(object sender, KeyEventArgs e) { }
 		//abstract public void destroyStreams();
 
 		public void destroy()
@@ -107,6 +112,16 @@ namespace KSP_MOCR
 			foreach (EngineIndicator indicator in screenEngines) { if (indicator != null) { indicator.Dispose(); } }
 			screenEngines.Clear();
 			screenEngines.TrimExcess();
+			
+			// Clear old VerticalMeters
+			foreach (VerticalMeter meter in screenVMeters) { if (meter != null) { meter.Dispose(); } }
+			screenVMeters.Clear();
+			screenVMeters.TrimExcess();
+			
+			// Clear old 7-segment displays
+			foreach (SegDisp disp in screenSegDisps) { if (disp != null) { disp.Dispose(); } }
+			screenSegDisps.Clear();
+			screenSegDisps.TrimExcess();
 
 			// Clear old FDAI
 			if (screenFDAI != null)

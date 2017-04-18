@@ -10,15 +10,21 @@ namespace KSP_MOCR
 		readonly KRPC.Client.Connection connection;
 		private Dictionary<DataType, Kstream> streams = new Dictionary<DataType, Kstream>();
 
+		private int stage;
+
 		public StreamCollection(Connection con)
 		{
 			connection = con;
 		}
 
-		public dynamic GetData(DataType type)
+		public dynamic GetData(DataType type){return GetData(type, false);}
+		public dynamic GetData(DataType type, bool force_reStream)
 		{
-			if (!streams.ContainsKey(type))
+			if (!streams.ContainsKey(type) || force_reStream)
 			{
+				// If forced, clear out old stream
+				if (force_reStream) { streams[type].Remove(); streams.Remove(type);}
+				
 				try
 				{
 					addStream(type);
@@ -42,6 +48,11 @@ namespace KSP_MOCR
 			}
 		}
 
+		public void setStage(int stage)
+		{
+			this.stage = stage;
+		}
+
 		private void addStream(DataType type)
 		{
 			// Some much used variables
@@ -50,7 +61,6 @@ namespace KSP_MOCR
 			Control control = connection.SpaceCenter().ActiveVessel.Control;
 			Orbit orbit = connection.SpaceCenter().ActiveVessel.Orbit;
 			Resources resources = connection.SpaceCenter().ActiveVessel.Resources;
-			int stage = control.CurrentStage;
 			Resources resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
 
 			Kstream stream;
@@ -321,6 +331,7 @@ namespace KSP_MOCR
 				case DataType.resource_stage_amount_liquidFuel:
 					stream = new floatStream(connection.AddStream(() => resources_stage.Amount("LiquidFuel")));
 					break;
+
 
 				case DataType.resource_stage_max_oxidizer:
 					stream = new floatStream(connection.AddStream(() => resources_stage.Max("Oxidizer")));

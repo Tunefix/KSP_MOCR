@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace KSP_MOCR
 {
-	class Pilot1 : MocrScreen
+	partial class Pilot1 : MocrScreen
 	{
 		private int setRotR = 0;
 		private int setRotP = 90;
@@ -24,15 +24,69 @@ namespace KSP_MOCR
 		private int lockRotR;
 		private int lockRotP;
 		private int lockRotY;
-
-		private float pitch;
-		private float roll;
-		private float yaw;
-
+		
 		private double rollRate = 1;
 		private double pitchRate = 1;
 
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
+
+		// DKSY PROTERITES
+		bool enterVerb = false;
+		bool enterNoun = false;
+		bool enterR1 = false;
+		bool enterR2 = false;
+		bool enterR3 = false;
+		String noun = null;
+		String verb = null;
+		String r1 = null;
+		String r2 = null;
+		String r3 = null;
+		int activeVerb = -1;
+		int activeNoun = -1;
+		int activeProg = 0;
+		int storeProg = -1;
+		bool flashing = false;
+		bool oprError = false;
+		
+
+		// DATA PROPERTIES
+		int oldStage = -1;
+		int currentStage = -1;
+		double meanAltitude = 0;
+		double MET = 0;
+		float throttle = 0;
+		float pitch;
+		float roll;
+		float yaw;
+		bool SAS = false;
+		bool RCS = false;
+		bool gear = false;
+		bool brakes = false;
+		bool lights = false;
+		bool abort = false;
+		float gForce = 0;
+		float maxElectric = 0;
+		float curElectric = 0;
+		float maxMonopropellant = 0;
+		float curMonopropellant = 0;
+		float maxStageFuel = 0;
+		float curStageFuel = 0;
+		float maxStageOx = 0;
+		float curStageOx = 0;
+		float maxTotFuel = 0;
+		float curTotFuel = 0;
+		SASMode sasMode = 0;
+		bool actionGroup0 = false;
+		bool actionGroup1 = false;
+		bool actionGroup2 = false;
+		bool actionGroup3 = false;
+		bool actionGroup4 = false;
+		bool actionGroup5 = false;
+		bool actionGroup6 = false;
+		bool actionGroup7 = false;
+		bool actionGroup8 = false;
+		bool actionGroup9 = false;
+		double orbitSpeed = 0;
 
 
 		DateTime start;
@@ -50,21 +104,25 @@ namespace KSP_MOCR
 
 			this.width = 120;
 			this.height = 30;
+			
+			oldStage = currentStage = screenStreams.GetData(DataType.control_currentStage);
 		}
 
 		public override void makeElements()
 		{
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 50; i++) screenIndicators.Add(null); // Initialize Indicators
-			for (int i = 0; i < 50; i++) screenButtons.Add(null); // Initialize Buttons
+			for (int i = 0; i < 80; i++) screenButtons.Add(null); // Initialize Buttons
 			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
+			for (int i = 0; i < 5; i++) screenVMeters.Add(null); // Initialize VMeters
+			for (int i = 0; i < 6; i++) screenSegDisps.Add(null); // Initialize 7-Segment Displays
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
 			screenFDAI = new FDAI();
 			screenFDAI.Font = form.buttonFont;
 			screenFDAI.Location = new Point((int)(39 * form.pxPrChar), (int)(3 * form.pxPrLine));
-			screenFDAI.Size = new Size((int)(44 * form.pxPrChar), (int)(17 * form.pxPrLine));
+			screenFDAI.Size = new Size((int)(43 * form.pxPrChar), (int)(17 * form.pxPrLine));
 			form.Controls.Add(screenFDAI);
 
 
@@ -82,7 +140,7 @@ namespace KSP_MOCR
 			screenLabels[9] = Helper.CreateLabel(0, 15, 25, 1, "      SET     CUR    LOCK");
 			screenLabels[10] = Helper.CreateLabel(0, 20, 80, 1, "───────── PROGRAMS ─────┬─── ACTION GROUPS ───┬─────── SAS SETTING ───────┐");
 			screenLabels[11] = Helper.CreateLabel(0, 21, 24, 1, "┌── ROLL ──┐┌── PITCH ─┐");
-			screenLabels[12] = Helper.CreateLabel(0, 29, 70, 1, "────────────────────────┴────────────┴────────────────────────────────────────┘");
+			screenLabels[12] = Helper.CreateLabel(0, 29, 75, 1, "────────────────────────┴────────────┴────────────────────────────────────┤");
 
 			// THROTTLE CONTROLS
 			screenButtons[0] = Helper.CreateButton(1, 12, 5, 1, "-10");
@@ -196,12 +254,6 @@ namespace KSP_MOCR
 			screenIndicators[3] = Helper.CreateIndicator(86, 2, 10, 1, "BRAKES");
 			screenIndicators[4] = Helper.CreateIndicator(97, 2, 10, 1, "LIGHTS");
 			screenIndicators[5] = Helper.CreateIndicator(108, 2, 10, 1, "ABORT");
-			screenIndicators[6] = Helper.CreateIndicator(86, 4, 10, 1, "POWER HI");
-			screenIndicators[7] = Helper.CreateIndicator(97, 4, 10, 1, "G HIGH");
-			screenIndicators[8] = Helper.CreateIndicator(108, 4, 10, 1, "LOX LOW");
-			screenIndicators[9] = Helper.CreateIndicator(86, 5, 10, 1, "POWER LOW");
-			screenIndicators[10] = Helper.CreateIndicator(97, 5, 10, 1, "MONO LOW");
-			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
 			screenIndicators[25] = Helper.CreateIndicator(20, 10, 10, 1, "AUTO");
 			screenIndicators[26] = Helper.CreateIndicator(20, 11, 10, 1, "FREE/SAS");
@@ -327,6 +379,110 @@ namespace KSP_MOCR
 			screenLabels[56] = Helper.CreateLabel(24, 26, 1, 1, "│");
 			screenLabels[57] = Helper.CreateLabel(24, 27, 1, 1, "│");
 			screenLabels[58] = Helper.CreateLabel(24, 28, 1, 1, "│");
+			
+			// SAS GROUP LABELS RIGHT
+			screenLabels[60] = Helper.CreateLabel(74, 21, 1, 1, "│");
+			screenLabels[61] = Helper.CreateLabel(74, 22, 1, 1, "│");
+			screenLabels[62] = Helper.CreateLabel(74, 23, 1, 1, "│");
+			screenLabels[63] = Helper.CreateLabel(74, 24, 1, 1, "│");
+			screenLabels[64] = Helper.CreateLabel(74, 25, 1, 1, "│");
+			screenLabels[65] = Helper.CreateLabel(74, 26, 1, 1, "│");
+			screenLabels[66] = Helper.CreateLabel(74, 27, 1, 1, "│");
+			screenLabels[67] = Helper.CreateLabel(74, 28, 1, 1, "│");
+
+			// Vertical Meters
+			screenVMeters[0] = Helper.CreateVMeter(83, 6, false);
+			screenVMeters[0].setScale(0, 10);
+			screenVMeters[1] = Helper.CreateVMeter(89, 6, true);
+			screenVMeters[1].setScale(0, 100);
+			screenVMeters[2] = Helper.CreateVMeter(99, 6, true);
+			screenVMeters[2].setScale(0, 100);
+			screenVMeters[3] = Helper.CreateVMeter(109, 6, true);
+			screenVMeters[3].setScale(0, 100);
+			
+			// Vertical Meter Labels
+			screenLabels[70] = Helper.CreateLabel(82, 3, 38, 1, "┌───────────── RESOURCES ────────────┐");
+			screenLabels[71] = Helper.CreateLabel(82.5, 4, 38, 1, "         STAGE     TOTAL     TOTAL");
+			screenLabels[72] = Helper.CreateLabel(82, 5, 38, 1, "  ACCEL  LF  OX    LF  OX    MP  EL");
+
+			// DKSY
+			screenSegDisps[0] = Helper.CreateSegDisp(83, 15.75, 5, true);
+			screenSegDisps[1] = Helper.CreateSegDisp(83, 18.25, 5, true);
+			screenSegDisps[2] = Helper.CreateSegDisp(83, 20.75, 5, true);
+			
+			screenSegDisps[3] = Helper.CreateSegDisp(104, 20.75, 2, false);
+			screenSegDisps[4] = Helper.CreateSegDisp(112, 20.75, 2, false);
+			
+			screenSegDisps[5] = Helper.CreateSegDisp(112, 17, 2, false);
+			
+			// DSKY LABELS
+			screenLabels[75] = Helper.CreateLabel(111, 16, 8, 1, "─ PROG ─");
+			screenLabels[76] = Helper.CreateLabel(111, 19.75, 8, 1, "─ NOUN ─");
+			screenLabels[77] = Helper.CreateLabel(103, 19.75, 8, 1, "─ VERB ─");
+			screenLabels[78] = Helper.CreateLabel(82, 15, 38, 1, "├────────────────────────────────────┤");
+
+			// DSKY BUTTONS
+			screenButtons[50] = Helper.CreateButton(78, 24.3, 5, 2, "VERB");
+			screenButtons[50].Font = form.buttonFont;
+			screenButtons[50].Click += verbClick;
+			screenButtons[51] = Helper.CreateButton(78, 26.5, 5, 2, "NOUN");
+			screenButtons[51].Font = form.buttonFont;
+			screenButtons[51].Click += nounClick;
+			
+			screenButtons[52] = Helper.CreateButton(84, 23.2, 5, 2, "+");
+			screenButtons[52].Font = form.buttonFont;
+			screenButtons[53] = Helper.CreateButton(84, 25.4, 5, 2, "-");
+			screenButtons[53].Font = form.buttonFont;
+			screenButtons[54] = Helper.CreateButton(84, 27.6, 5, 2, "0");
+			screenButtons[54].Font = form.buttonFont;
+			screenButtons[54].Click += (sender, e) => dskyNumber(sender, e, 0);
+			
+			screenButtons[55] = Helper.CreateButton(90, 23.2, 5, 2, "7");
+			screenButtons[55].Font = form.buttonFont;
+			screenButtons[55].Click += (sender, e) => dskyNumber(sender, e, 7);
+			screenButtons[56] = Helper.CreateButton(90, 25.4, 5, 2, "4");
+			screenButtons[56].Font = form.buttonFont;
+			screenButtons[56].Click += (sender, e) => dskyNumber(sender, e, 4);
+			screenButtons[57] = Helper.CreateButton(90, 27.6, 5, 2, "1");
+			screenButtons[57].Font = form.buttonFont;
+			screenButtons[57].Click += (sender, e) => dskyNumber(sender, e, 1);
+			
+			screenButtons[58] = Helper.CreateButton(96, 23.2, 5, 2, "8");
+			screenButtons[58].Font = form.buttonFont;
+			screenButtons[58].Click += (sender, e) => dskyNumber(sender, e, 8);
+			screenButtons[59] = Helper.CreateButton(96, 25.4, 5, 2, "5");
+			screenButtons[59].Font = form.buttonFont;
+			screenButtons[59].Click += (sender, e) => dskyNumber(sender, e, 5);
+			screenButtons[60] = Helper.CreateButton(96, 27.6, 5, 2, "2");
+			screenButtons[60].Font = form.buttonFont;
+			screenButtons[60].Click += (sender, e) => dskyNumber(sender, e, 2);
+			
+			screenButtons[61] = Helper.CreateButton(102, 23.2, 5, 2, "9");
+			screenButtons[61].Font = form.buttonFont;
+			screenButtons[61].Click += (sender, e) => dskyNumber(sender, e, 9);
+			screenButtons[62] = Helper.CreateButton(102, 25.4, 5, 2, "6");
+			screenButtons[62].Font = form.buttonFont;
+			screenButtons[62].Click += (sender, e) => dskyNumber(sender, e, 6);
+			screenButtons[63] = Helper.CreateButton(102, 27.6, 5, 2, "3");
+			screenButtons[63].Font = form.buttonFont;
+			screenButtons[63].Click += (sender, e) => dskyNumber(sender, e, 3);
+			
+			screenButtons[64] = Helper.CreateButton(108, 23.2, 5, 2, "CLR");
+			screenButtons[64].Font = form.buttonFont;
+			screenButtons[64].Click += clrClick;
+			screenButtons[65] = Helper.CreateButton(108, 25.4, 5, 2, "PRO");
+			screenButtons[65].Font = form.buttonFont;
+			screenButtons[65].Click += proClick;
+			screenButtons[66] = Helper.CreateButton(108, 27.6, 5, 2, "KEY\nREL");
+			screenButtons[66].Font = form.buttonFont;
+			
+			screenButtons[67] = Helper.CreateButton(114, 24.3, 5, 2, "ENTR");
+			screenButtons[67].Font = form.buttonFont;
+			screenButtons[67].Click += entrClick;
+			screenButtons[68] = Helper.CreateButton(114, 26.5, 5, 2, "RSET");
+			screenButtons[68].Font = form.buttonFont;
+			screenButtons[67].Click += rsetClick;
+			
 
 			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
@@ -354,47 +510,63 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(4);
 			}
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight){
+			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			{
 
 				// GET DATA
+				
 				start = DateTime.Now;
-				double meanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
-				double MET = screenStreams.GetData(DataType.vessel_MET);
-				float throttle = screenStreams.GetData(DataType.control_throttle);
+				currentStage = screenStreams.GetData(DataType.control_currentStage);
+				
+				screenStreams.setStage(currentStage);
+				
+				meanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
+				MET = screenStreams.GetData(DataType.vessel_MET);
+				throttle = screenStreams.GetData(DataType.control_throttle);
 				pitch = screenStreams.GetData(DataType.flight_pitch);
 				roll = screenStreams.GetData(DataType.flight_roll);
 				yaw = screenStreams.GetData(DataType.flight_heading);
-				int currentStage = screenStreams.GetData(DataType.control_currentStage);
-				bool SAS = screenStreams.GetData(DataType.control_SAS);
-				bool RCS = screenStreams.GetData(DataType.control_RCS);
-				bool gear = screenStreams.GetData(DataType.control_gear);
-				bool brakes = screenStreams.GetData(DataType.control_brakes);
-				bool lights = screenStreams.GetData(DataType.control_lights);
-				bool abort = screenStreams.GetData(DataType.control_abort);
-				float gForce = screenStreams.GetData(DataType.flight_gForce);
-				float maxElectric = screenStreams.GetData(DataType.resource_total_max_electricCharge);
-				float curElectric = screenStreams.GetData(DataType.resource_total_amount_electricCharge);
-				float maxMonopropellant = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
-				float curMonopropellant = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
-				float maxStageFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
-				float curStageFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
-				float maxStageOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
-				float curStageOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
-				SASMode sasMode = screenStreams.GetData(DataType.control_SASmode);
-				bool actionGroup0 = screenStreams.GetData(DataType.control_actionGroup0);
-				bool actionGroup1 = screenStreams.GetData(DataType.control_actionGroup1);
-				bool actionGroup2 = screenStreams.GetData(DataType.control_actionGroup2);
-				bool actionGroup3 = screenStreams.GetData(DataType.control_actionGroup3);
-				bool actionGroup4 = screenStreams.GetData(DataType.control_actionGroup4);
-				bool actionGroup5 = screenStreams.GetData(DataType.control_actionGroup5);
-				bool actionGroup6 = screenStreams.GetData(DataType.control_actionGroup6);
-				bool actionGroup7 = screenStreams.GetData(DataType.control_actionGroup7);
-				bool actionGroup8 = screenStreams.GetData(DataType.control_actionGroup8);
-				bool actionGroup9 = screenStreams.GetData(DataType.control_actionGroup9);
+				SAS = screenStreams.GetData(DataType.control_SAS);
+				RCS = screenStreams.GetData(DataType.control_RCS);
+				gear = screenStreams.GetData(DataType.control_gear);
+				brakes = screenStreams.GetData(DataType.control_brakes);
+				lights = screenStreams.GetData(DataType.control_lights);
+				abort = screenStreams.GetData(DataType.control_abort);
+				gForce = screenStreams.GetData(DataType.flight_gForce);
+				maxElectric = screenStreams.GetData(DataType.resource_total_max_electricCharge);
+				curElectric = screenStreams.GetData(DataType.resource_total_amount_electricCharge);
+				maxMonopropellant = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
+				curMonopropellant = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
+				orbitSpeed = screenStreams.GetData(DataType.orbit_speed);
 
-
-
-					
+				if (currentStage != oldStage) // WE HAVE STAGED, GET NEW STAGE_RESOURCE DATA
+				{
+					maxStageFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel, true);
+					curStageFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel, true);
+					maxStageOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer, true);
+					curStageOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer, true);
+				}
+				else // ON SAME STAGE AS BEFORE, USE CURRENT STAGE_RESOURCE DATA (if it exists)
+				{
+					maxStageFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
+					curStageFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
+					maxStageOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
+					curStageOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
+				}
+				maxTotFuel = screenStreams.GetData(DataType.resource_total_max_liquidFuel);
+				curTotFuel = screenStreams.GetData(DataType.resource_total_amount_liquidFuel);
+				
+				sasMode = screenStreams.GetData(DataType.control_SASmode);
+				actionGroup0 = screenStreams.GetData(DataType.control_actionGroup0);
+				actionGroup1 = screenStreams.GetData(DataType.control_actionGroup1);
+				actionGroup2 = screenStreams.GetData(DataType.control_actionGroup2);
+				actionGroup3 = screenStreams.GetData(DataType.control_actionGroup3);
+				actionGroup4 = screenStreams.GetData(DataType.control_actionGroup4);
+				actionGroup5 = screenStreams.GetData(DataType.control_actionGroup5);
+				actionGroup6 = screenStreams.GetData(DataType.control_actionGroup6);
+				actionGroup7 = screenStreams.GetData(DataType.control_actionGroup7);
+				actionGroup8 = screenStreams.GetData(DataType.control_actionGroup8);
+				actionGroup9 = screenStreams.GetData(DataType.control_actionGroup9);
 
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
@@ -453,26 +625,6 @@ namespace KSP_MOCR
 				if (lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
 				if (abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
 
-				if (gForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
-
-
-				float maxR = maxElectric;
-				float curR = curElectric;
-				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(1); } else { screenIndicators[6].setStatus(0); } // Power High
-				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[9].setStatus(2); } else { screenIndicators[9].setStatus(0); } // Power Low
-
-				maxR = maxMonopropellant;
-				curR = curMonopropellant;
-				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[10].setStatus(2); } else { screenIndicators[10].setStatus(0); } // Monopropellant Low
-
-				maxR = maxStageFuel;
-				curR = curStageFuel;
-				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[11].setStatus(2); } else { screenIndicators[11].setStatus(0); } // Fuel Low
-
-				maxR = maxStageOx;
-				curR = curStageOx;
-				if (curR / maxR < 0.1 && curR / maxR > 0) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
-
 
 				// Check for autopilot
 				switch (controlMode)
@@ -527,32 +679,35 @@ namespace KSP_MOCR
 					screenIndicators[i].setStatus(0);
 				}
 
-				switch (sasMode)
+				if (SAS)
 				{
-					case SASMode.Prograde:
-						screenIndicators[30].setStatus(4);
-						break;
-					case SASMode.Retrograde:
-						screenIndicators[31].setStatus(4);
-						break;
-					case SASMode.StabilityAssist:
-						screenIndicators[32].setStatus(4);
-						break;
-					case SASMode.Normal:
-						screenIndicators[33].setStatus(4);
-						break;
-					case SASMode.AntiNormal:
-						screenIndicators[34].setStatus(4);
-						break;
-					case SASMode.Radial:
-						screenIndicators[36].setStatus(4);
-						break;
-					case SASMode.AntiRadial:
-						screenIndicators[37].setStatus(4);
-						break;
-					case SASMode.Maneuver:
-						screenIndicators[39].setStatus(4);
-						break;
+					switch (sasMode)
+					{
+						case SASMode.Prograde:
+							screenIndicators[30].setStatus(4);
+							break;
+						case SASMode.Retrograde:
+							screenIndicators[31].setStatus(4);
+							break;
+						case SASMode.StabilityAssist:
+							screenIndicators[32].setStatus(4);
+							break;
+						case SASMode.Normal:
+							screenIndicators[33].setStatus(4);
+							break;
+						case SASMode.AntiNormal:
+							screenIndicators[34].setStatus(4);
+							break;
+						case SASMode.Radial:
+							screenIndicators[36].setStatus(4);
+							break;
+						case SASMode.AntiRadial:
+							screenIndicators[37].setStatus(4);
+							break;
+						case SASMode.Maneuver:
+							screenIndicators[39].setStatus(4);
+							break;
+					}
 				}
 
 				if (SAS) { screenIndicators[35].setStatus(4); } else { screenIndicators[35].setStatus(0); }
@@ -560,7 +715,6 @@ namespace KSP_MOCR
 
 
 				// Action Group Indicators
-				if (actionGroup0) { screenIndicators[39].setStatus(4); } else { screenIndicators[39].setStatus(0); }
 				if (actionGroup1) { screenIndicators[40].setStatus(4); } else { screenIndicators[40].setStatus(0); }
 				if (actionGroup2) { screenIndicators[41].setStatus(4); } else { screenIndicators[41].setStatus(0); }
 				if (actionGroup3) { screenIndicators[42].setStatus(4); } else { screenIndicators[42].setStatus(0); }
@@ -570,8 +724,13 @@ namespace KSP_MOCR
 				if (actionGroup7) { screenIndicators[46].setStatus(4); } else { screenIndicators[46].setStatus(0); }
 				if (actionGroup8) { screenIndicators[47].setStatus(4); } else { screenIndicators[47].setStatus(0); }
 				if (actionGroup9) { screenIndicators[48].setStatus(4); } else { screenIndicators[48].setStatus(0); }
+				if (actionGroup0) { screenIndicators[49].setStatus(4); } else { screenIndicators[49].setStatus(0); }
 
-
+				// Vertical Meters
+				
+				screenVMeters[0].setValue1((curStageFuel / maxStageFuel)*100);
+				screenVMeters[0].setValue2((curStageOx / maxStageOx)*100);
+				screenVMeters[1].setValue((curMonopropellant / maxMonopropellant) * 100);
 
 				// Graphs
 				//data = new List<Dictionary<int, Nullable<double>>>();
@@ -591,6 +750,12 @@ namespace KSP_MOCR
 					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = this.lockRotR;
 					form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = this.lockRotY;
 				}
+
+
+				updateDSKY();
+				
+				
+				oldStage = currentStage;
 				/**/
 			}
 		}
@@ -861,5 +1026,7 @@ namespace KSP_MOCR
 			Console.WriteLine("Block " + block++ + outName + ": " + (int)dur.TotalMilliseconds);
 			start = DateTime.Now;
 		}
+
+		
 	}
 }

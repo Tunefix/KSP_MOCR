@@ -192,6 +192,10 @@
     <Compile Include="Screens\Resources.cs" />
     <Compile Include="Screens\FDO.cs" />
     <Compile Include="Classes\Orbit.cs" />
+    <Compile Include="Classes\VerticalMeter.cs" />
+    <Compile Include="Classes\7SegDisp.cs" />
+    <Compile Include="Screens\PilotDSKY.cs" />
+    <Compile Include="Screens\PilotKeyHandling.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
