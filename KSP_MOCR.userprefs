@@ -6,18 +6,12 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workbench ActiveDocument="KSP_MOCR Status">
     <Files>
-      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Screens\Resources.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Screens\Pilot1.cs" Line="729" Column="33" />
+      <File FileName="KSP_MOCR\Screens\PilotDSKY.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Screens\PilotKeyHandling.cs" Line="1" Column="1" />
+      <File FileName="KSP_MOCR\Classes\ChartData.cs" Line="21" Column="1" />
       <File FileName="KSP_MOCR\Classes\StreamCollection.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\DataType.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Program.cs" Line="19" Column="1" />
-      <File FileName="KSP_MOCR\Classes\Kstream.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\FDAI.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\helper.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\MocrScreen.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\Plot.cs" Line="209" Column="4" />
-      <File FileName="KSP_MOCR\Form1.cs" Line="1" Column="1" />
-      <File FileName="KSP_MOCR\Classes\ChartData.cs" Line="28" Column="74" />
+      <File FileName="KSP_MOCR\Classes\VerticalMeter.cs" Line="1" Column="1" />
       <File FileName="KSP_MOCR Status" />
     </Files>
   </MonoDevelop.Ide.Workbench>

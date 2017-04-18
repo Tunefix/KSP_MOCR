@@ -340,6 +340,13 @@ namespace KSP_MOCR
 				case DataType.resource_stage_amount_oxidizer:
 					stream = new floatStream(connection.AddStream(() => resources_stage.Amount("Oxidizer")));
 					break;
+				case DataType.resource_total_max_oxidizer:
+					stream = new floatStream(connection.AddStream(() => resources.Max("Oxidizer")));
+					break;
+
+				case DataType.resource_total_amount_oxidizer:
+					stream = new floatStream(connection.AddStream(() => resources.Amount("Oxidizer")));
+					break;
 
 
 

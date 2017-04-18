@@ -200,13 +200,15 @@ namespace KSP_MOCR
 		private void entrClick(object sender, EventArgs e)
 		{
 			// TODO: MAGIC!
-			if (verb != null)
+			if (verb != null && noun != null)
 			{
 				activeVerb = int.Parse(verb);
 				verb = null;
+				activeNoun = int.Parse(noun);
+				noun = null;
 			}
-			
-			if (noun != null)
+
+			if (activeVerb != -1 && noun != null)
 			{
 				activeNoun = int.Parse(noun);
 				noun = null;

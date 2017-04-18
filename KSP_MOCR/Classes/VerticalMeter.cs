@@ -256,8 +256,8 @@ namespace KSP_MOCR
 			
 			
 			// Pointer 2
-			scaler = (Height - 20) / (double)Math.Abs(scale1max - scale1min);
-			y = (float)((Height - 10) - (value1 * scaler));
+			scaler = (Height - 20) / (double)Math.Abs(scale2max - scale2min);
+			y = (float)((Height - 10) - (value2 * scaler));
 			x = Width - 3;
 			w = Width / 5;
 			a = 50; // Angle at "pointy" end

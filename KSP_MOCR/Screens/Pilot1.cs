@@ -47,6 +47,11 @@ namespace KSP_MOCR
 		int storeProg = -1;
 		bool flashing = false;
 		bool oprError = false;
+
+		// FDAI-angles
+		float FDAIRoll = 0;
+		float FDAIPitch = 0;
+		float FDAIYaw = 0;
 		
 
 		// DATA PROPERTIES
@@ -75,6 +80,8 @@ namespace KSP_MOCR
 		float curStageOx = 0;
 		float maxTotFuel = 0;
 		float curTotFuel = 0;
+		float maxTotOx = 0;
+		float curTotOx = 0;
 		SASMode sasMode = 0;
 		bool actionGroup0 = false;
 		bool actionGroup1 = false;
@@ -555,6 +562,8 @@ namespace KSP_MOCR
 				}
 				maxTotFuel = screenStreams.GetData(DataType.resource_total_max_liquidFuel);
 				curTotFuel = screenStreams.GetData(DataType.resource_total_amount_liquidFuel);
+				maxTotOx = screenStreams.GetData(DataType.resource_total_max_oxidizer);
+				curTotOx = screenStreams.GetData(DataType.resource_total_amount_oxidizer);
 				
 				sasMode = screenStreams.GetData(DataType.control_SASmode);
 				actionGroup0 = screenStreams.GetData(DataType.control_actionGroup0);
@@ -727,10 +736,13 @@ namespace KSP_MOCR
 				if (actionGroup0) { screenIndicators[49].setStatus(4); } else { screenIndicators[49].setStatus(0); }
 
 				// Vertical Meters
-				
-				screenVMeters[0].setValue1((curStageFuel / maxStageFuel)*100);
-				screenVMeters[0].setValue2((curStageOx / maxStageOx)*100);
-				screenVMeters[1].setValue((curMonopropellant / maxMonopropellant) * 100);
+				screenVMeters[0].setValue1(gForce);
+				screenVMeters[1].setValue1((curStageFuel / maxStageFuel) * 100);
+				screenVMeters[1].setValue2((curStageOx / maxStageOx) * 100);
+				screenVMeters[2].setValue1((curTotFuel / maxTotFuel) * 100);
+				screenVMeters[2].setValue2((curTotOx / maxTotOx) * 100);
+				screenVMeters[3].setValue1((curMonopropellant / maxMonopropellant) * 100);
+				screenVMeters[3].setValue2((curElectric / maxElectric) * 100);
 
 				// Graphs
 				//data = new List<Dictionary<int, Nullable<double>>>();

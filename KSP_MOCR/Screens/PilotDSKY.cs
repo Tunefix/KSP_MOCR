@@ -60,6 +60,11 @@ namespace KSP_MOCR
 				runVerb(activeVerb, activeNoun);
 			}
 
+			if (activeProg != -1)
+			{
+				runProgram(activeProg);
+			}
+
 			/*
 			 * DEBUG
 			 */
@@ -73,6 +78,167 @@ namespace KSP_MOCR
 			Console.WriteLine("VERB-S: " + verbStr);
 			Console.WriteLine("PROG-S: " + progStr);
 			/**/
+		}
+
+		private void runProgram(int prog)
+		{
+			switch (prog)
+			{
+				case 0:
+					// Idle
+					break;
+				case 1: // Initialisation program
+					activeVerb = 16;
+					activeNoun = 20;
+					runProg1();
+					break;
+				case 2: // Ready to launch
+					runProg2();
+					break;
+				case 3: // Ready to launch
+					runProg3();
+					break;
+				case 11: // Launch program
+					activeVerb = 16;
+					activeNoun = 73;
+					runProg11();
+					break;
+			}
+		}
+
+		private void runProg1()
+		{
+			/*
+			 * COARSE ALIGN OF FDAI
+			 */
+			int FR = (int)Math.Round(FDAIRoll * 100);
+			int FP = (int)Math.Round(FDAIPitch * 100);
+			int FY = (int)Math.Round(FDAIYaw * 100);
+			int TR = (int)Math.Round(roll * 100);
+			int TP = (int)Math.Round(pitch * 100);
+			int TY = (int)Math.Round(yaw * 100);
+
+			int DR = FR - TR;
+			int DP = FP - TP;
+			int DY = FY - TY;
+			
+			if ((FR == TR || Math.Abs(DR) < 100)
+				&& (FP == TP || Math.Abs(DP) < 100)
+				&& (FY == TY || Math.Abs(DY) < 100)
+			)
+			{
+				activeProg = 2;
+			}
+			else
+			{
+				if (FR != TR)
+				{
+					if (DR > 0)
+					{
+						FDAIRoll -= 1f;
+					}
+					else
+					{
+						FDAIRoll += 1f;
+					}
+				}
+				
+				if (FP != TP)
+				{
+					if (DP > 0)
+					{
+						FDAIPitch -= 1f;
+					}
+					else
+					{
+						FDAIPitch += 1f;
+					}
+				}
+				
+				if (FY != TY)
+				{
+					if (DY > 0)
+					{
+						FDAIYaw -= 1f;
+					}
+					else
+					{
+						FDAIYaw += 1f;
+					}
+				}
+				
+			}
+		}
+		
+		private void runProg2()
+		{
+			/*
+			 * FINE ALIGN OF FDAI
+			 */
+			int FR = (int)Math.Round(FDAIRoll * 100);
+			int FP = (int)Math.Round(FDAIPitch * 100);
+			int FY = (int)Math.Round(FDAIYaw * 100);
+			int TR = (int)Math.Round(roll * 100);
+			int TP = (int)Math.Round(pitch * 100);
+			int TY = (int)Math.Round(yaw * 100);
+			if (FR == TR && FP == TP && FY == TY)
+			{
+				activeProg = 3;
+			}
+			else
+			{
+				if (FR != TR)
+				{
+					int diff = FR - TR;
+					if (diff > 0)
+					{
+						FDAIRoll -= 0.01f;
+					}
+					else
+					{
+						FDAIRoll += 0.01f;
+					}
+				}
+				
+				if (FP != TP)
+				{
+					int diff = FP - TP;
+					if (diff > 0)
+					{
+						FDAIPitch -= 0.01f;
+					}
+					else
+					{
+						FDAIPitch += 0.01f;
+					}
+				}
+				
+				if (FY != TY)
+				{
+					int diff = FY - TY;
+					if (diff > 0)
+					{
+						FDAIYaw -= 0.01f;
+					}
+					else
+					{
+						FDAIYaw += 0.01f;
+					}
+				}
+				
+			}
+		}
+		
+		private void runProg3()
+		{
+			if (MET > 0)
+			{
+				activeProg = 11;
+			}
+		}
+		
+		private void runProg11()
+		{
 		}
 
 		private void runVerb(int verb, int noun)
@@ -134,32 +300,9 @@ namespace KSP_MOCR
 
 		private void verb37(int noun)
 		{
-			// Registers (aka output)
-			String r1 = "";
-			String r2 = "";
-			String r3 = "";
-			// Precision
-			int p1 = 0;
-			int p2 = 0;
-			int p3 = 0;
-			
-			switch (noun)
-			{
-				case 0: // Idle
-					activeProg = 0;
-					activeVerb = -1;
-					activeNoun = -1;
-					break;
-				default:
-					oprError = true;
-					activeNoun = -1;
-					activeVerb = -1;
-					break;
-			}
-			
-			screenSegDisps[0].setValue(r1,p1);
-			screenSegDisps[1].setValue(r2,p2);
-			screenSegDisps[2].setValue(r3,p3);
+			activeProg = noun;
+			activeVerb = -1;
+			activeNoun = -1;
 		}
 
 		private void verb69()
@@ -208,6 +351,13 @@ namespace KSP_MOCR
 					values[0] = (int)Math.Round(roll * 100);
 					values[1] = (int)Math.Round(pitch * 100);
 					values[2] = (int)Math.Round(yaw * 100);
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+				case 20: // FDAI angles
+					values[0] = (int)Math.Round(FDAIRoll * 100);
+					values[1] = (int)Math.Round(FDAIPitch* 100);
+					values[2] = (int)Math.Round(FDAIYaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					
