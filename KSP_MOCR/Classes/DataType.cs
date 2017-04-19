@@ -83,6 +83,14 @@ namespace KSP_MOCR
 		flight_totalAirTemperature,
 		flight_staticAirTemperature,
 
+		flight_inertial_roll,
+		flight_inertial_pitch,
+		flight_inertial_yaw,
+		flight_inertial_velocty,
+		flight_inertial_speed,
+		flight_inertial_direction,
+		
+
 		orbit_celestialBody, // CelestialBody
 		orbit_apoapsis, // double
 		orbit_periapsis, // double

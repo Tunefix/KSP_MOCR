@@ -30,7 +30,12 @@ namespace KSP_MOCR
 
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
 
-		// DKSY PROTERITES
+		// DKSY PROPERITES
+		bool runOnce = false;
+		int progStep = 0;
+		bool proPress = false;
+		bool entrPress = false;
+		bool keyRelPress = false;
 		bool enterVerb = false;
 		bool enterNoun = false;
 		bool enterR1 = false;
@@ -38,20 +43,35 @@ namespace KSP_MOCR
 		bool enterR3 = false;
 		String noun = null;
 		String verb = null;
-		String r1 = null;
-		String r2 = null;
-		String r3 = null;
+		String r1 = "";
+		String r2 = "";
+		String r3 = "";
+		int r1precision = 0;
+		int r2precision = 0;
+		int r3precision = 0;
+		SegDisp.SignState r1sign = SegDisp.SignState.NONE;
+		SegDisp.SignState r2sign = SegDisp.SignState.NONE;
+		SegDisp.SignState r3sign = SegDisp.SignState.NONE;
 		int activeVerb = -1;
 		int activeNoun = -1;
 		int activeProg = 0;
 		int storeProg = -1;
 		bool flashing = false;
+		bool flashOn;
+		Stopwatch flashTime = new Stopwatch();
 		bool oprError = false;
+		bool keyRel = false;
+		float TIG = 0;
+		float deltaV = 0;
+		float burnTime = 0;
+		List<int> dataStorage = new List<int>();
 
-		// FDAI-angles
-		float FDAIRoll = 0;
-		float FDAIPitch = 0;
-		float FDAIYaw = 0;
+		// FDAI PROPERTIES
+		float FDAIOffsetRoll = 0;
+		float FDAIOffsetPitch = 0;
+		float FDAIOffsetYaw = 0;
+		enum FDAIMode { SURF, INER }
+		FDAIMode FDAImode;
 		
 
 		// DATA PROPERTIES
@@ -63,6 +83,9 @@ namespace KSP_MOCR
 		float pitch;
 		float roll;
 		float yaw;
+		float inerRoll = 0;
+		float inerPitch = 0;
+		float inerYaw = 0;
 		bool SAS = false;
 		bool RCS = false;
 		bool gear = false;
@@ -94,6 +117,8 @@ namespace KSP_MOCR
 		bool actionGroup8 = false;
 		bool actionGroup9 = false;
 		double orbitSpeed = 0;
+		double apoapsis = 0;
+		double periapsis = 0;
 
 
 		DateTime start;
@@ -118,7 +143,7 @@ namespace KSP_MOCR
 		public override void makeElements()
 		{
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
-			for (int i = 0; i < 50; i++) screenIndicators.Add(null); // Initialize Indicators
+			for (int i = 0; i < 70; i++) screenIndicators.Add(null); // Initialize Indicators
 			for (int i = 0; i < 80; i++) screenButtons.Add(null); // Initialize Buttons
 			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
 			for (int i = 0; i < 5; i++) screenVMeters.Add(null); // Initialize VMeters
@@ -126,18 +151,10 @@ namespace KSP_MOCR
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
-			screenFDAI = new FDAI();
-			screenFDAI.Font = form.buttonFont;
-			screenFDAI.Location = new Point((int)(39 * form.pxPrChar), (int)(3 * form.pxPrLine));
-			screenFDAI.Size = new Size((int)(43 * form.pxPrChar), (int)(17 * form.pxPrLine));
-			form.Controls.Add(screenFDAI);
-
-
-
 			// LABELS
 			screenLabels[0] = Helper.CreateLabel(16, 1, 13); // Local Time
 			screenLabels[1] = Helper.CreateLabel(0, 1, 14); // MET Time
-			screenLabels[2] = Helper.CreateLabel(39, 0, 42, 1, "============= PILOT MODULE #1 ============"); // Screen Title
+			screenLabels[2] = Helper.CreateLabel(39, 0, 42, 1, "=============== PILOT MODULE ============="); // Screen Title
 			screenLabels[3] = Helper.CreateLabel(84, 0, 39, 1, "├───────────── STATUS ─────────────┤"); // Status Headline
 			screenLabels[4] = Helper.CreateLabel(84, 1, 1, 1, "│");
 			screenLabels[5] = Helper.CreateLabel(0, 2, 85, 1, "────────────────────────────────────────────────────────────────────────────────────┤"); // Obrit/Position headline
@@ -398,13 +415,17 @@ namespace KSP_MOCR
 			screenLabels[67] = Helper.CreateLabel(74, 28, 1, 1, "│");
 
 			// Vertical Meters
-			screenVMeters[0] = Helper.CreateVMeter(83, 6, false);
+			screenVMeters[0] = Helper.CreateVMeter(83, 6, false,1);
+			screenVMeters[0].subdivisions = 4;
 			screenVMeters[0].setScale(0, 10);
 			screenVMeters[1] = Helper.CreateVMeter(89, 6, true);
+			screenVMeters[1].subdivisions = 2;
 			screenVMeters[1].setScale(0, 100);
 			screenVMeters[2] = Helper.CreateVMeter(99, 6, true);
+			screenVMeters[2].subdivisions = 2;
 			screenVMeters[2].setScale(0, 100);
 			screenVMeters[3] = Helper.CreateVMeter(109, 6, true);
+			screenVMeters[3].subdivisions = 2;
 			screenVMeters[3].setScale(0, 100);
 			
 			// Vertical Meter Labels
@@ -412,7 +433,7 @@ namespace KSP_MOCR
 			screenLabels[71] = Helper.CreateLabel(82.5, 4, 38, 1, "         STAGE     TOTAL     TOTAL");
 			screenLabels[72] = Helper.CreateLabel(82, 5, 38, 1, "  ACCEL  LF  OX    LF  OX    MP  EL");
 
-			// DKSY
+			// DSKY
 			screenSegDisps[0] = Helper.CreateSegDisp(83, 15.75, 5, true);
 			screenSegDisps[1] = Helper.CreateSegDisp(83, 18.25, 5, true);
 			screenSegDisps[2] = Helper.CreateSegDisp(83, 20.75, 5, true);
@@ -421,6 +442,16 @@ namespace KSP_MOCR
 			screenSegDisps[4] = Helper.CreateSegDisp(112, 20.75, 2, false);
 			
 			screenSegDisps[5] = Helper.CreateSegDisp(112, 17, 2, false);
+			
+			// DSKY INDICATORS
+			screenIndicators[50] = Helper.CreateIndicator(103, 15.75, 7, 1, "COMP ACT");
+			screenIndicators[50].Font = form.smallFont;
+			screenIndicators[51] = Helper.CreateIndicator(103, 16.75, 7, 1, "PROG");
+			screenIndicators[51].Font = form.buttonFont;
+			screenIndicators[52] = Helper.CreateIndicator(103, 17.75, 7, 1, "OPR ERR");
+			screenIndicators[52].Font = form.buttonFont;
+			screenIndicators[53] = Helper.CreateIndicator(103, 18.75, 7, 1, "KEY REL");
+			screenIndicators[53].Font = form.buttonFont;
 			
 			// DSKY LABELS
 			screenLabels[75] = Helper.CreateLabel(111, 16, 8, 1, "─ PROG ─");
@@ -438,8 +469,10 @@ namespace KSP_MOCR
 			
 			screenButtons[52] = Helper.CreateButton(84, 23.2, 5, 2, "+");
 			screenButtons[52].Font = form.buttonFont;
+			screenButtons[52].Click += plusClick;
 			screenButtons[53] = Helper.CreateButton(84, 25.4, 5, 2, "-");
 			screenButtons[53].Font = form.buttonFont;
+			screenButtons[53].Click += minusClick;
 			screenButtons[54] = Helper.CreateButton(84, 27.6, 5, 2, "0");
 			screenButtons[54].Font = form.buttonFont;
 			screenButtons[54].Click += (sender, e) => dskyNumber(sender, e, 0);
@@ -482,13 +515,53 @@ namespace KSP_MOCR
 			screenButtons[65].Click += proClick;
 			screenButtons[66] = Helper.CreateButton(108, 27.6, 5, 2, "KEY\nREL");
 			screenButtons[66].Font = form.buttonFont;
+			screenButtons[66].Click += keyRelClick;
 			
 			screenButtons[67] = Helper.CreateButton(114, 24.3, 5, 2, "ENTR");
 			screenButtons[67].Font = form.buttonFont;
 			screenButtons[67].Click += entrClick;
 			screenButtons[68] = Helper.CreateButton(114, 26.5, 5, 2, "RSET");
 			screenButtons[68].Font = form.buttonFont;
-			screenButtons[67].Click += rsetClick;
+			screenButtons[68].Click += rsetClick;
+			
+			// FDAI
+			screenFDAI = new FDAI();
+			screenFDAI.Font = form.buttonFont;
+			screenFDAI.Location = new Point((int)(46 * form.pxPrChar)+4, (int)(3 * form.pxPrLine) + 4);
+			screenFDAI.Size = new Size((int)(36 * form.pxPrChar), (int)(17 * form.pxPrLine));
+			form.Controls.Add(screenFDAI);
+			
+			// FDAI LABELS
+			screenLabels[80] = Helper.CreateLabel(38, 3, 8, 1, "┌ FDAI ─");
+			screenLabels[81] = Helper.CreateLabel(38, 4, 1, 1, "│");
+			screenLabels[82] = Helper.CreateLabel(38, 5, 1, 1, "│");
+			screenLabels[83] = Helper.CreateLabel(38, 6, 1, 1, "│");
+			screenLabels[84] = Helper.CreateLabel(38, 7, 1, 1, "│");
+			screenLabels[85] = Helper.CreateLabel(38, 8, 1, 1, "│");
+			screenLabels[86] = Helper.CreateLabel(38, 9, 1, 1, "│");
+			screenLabels[87] = Helper.CreateLabel(38, 10, 1, 1, "│");
+			screenLabels[88] = Helper.CreateLabel(38, 11, 1, 1, "│");
+			screenLabels[89] = Helper.CreateLabel(38, 12, 1, 1, "│");
+			screenLabels[90] = Helper.CreateLabel(38, 13, 1, 1, "│");
+			screenLabels[91] = Helper.CreateLabel(38, 14, 1, 1, "│");
+			screenLabels[92] = Helper.CreateLabel(38, 15, 1, 1, "│");
+			screenLabels[93] = Helper.CreateLabel(38, 16, 1, 1, "│");
+			screenLabels[94] = Helper.CreateLabel(38, 17, 1, 1, "│");
+			screenLabels[95] = Helper.CreateLabel(38, 18, 1, 1, "│");
+			screenLabels[96] = Helper.CreateLabel(38, 19, 8, 1, "└───────");
+			
+			// FDAI INDICATORS
+			screenIndicators[60] = Helper.CreateIndicator(39, 4, 6, 1, "");
+			screenIndicators[61] = Helper.CreateIndicator(39, 7, 6, 1, "");
+			
+			// FDAI BUTTONS
+			screenButtons[70] = Helper.CreateButton(39, 5, 6, 1, "SURF");
+			screenButtons[70].Font = form.buttonFont;
+			screenButtons[70].Click += (sender, e) => setFDAIMode(sender, e, FDAIMode.SURF);
+			
+			screenButtons[71] = Helper.CreateButton(39, 8, 6, 1, "INER");
+			screenButtons[71].Font = form.buttonFont;
+			screenButtons[71].Click += (sender, e) => setFDAIMode(sender, e, FDAIMode.INER);
 			
 
 			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
@@ -508,13 +581,13 @@ namespace KSP_MOCR
 			// ROTATIONAL INDICATORS Are local, so always update these also
 			if (rotStep == 1)
 			{
-				screenIndicators[22].setStatus(4);
-				screenIndicators[23].setStatus(0);
+				screenIndicators[22].setStatus(Indicator.status.AMBER);
+				screenIndicators[23].setStatus(Indicator.status.OFF);
 			}
 			else if (rotStep == 5)
 			{
-				screenIndicators[22].setStatus(0);
-				screenIndicators[23].setStatus(4);
+				screenIndicators[22].setStatus(Indicator.status.OFF);
+				screenIndicators[23].setStatus(Indicator.status.AMBER);
 			}
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
@@ -533,6 +606,9 @@ namespace KSP_MOCR
 				pitch = screenStreams.GetData(DataType.flight_pitch);
 				roll = screenStreams.GetData(DataType.flight_roll);
 				yaw = screenStreams.GetData(DataType.flight_heading);
+				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
+				inerPitch = screenStreams.GetData(DataType.flight_inertial_pitch);
+				inerYaw = screenStreams.GetData(DataType.flight_inertial_yaw);
 				SAS = screenStreams.GetData(DataType.control_SAS);
 				RCS = screenStreams.GetData(DataType.control_RCS);
 				gear = screenStreams.GetData(DataType.control_gear);
@@ -545,6 +621,8 @@ namespace KSP_MOCR
 				maxMonopropellant = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
 				curMonopropellant = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
 				orbitSpeed = screenStreams.GetData(DataType.orbit_speed);
+				apoapsis = screenStreams.GetData(DataType.orbit_apoapsisAltitude);
+				periapsis = screenStreams.GetData(DataType.orbit_periapsisAltitude);
 
 				if (currentStage != oldStage) // WE HAVE STAGED, GET NEW STAGE_RESOURCE DATA
 				{
@@ -582,10 +660,6 @@ namespace KSP_MOCR
 
 				// THROTTLE
 				screenLabels[16].Text = Helper.prtlen(Math.Ceiling(throttle * 100).ToString() + "%", 4, Helper.Align.RIGHT);
-
-				// FDAI
-				screenFDAI.setAttitude(pitch, roll, yaw);
-				screenFDAI.Invalidate();
 
 
 				// ROTATION READOUT
@@ -627,56 +701,56 @@ namespace KSP_MOCR
 
 
 				// Status
-				if (SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
-				if (RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
-				if (gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
-				if (brakes) { screenIndicators[3].setStatus(2); } else { screenIndicators[3].setStatus(0); } // Break
-				if (lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
-				if (abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
+				if (SAS) { screenIndicators[0].setStatus(Indicator.status.GREEN); } else { screenIndicators[0].setStatus(Indicator.status.OFF); } // SAS
+				if (RCS) { screenIndicators[1].setStatus(Indicator.status.GREEN); } else { screenIndicators[1].setStatus(Indicator.status.OFF); } // RCS
+				if (gear) { screenIndicators[2].setStatus(Indicator.status.GREEN); } else { screenIndicators[2].setStatus(Indicator.status.OFF); } // GEAR
+				if (brakes) { screenIndicators[3].setStatus(Indicator.status.RED); } else { screenIndicators[3].setStatus(Indicator.status.OFF); } // Break
+				if (lights) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); } // Lights
+				if (abort) { screenIndicators[5].setStatus(Indicator.status.RED); } else { screenIndicators[5].setStatus(Indicator.status.OFF); } // Abort
 
 
 				// Check for autopilot
 				switch (controlMode)
 				{
 					case 0:
-						screenIndicators[25].setStatus(0);
-						screenIndicators[26].setStatus(4);
-						screenIndicators[27].setStatus(0);
-						screenIndicators[28].setStatus(0);
-						screenIndicators[20].setStatus(0);
-						screenIndicators[21].setStatus(0);
+						screenIndicators[25].setStatus(Indicator.status.OFF);
+						screenIndicators[26].setStatus(Indicator.status.AMBER);
+						screenIndicators[27].setStatus(Indicator.status.OFF);
+						screenIndicators[28].setStatus(Indicator.status.OFF);
+						screenIndicators[20].setStatus(Indicator.status.OFF);
+						screenIndicators[21].setStatus(Indicator.status.OFF);
 						break;
 					case 1:
-						screenIndicators[25].setStatus(1);
-						screenIndicators[26].setStatus(0);
-						screenIndicators[27].setStatus(0);
-						screenIndicators[28].setStatus(0);
-						screenIndicators[20].setStatus(0);
-						screenIndicators[21].setStatus(0);
+						screenIndicators[25].setStatus(Indicator.status.GREEN);
+						screenIndicators[26].setStatus(Indicator.status.OFF);
+						screenIndicators[27].setStatus(Indicator.status.OFF);
+						screenIndicators[28].setStatus(Indicator.status.OFF);
+						screenIndicators[20].setStatus(Indicator.status.OFF);
+						screenIndicators[21].setStatus(Indicator.status.OFF);
 						break;
 					case 2:
-						screenIndicators[25].setStatus(0);
-						screenIndicators[26].setStatus(0);
-						screenIndicators[27].setStatus(2);
-						screenIndicators[28].setStatus(0);
-						screenIndicators[20].setStatus(0);
-						screenIndicators[21].setStatus(0);
+						screenIndicators[25].setStatus(Indicator.status.OFF);
+						screenIndicators[26].setStatus(Indicator.status.OFF);
+						screenIndicators[27].setStatus(Indicator.status.RED);
+						screenIndicators[28].setStatus(Indicator.status.OFF);
+						screenIndicators[20].setStatus(Indicator.status.OFF);
+						screenIndicators[21].setStatus(Indicator.status.OFF);
 						break;
 					case 3:
-						screenIndicators[25].setStatus(0);
-						screenIndicators[26].setStatus(0);
-						screenIndicators[27].setStatus(0);
-						screenIndicators[28].setStatus(4);
-						screenIndicators[20].setStatus(1);
-						screenIndicators[21].setStatus(0);
+						screenIndicators[25].setStatus(Indicator.status.OFF);
+						screenIndicators[26].setStatus(Indicator.status.OFF);
+						screenIndicators[27].setStatus(Indicator.status.OFF);
+						screenIndicators[28].setStatus(Indicator.status.AMBER);
+						screenIndicators[20].setStatus(Indicator.status.GREEN);
+						screenIndicators[21].setStatus(Indicator.status.OFF);
 						break;
 					case 4:
-						screenIndicators[25].setStatus(0);
-						screenIndicators[26].setStatus(0);
-						screenIndicators[27].setStatus(0);
-						screenIndicators[28].setStatus(4);
-						screenIndicators[20].setStatus(0);
-						screenIndicators[21].setStatus(1);
+						screenIndicators[25].setStatus(Indicator.status.OFF);
+						screenIndicators[26].setStatus(Indicator.status.OFF);
+						screenIndicators[27].setStatus(Indicator.status.OFF);
+						screenIndicators[28].setStatus(Indicator.status.AMBER);
+						screenIndicators[20].setStatus(Indicator.status.OFF);
+						screenIndicators[21].setStatus(Indicator.status.GREEN);
 						break;
 				}
 				// PROGRAM LABEL
@@ -693,47 +767,47 @@ namespace KSP_MOCR
 					switch (sasMode)
 					{
 						case SASMode.Prograde:
-							screenIndicators[30].setStatus(4);
+							screenIndicators[30].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.Retrograde:
-							screenIndicators[31].setStatus(4);
+							screenIndicators[31].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.StabilityAssist:
-							screenIndicators[32].setStatus(4);
+							screenIndicators[32].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.Normal:
-							screenIndicators[33].setStatus(4);
+							screenIndicators[33].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.AntiNormal:
-							screenIndicators[34].setStatus(4);
+							screenIndicators[34].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.Radial:
-							screenIndicators[36].setStatus(4);
+							screenIndicators[36].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.AntiRadial:
-							screenIndicators[37].setStatus(4);
+							screenIndicators[37].setStatus(Indicator.status.AMBER);
 							break;
 						case SASMode.Maneuver:
-							screenIndicators[39].setStatus(4);
+							screenIndicators[39].setStatus(Indicator.status.AMBER);
 							break;
 					}
 				}
 
-				if (SAS) { screenIndicators[35].setStatus(4); } else { screenIndicators[35].setStatus(0); }
-				if (RCS) { screenIndicators[38].setStatus(4); } else { screenIndicators[38].setStatus(0); }
+				if (SAS) { screenIndicators[35].setStatus(Indicator.status.AMBER); } else { screenIndicators[35].setStatus(Indicator.status.OFF); }
+				if (RCS) { screenIndicators[38].setStatus(Indicator.status.AMBER); } else { screenIndicators[38].setStatus(Indicator.status.OFF); }
 
 
 				// Action Group Indicators
-				if (actionGroup1) { screenIndicators[40].setStatus(4); } else { screenIndicators[40].setStatus(0); }
-				if (actionGroup2) { screenIndicators[41].setStatus(4); } else { screenIndicators[41].setStatus(0); }
-				if (actionGroup3) { screenIndicators[42].setStatus(4); } else { screenIndicators[42].setStatus(0); }
-				if (actionGroup4) { screenIndicators[43].setStatus(4); } else { screenIndicators[43].setStatus(0); }
-				if (actionGroup5) { screenIndicators[44].setStatus(4); } else { screenIndicators[44].setStatus(0); }
-				if (actionGroup6) { screenIndicators[45].setStatus(4); } else { screenIndicators[45].setStatus(0); }
-				if (actionGroup7) { screenIndicators[46].setStatus(4); } else { screenIndicators[46].setStatus(0); }
-				if (actionGroup8) { screenIndicators[47].setStatus(4); } else { screenIndicators[47].setStatus(0); }
-				if (actionGroup9) { screenIndicators[48].setStatus(4); } else { screenIndicators[48].setStatus(0); }
-				if (actionGroup0) { screenIndicators[49].setStatus(4); } else { screenIndicators[49].setStatus(0); }
+				if (actionGroup1) { screenIndicators[40].setStatus(Indicator.status.AMBER); } else { screenIndicators[40].setStatus(Indicator.status.OFF); }
+				if (actionGroup2) { screenIndicators[41].setStatus(Indicator.status.AMBER); } else { screenIndicators[41].setStatus(Indicator.status.OFF); }
+				if (actionGroup3) { screenIndicators[42].setStatus(Indicator.status.AMBER); } else { screenIndicators[42].setStatus(Indicator.status.OFF); }
+				if (actionGroup4) { screenIndicators[43].setStatus(Indicator.status.AMBER); } else { screenIndicators[43].setStatus(Indicator.status.OFF); }
+				if (actionGroup5) { screenIndicators[44].setStatus(Indicator.status.AMBER); } else { screenIndicators[44].setStatus(Indicator.status.OFF); }
+				if (actionGroup6) { screenIndicators[45].setStatus(Indicator.status.AMBER); } else { screenIndicators[45].setStatus(Indicator.status.OFF); }
+				if (actionGroup7) { screenIndicators[46].setStatus(Indicator.status.AMBER); } else { screenIndicators[46].setStatus(Indicator.status.OFF); }
+				if (actionGroup8) { screenIndicators[47].setStatus(Indicator.status.AMBER); } else { screenIndicators[47].setStatus(Indicator.status.OFF); }
+				if (actionGroup9) { screenIndicators[48].setStatus(Indicator.status.AMBER); } else { screenIndicators[48].setStatus(Indicator.status.OFF); }
+				if (actionGroup0) { screenIndicators[49].setStatus(Indicator.status.AMBER); } else { screenIndicators[49].setStatus(Indicator.status.OFF); }
 
 				// Vertical Meters
 				screenVMeters[0].setValue1(gForce);
@@ -744,12 +818,31 @@ namespace KSP_MOCR
 				screenVMeters[3].setValue1((curMonopropellant / maxMonopropellant) * 100);
 				screenVMeters[3].setValue2((curElectric / maxElectric) * 100);
 
+
+				// FDAI
+				if (FDAImode == FDAIMode.SURF)
+				{
+					screenIndicators[60].setStatus(Indicator.status.AMBER);
+					screenIndicators[61].setStatus(Indicator.status.OFF);
+					screenFDAI.setAttitude(roll + FDAIOffsetRoll, pitch + FDAIOffsetPitch, yaw + FDAIOffsetYaw);
+				
+				}
+				else
+				{
+					screenIndicators[60].setStatus(Indicator.status.OFF);
+					screenIndicators[61].setStatus(Indicator.status.AMBER);
+					screenFDAI.setAttitude(inerRoll + FDAIOffsetRoll, inerPitch + FDAIOffsetPitch, inerYaw + FDAIOffsetYaw);
+				}
+				
+				screenFDAI.Invalidate();
+				
+
 				// Graphs
 				//data = new List<Dictionary<int, Nullable<double>>>();
 				//data.Add(chartData["geeTime"]);
 				//form.showData(0, data, false);
 
-				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
+					// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
 				if (controlMode == 1)
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.setRotP;
@@ -764,9 +857,28 @@ namespace KSP_MOCR
 				}
 
 
+				screenIndicators[50].setStatus(Indicator.status.GREEN);
 				updateDSKY();
-				
-				
+				screenIndicators[50].setStatus(Indicator.status.OFF);
+
+				if (oprError)
+				{
+					screenIndicators[52].setStatus(Indicator.status.WHITE);
+				}
+				else
+				{
+					screenIndicators[52].setStatus(Indicator.status.OFF);
+				}
+
+				if (keyRel)
+				{
+					screenIndicators[53].setStatus(Indicator.status.WHITE);
+				}
+				else
+				{
+					screenIndicators[53].setStatus(Indicator.status.OFF);
+				}
+
 				oldStage = currentStage;
 				/**/
 			}
@@ -928,6 +1040,11 @@ namespace KSP_MOCR
 					}
 					break;
 			}
+		}
+
+		private void setFDAIMode(object sender, EventArgs e, FDAIMode mode)
+		{
+			FDAImode = mode;
 		}
 
 		private void rollProgram()

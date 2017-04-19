@@ -251,7 +251,7 @@ namespace KSP_MOCR
 		}
 
 
-		static public Indicator CreateIndicator(int x, int y, int w, int h, String t)
+		static public Indicator CreateIndicator(double x, double y, int w, int h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -284,15 +284,8 @@ namespace KSP_MOCR
 				label.Image = form.indicatorImage;
 			}
 
-			// Set the five deafult colors
-			label.setStatusColors(0, Color.FromArgb(200, 0, 0, 0), Color.FromArgb(255, 32, 32, 32)); // Status 0 (Off/Gray)
-			label.setStatusColors(1, Color.FromArgb(200, 0, 0, 0), Color.FromArgb(255, 32, 128, 32)); // Status 1 (ON/Green)
-			label.setStatusColors(2, Color.FromArgb(200, 0, 0, 0), Color.FromArgb(255, 128, 32, 32)); // Status 2 (ON/Red)
-			label.setStatusColors(3, Color.FromArgb(200, 0, 0, 0), Color.FromArgb(255, 32, 32, 128)); // Status 3 (ON/Blue)
-			label.setStatusColors(4, Color.FromArgb(200, 0, 0, 0), Color.FromArgb(255, 128, 100, 32)); // Status 3 (ON/Amber)
-
-			// Set the status to 0 (OFF)
-			label.setStatus(0);
+			// Set the status to OFF
+			label.setStatus(Indicator.status.OFF);
 
 			form.Controls.Add(label);
 
@@ -327,8 +320,9 @@ namespace KSP_MOCR
 			return label;
 		}
 
-		static public VerticalMeter CreateVMeter(int x, int y){return CreateVMeter(x, y, false);}
-		static public VerticalMeter CreateVMeter(int x, int y, bool doubleMeter)
+		static public VerticalMeter CreateVMeter(int x, int y){return CreateVMeter(x, y, false, 0);}
+		static public VerticalMeter CreateVMeter(int x, int y, bool doubleMeter){return CreateVMeter(x, y, doubleMeter, 0);}
+		static public VerticalMeter CreateVMeter(int x, int y, bool doubleMeter, int scaleType)
 		{
 			int w = 0;
 			int h = 9;
@@ -339,7 +333,7 @@ namespace KSP_MOCR
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
 			Color fColor = form.foreColor;
-			VerticalMeter label = new VerticalMeter(form.smallFont);
+			VerticalMeter label = new VerticalMeter(form.smallFont,scaleType);
 			label.Font = form.font;
 			label.doubleMeter = doubleMeter;
 			label.Location = new Point(left, top);
@@ -454,7 +448,7 @@ namespace KSP_MOCR
 			min_s = min.ToString();
 			while (min_s.Length < 2) { min_s = "0" + min_s; }
 
-			sec = Math.Round(ts);
+			sec = Math.Floor(ts);
 			sec_s = sec.ToString();
 			while (sec_s.Length < 2) { sec_s = "0" + sec_s; }
 

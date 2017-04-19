@@ -12,6 +12,16 @@ namespace KSP_MOCR
 
 		private int stage;
 
+		// Some much used variables
+		Flight flight;
+		Vessel vessel;
+		Control control;
+		Orbit orbit;
+		Resources resources;
+		Resources resources_stage;
+		ReferenceFrame inertialRefFrame;
+		Flight inertFlight;
+
 		public StreamCollection(Connection con)
 		{
 			connection = con;
@@ -32,7 +42,7 @@ namespace KSP_MOCR
 				catch (Exception e)
 				{
 					Console.WriteLine(e.Message);
-					return new object();
+					return null;
 				}
 			}
 			Kstream stream = streams[type];
@@ -62,6 +72,8 @@ namespace KSP_MOCR
 			Orbit orbit = connection.SpaceCenter().ActiveVessel.Orbit;
 			Resources resources = connection.SpaceCenter().ActiveVessel.Resources;
 			Resources resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
+			ReferenceFrame inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
+			Flight inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
 
 			Kstream stream;
 
@@ -228,6 +240,19 @@ namespace KSP_MOCR
 					break;
 
 
+				///// INERTIAL FLIGHT DATA /////
+
+				case DataType.flight_inertial_roll:
+					stream = new floatStream(connection.AddStream(() => inertFlight.Roll));
+					break;
+				case DataType.flight_inertial_pitch:
+					stream = new floatStream(connection.AddStream(() => inertFlight.Pitch));
+					break;
+				case DataType.flight_inertial_yaw:
+					stream = new floatStream(connection.AddStream(() => inertFlight.Heading));
+					break;
+
+
 				///// ORBIT DATA /////
 
 				case DataType.orbit_apoapsisAltitude:
@@ -361,6 +386,47 @@ namespace KSP_MOCR
 			}
 
 			streams.Add(type, stream);
+		}
+
+		private void getFlight()
+		{
+			flight = connection.SpaceCenter().ActiveVessel.Flight();
+		}
+
+		private void getVessel()
+		{
+			vessel = connection.SpaceCenter().ActiveVessel;
+		}
+
+		private void getControl()
+		{
+			control = connection.SpaceCenter().ActiveVessel.Control;
+		}
+
+		private void getOrbit()
+		{
+			orbit = connection.SpaceCenter().ActiveVessel.Orbit;
+		}
+
+		private void getResources()
+		{
+			resources = connection.SpaceCenter().ActiveVessel.Resources;
+		}
+
+		private void getResourcesStage(int stg)
+		{
+			resources_stage = connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stg, false);
+		}
+
+		private void getInertialRefFrame()
+		{
+			inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
+		}
+
+		private void getInertFlight()
+		{
+			getInertialRefFrame();
+			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
 		}
 	}
 }

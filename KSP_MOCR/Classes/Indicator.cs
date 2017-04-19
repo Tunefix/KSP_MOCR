@@ -10,30 +10,33 @@ namespace KSP_MOCR
 {
 	class Indicator : Label
 	{
-		List<Color?> statusFColor = new List<Color?>();
-		List<Color?> statusBColor = new List<Color?>();
-
-		public void setStatusColors(int id, Color f, Color b)
+		readonly Dictionary<status, Color> FColor = new Dictionary<status, Color>()
 		{
-			if(statusFColor.Count <= id)
-			{
-				while(statusFColor.Count <= id)
-				{
-					statusFColor.Add(null);
-					statusBColor.Add(null);
-				}
-			}
-			statusFColor[id] = f;
-			statusBColor[id] = b;
-		}
+			{status.OFF, Color.FromArgb(200, 0, 0, 0)},
+			{status.GREEN, Color.FromArgb(200, 0, 0, 0)},
+			{status.RED, Color.FromArgb(200, 0, 0, 0)},
+			{status.BLUE, Color.FromArgb(200, 0, 0, 0)},
+			{status.AMBER, Color.FromArgb(200, 0, 0, 0)},
+			{status.WHITE, Color.FromArgb(200, 0, 0, 0)}
+		};
 
-		public void setStatus(int id)
+		readonly Dictionary<status, Color> BColor = new Dictionary<status, Color>()
 		{
-			if(statusFColor.Count > id)
-			{
-				this.ForeColor = (Color)statusFColor[id];
-				this.BackColor = (Color)statusBColor[id];
-			}
+			{status.OFF, Color.FromArgb(255, 32, 32, 32)},
+			{status.GREEN, Color.FromArgb(255, 32, 128, 32)},
+			{status.RED, Color.FromArgb(255, 128, 32, 32)},
+			{status.BLUE, Color.FromArgb(255, 32, 32, 128)},
+			{status.AMBER, Color.FromArgb(255, 128, 100, 32)},
+			{status.WHITE, Color.FromArgb(200, 255, 255, 253)}
+		};
+		
+		public enum status { OFF, GREEN, RED, BLUE, AMBER, WHITE }
+		
+		public void setStatus(status s)
+		{
+			this.ForeColor = FColor[s];
+			this.BackColor = BColor[s];
+			this.Invalidate();
 		}
 	}
 }

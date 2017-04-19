@@ -391,8 +391,10 @@ namespace KSP_MOCR
 			{
 				screenCallup += (x - 96).ToString();
 			}
-
-			activeScreen.keyDown(sender, e);
+			if (activeScreen != null)
+			{
+				activeScreen.keyDown(sender, e);
+			}
 		}
 
 		private void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -433,8 +435,11 @@ namespace KSP_MOCR
 				}
 				screenCallup = "";
 			}
-			
-			activeScreen.keyUp(sender, e);
+
+			if (activeScreen != null)
+			{
+				activeScreen.keyUp(sender, e);
+			}
 		}
 	}
 }

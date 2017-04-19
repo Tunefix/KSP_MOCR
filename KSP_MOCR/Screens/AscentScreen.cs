@@ -22,11 +22,18 @@ namespace KSP_MOCR
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
 
+		// Stream Data //
+		float inertRoll = 0;
+		float inertPitch = 0;
+		float inertYaw = 0;
+
 
 		public AscentScreen(Form1 form)
 		{
 			this.form = form;
 			this.chartData = form.chartData;
+
+			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 120;
 			this.height = 30;
@@ -180,6 +187,11 @@ namespace KSP_MOCR
 				flight = flight_stream.Get();
 				orbit = orbit_stream.Get();
 
+
+				inertRoll = screenStreams.GetData(DataType.flight_inertial_roll);
+				inertPitch = screenStreams.GetData(DataType.flight_inertial_pitch);
+				inertYaw = screenStreams.GetData(DataType.flight_inertial_yaw);
+
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
 
@@ -217,9 +229,9 @@ namespace KSP_MOCR
 
 
 				// POSITION INFO
-				screenLabels[46].Text = "R: " + Helper.prtlen(Helper.toFixed(flight.Roll, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(flight.Roll, 2), 7, Helper.Align.RIGHT);
-				screenLabels[47].Text = "P: " + Helper.prtlen(Helper.toFixed(flight.Pitch, 2), 7, Helper.Align.RIGHT);
-				screenLabels[48].Text = "Y: " + Helper.prtlen(Helper.toFixed(flight.Heading, 2), 7, Helper.Align.RIGHT);
+				screenLabels[46].Text = "R: " + Helper.prtlen(Helper.toFixed(flight.Roll, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertRoll, 2), 7, Helper.Align.RIGHT);
+				screenLabels[47].Text = "P: " + Helper.prtlen(Helper.toFixed(flight.Pitch, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertPitch, 2), 7, Helper.Align.RIGHT);
+				screenLabels[48].Text = "Y: " + Helper.prtlen(Helper.toFixed(flight.Heading, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertYaw, 2), 7, Helper.Align.RIGHT);
 
 				screenLabels[40].Text = "  Body: " + Helper.prtlen(orbit.Body.Name, 9, Helper.Align.RIGHT);
 				screenLabels[41].Text = "   Lat: " + Helper.prtlen(Helper.toFixed(flight.Latitude, 5), 9, Helper.Align.RIGHT);
@@ -278,31 +290,31 @@ namespace KSP_MOCR
 										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
 
 				// Status
-				if (vessel.Control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
-				if (vessel.Control.RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
-				if (vessel.Control.Gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
-				if (vessel.Control.Brakes) { screenIndicators[3].setStatus(2); } else { screenIndicators[3].setStatus(0); } // Break
-				if (vessel.Control.Lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
-				if (vessel.Control.Abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
+				if (vessel.Control.SAS) { screenIndicators[0].setStatus(Indicator.status.GREEN); } else { screenIndicators[0].setStatus(Indicator.status.OFF); } // SAS
+				if (vessel.Control.RCS) { screenIndicators[1].setStatus(Indicator.status.GREEN); } else { screenIndicators[1].setStatus(Indicator.status.OFF); } // RCS
+				if (vessel.Control.Gear) { screenIndicators[2].setStatus(Indicator.status.GREEN); } else { screenIndicators[2].setStatus(Indicator.status.OFF); } // GEAR
+				if (vessel.Control.Brakes) { screenIndicators[3].setStatus(Indicator.status.RED); } else { screenIndicators[3].setStatus(Indicator.status.OFF); } // Break
+				if (vessel.Control.Lights) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); } // Lights
+				if (vessel.Control.Abort) { screenIndicators[5].setStatus(Indicator.status.RED); } else { screenIndicators[5].setStatus(Indicator.status.OFF); } // Abort
 
-				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
+				if (flight.GForce > 4) { screenIndicators[7].setStatus(Indicator.status.AMBER); } else { screenIndicators[7].setStatus(Indicator.status.OFF); } // G High
 
 				float maxR = vessel.Resources.Max("ElectricCharge");
 				float curR = vessel.Resources.Amount("ElectricCharge");
-				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(1); } else { screenIndicators[6].setStatus(0); } // Power High
-				if (curR / maxR < 0.1) { screenIndicators[9].setStatus(2); } else { screenIndicators[9].setStatus(0); } // Power Low
+				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(Indicator.status.GREEN); } else { screenIndicators[6].setStatus(Indicator.status.OFF); } // Power High
+				if (curR / maxR < 0.1) { screenIndicators[9].setStatus(Indicator.status.RED); } else { screenIndicators[9].setStatus(Indicator.status.OFF); } // Power Low
 
 				maxR = vessel.Resources.Max("MonoPropellant");
 				curR = vessel.Resources.Amount("MonoPropellant");
-				if (curR / maxR < 0.1) { screenIndicators[10].setStatus(2); } else { screenIndicators[10].setStatus(0); } // Monopropellant Low
+				if (curR / maxR < 0.1) { screenIndicators[10].setStatus(Indicator.status.RED); } else { screenIndicators[10].setStatus(Indicator.status.OFF); } // Monopropellant Low
 
 				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
-				if (curR / maxR < 0.1) { screenIndicators[11].setStatus(2); } else { screenIndicators[11].setStatus(0); } // Fuel Low
+				if (curR / maxR < 0.1) { screenIndicators[11].setStatus(Indicator.status.RED); } else { screenIndicators[11].setStatus(Indicator.status.OFF); } // Fuel Low
 
 				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("Oxidizer");
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
-				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
+				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(Indicator.status.RED); } else { screenIndicators[8].setStatus(Indicator.status.OFF); } // LOW Low
 
 
 				// Graphs

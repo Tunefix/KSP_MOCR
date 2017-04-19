@@ -52,6 +52,25 @@ namespace KSP_MOCR
 					screenButtons[68].Invalidate();
 					screenButtons[68].PerformClick();
 					break;
+				case Keys.K:
+					screenButtons[66].BackColor = Color.FromArgb(255, 16, 16, 16);
+					screenButtons[66].Invalidate();
+					screenButtons[66].PerformClick();
+					break;
+					
+				case Keys.Subtract:
+				case Keys.OemMinus:
+					screenButtons[53].BackColor = Color.FromArgb(255, 16, 16, 16);
+					screenButtons[53].Invalidate();
+					screenButtons[53].PerformClick();
+					break;
+				case Keys.Add:
+				case Keys.Oemplus:
+					screenButtons[52].BackColor = Color.FromArgb(255, 16, 16, 16);
+					screenButtons[52].Invalidate();
+					screenButtons[52].PerformClick();
+					break;
+					
 					
 				case Keys.D0:
 				case Keys.NumPad0:
@@ -140,6 +159,18 @@ namespace KSP_MOCR
 				case Keys.R:
 					screenButtons[68].BackColor = Color.FromArgb(255, 32, 32, 32);
 					break;
+				case Keys.K:
+					screenButtons[66].BackColor = Color.FromArgb(255, 32, 32, 32);
+					break;
+					
+				case Keys.Subtract:
+				case Keys.OemMinus:
+					screenButtons[53].BackColor = Color.FromArgb(255, 32, 32, 32);
+					break;
+				case Keys.Add:
+				case Keys.Oemplus:
+					screenButtons[52].BackColor = Color.FromArgb(255, 32, 32, 32);
+					break;
 					
 				case Keys.D0:
 				case Keys.NumPad0:
@@ -188,40 +219,72 @@ namespace KSP_MOCR
 		private void verbClick(object sender, EventArgs e)
 		{
 			enterVerb = true;
-			verb = null;
+			verb = "";
 		}
 		
 		private void nounClick(object sender, EventArgs e)
 		{
 			enterNoun = true;
+			noun = "";
+		}
+		
+		private void keyRelClick(object sender, EventArgs e)
+		{
+			Console.WriteLine("KeyRelease");
+			keyRel = false;
+			activeVerb = -1;
+			activeNoun = -1;
+			verb = null;
 			noun = null;
 		}
 		
 		private void entrClick(object sender, EventArgs e)
 		{
-			// TODO: MAGIC!
+			entrPress = true;
+
+			Console.WriteLine("B AV: " + activeVerb.ToString());
+			Console.WriteLine("B AN: " + activeNoun.ToString());
+			Console.WriteLine("B ve: " + verb);
+			Console.WriteLine("B no: " + noun);
+
 			if (verb != null && noun != null)
 			{
 				activeVerb = int.Parse(verb);
 				verb = null;
 				activeNoun = int.Parse(noun);
 				noun = null;
+				
+				runOnce = true;
 			}
-
-			if (activeVerb != -1 && noun != null)
+			else if (activeVerb != -1 && noun != null)
 			{
 				activeNoun = int.Parse(noun);
 				noun = null;
 			}
-
-			if (verb == "37") // Run Program
+			else if (verb == "37") // Run Program
 			{
 				enterNoun = true;
 				noun = null;
 			}
-
-			if (verb == "69"){runVerb(69, 0);}// Reset DSKY
-			if (verb == "35"){runVerb(35, 0);}// Lamp Test
+			else
+			{
+				if (verb != "" && verb != null)
+				{
+					if (activeNoun != -1)
+					{
+						runVerb(int.Parse(verb), activeNoun);
+					}
+					else
+					{
+						runVerb(int.Parse(verb), 0);
+					}
+				}
+			}
+			
+			Console.WriteLine("A AV: " + activeVerb.ToString());
+			Console.WriteLine("A AN: " + activeNoun.ToString());
+			Console.WriteLine("A ve: " + verb);
+			Console.WriteLine("A no: " + noun);
 		}
 		
 		private void proClick(object sender, EventArgs e)
@@ -230,57 +293,82 @@ namespace KSP_MOCR
 		
 		private void rsetClick(object sender, EventArgs e)
 		{
+			oprError = false;
+			screenIndicators[52].setStatus(Indicator.status.OFF);
+		}
+		
+		private void plusClick(object sender, EventArgs e)
+		{
+			dskyNumber(sender, e, 10);
+		}
+		
+		private void minusClick(object sender, EventArgs e)
+		{
+			dskyNumber(sender, e, 11);
 		}
 		
 		private void clrClick(object sender, EventArgs e)
 		{
 			if (enterVerb) { verb = null; }
 			if (enterNoun) { noun = null; }
-			if (enterR1) { r1 = null; }
-			if (enterR2) { r2 = null; }
-			if (enterR3) { r3 = null; }
+			if (enterR1) { r1 = " "; }
+			if (enterR2) { r2 = " "; }
+			if (enterR3) { r3 = " "; }
 		}
 
 		private void dskyNumber(object sender, EventArgs e, int n)
 		{
 			if (enterVerb)
 			{
-				if (verb == null)
-				{
-					verb = n.ToString();
-				}
-				else
-				{
-					if (verb.ToString().Length < 2)
-					{
-						verb = verb + n.ToString();
-					}
-				}
-
-				if (verb.ToString().Length == 2)
-				{
-					enterVerb = false;
-				}
+				if (n >= 10) { oprError = true;}
+				verb = enterData(n, verb, out enterVerb, 2);
 			}
 			else if (enterNoun)
 			{
-				if (noun == null)
-				{
-					noun = n.ToString();
-				}
-				else
-				{
-					if (noun.ToString().Length < 2)
-					{
-						noun = noun + n.ToString();
-					}
-				}
-
-				if (noun.ToString().Length == 2)
-				{
-					enterNoun = false;
-				}
+				if (n >= 10) { oprError = true;}
+				noun = enterData(n, noun, out enterNoun, 2);
 			}
+			else if (enterR1)
+			{
+				if (n == 10) { r1sign = SegDisp.SignState.PLUS; }
+				else if (n == 11) { r1sign = SegDisp.SignState.MINUS; }
+				else { r1 = enterData(n, r1, out enterR1, 5); }
+			}
+			else if (enterR2)
+			{
+				if (n == 10) { r2sign = SegDisp.SignState.PLUS; }
+				else if (n == 11) { r2sign = SegDisp.SignState.MINUS; }
+				else { r2 = enterData(n, r2, out enterR2, 5); }
+			}
+			else if (enterR3)
+			{
+				if (n == 10) { r3sign = SegDisp.SignState.PLUS; }
+				else if (n == 11) { r3sign = SegDisp.SignState.MINUS; }
+				else { r3 = enterData(n, r3, out enterR3, 5); }
+			}
+		}
+
+		private String enterData(int number, string field, out bool enterField, int size)
+		{
+			if (field == null || field == " ")
+			{
+				field = number.ToString();
+			}
+			else
+			{
+				field = field + number.ToString();
+			}
+
+			if (field.ToString().Length >= size)
+			{
+				enterField = false;
+			}
+			else
+			{
+				enterField = true;
+			}
+
+			return field;
 		}
 	}
 }

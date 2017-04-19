@@ -16,17 +16,22 @@ namespace KSP_MOCR
 		int scale2min = 0;
 		int scale2max = 100;
 
+		readonly int scaleType = 0; // 0 = Linear, 1 = Log
+		public int subdivisions { get; set; }
+
 		Font font;
 
 		readonly Pen borderPen = new Pen(Color.FromArgb(255, 32, 32, 32), 3f);
 		readonly Pen scalePen = new Pen(Color.FromArgb(240, 255, 255, 255), 1.5f);
 		readonly Brush scaleBrush = new SolidBrush(Color.FromArgb(240, 255, 255, 255));
 		readonly Brush pointerBrush = new SolidBrush(Color.FromArgb(255, 16, 16, 16));
-		
-		public VerticalMeter(Font font)
+
+		public VerticalMeter(Font font, int scaleType)
 		{
 			this.DoubleBuffered = true;
 			this.font = font;
+			this.scaleType = scaleType;
+			this.subdivisions = 0;
 		}
 
 		public void setScale(int min, int max) { setScale1(min, max); setScale2(min, max);}
@@ -173,6 +178,15 @@ namespace KSP_MOCR
 				g.DrawLine(scalePen, x1, y1, x2, y2);
 
 				g.DrawString(Math.Round(i * scaleData[0]).ToString(), font, scaleBrush, x2 + 2, y2, format);
+
+				float subSpace = scaleData[1] / subdivisions;
+				float xHalf = Math.Abs(x2 - x1) / 2f;
+				for (int n = 0; n < subdivisions; n++)
+				{
+					y1 = (Height - 10) - (scaleData[1] * i) - (subSpace * n);
+					y2 = y1;
+					g.DrawLine(scalePen, x1, y1, x2 - xHalf, y2);
+				}
 			}
 		}
 		
@@ -193,6 +207,15 @@ namespace KSP_MOCR
 				g.DrawLine(scalePen, x1, y1, x2, y2);
 
 				g.DrawString(Math.Round(i * scaleData[0]).ToString(), font, scaleBrush, x2 + 1, y2, format);
+				
+				float subSpace = scaleData[1] / subdivisions;
+				float xHalf = Math.Abs(x2 - x1) / 2f;
+				for (int n = 0; n < subdivisions; n++)
+				{
+					y1 = (Height - 10) - (scaleData[1] * i) - (subSpace * n);
+					y2 = y1;
+					g.DrawLine(scalePen, x1, y1, x2 - xHalf, y2);
+				}
 			}
 			
 			// Scale 2
@@ -209,6 +232,15 @@ namespace KSP_MOCR
 				g.DrawLine(scalePen, x1, y1, x2, y2);
 
 				g.DrawString(Math.Round(i * scaleData[0]).ToString(), font, scaleBrush, x2 - 1, y2, format);
+				
+				float subSpace = scaleData[1] / subdivisions;
+				float xHalf = Math.Abs(x2 - x1) / 2f;
+				for (int n = 0; n < subdivisions; n++)
+				{
+					y1 = (Height - 10) - (scaleData[1] * i) - (subSpace * n);
+					y2 = y1;
+					g.DrawLine(scalePen, x1, y1, x2 + xHalf, y2);
+				}
 			}
 		}
 

@@ -60,6 +60,14 @@ namespace KSP_MOCR
 				runVerb(activeVerb, activeNoun);
 			}
 
+			// REG DISPLAYS
+			if (activeVerb == -1)
+			{
+				if (r1 != "") { regValueShow(0, r1, r1sign, r1precision); }
+				if (r2 != "") { regValueShow(1, r2, r2sign, r2precision); }
+				if (r3 != "") { regValueShow(2, r3, r3sign, r3precision); }
+			}
+
 			if (activeProg != -1)
 			{
 				runProgram(activeProg);
@@ -80,43 +88,77 @@ namespace KSP_MOCR
 			/**/
 		}
 
+		private void regValueShow(int dispID, String value, SegDisp.SignState sign, int precision)
+		{
+			screenSegDisps[dispID].setValue(value, precision, sign, false, SegDisp.Align.LEFT);
+		}
+
 		private void runProgram(int prog)
 		{
 			switch (prog)
 			{
 				case 0:
 					// Idle
+					runProg0();
 					break;
 				case 1: // Initialisation program
 					activeVerb = 16;
 					activeNoun = 20;
 					runProg1();
 					break;
-				case 2: // Ready to launch
+				case 2: // Ready to launch, holding FDAI angles
 					runProg2();
-					break;
-				case 3: // Ready to launch
-					runProg3();
 					break;
 				case 11: // Launch program
 					activeVerb = 16;
 					activeNoun = 73;
 					runProg11();
 					break;
+				case 30: // Load Burn Data
+					keyRelCheck();
+					runProg30();
+					break;
+			}
+		}
+
+		private void keyRelCheck()
+		{
+			if (activeVerb != -1)
+			{
+				keyRelPress = false;
+				keyRel = true;
+			}
+		}
+
+		private void runProg0()
+		{
+			/**
+			 * IDLE PROGRAM
+			 * Clear DKSY and idle
+			 */
+			if (runOnce)
+			{
+				r1 = "";
+				r2 = "";
+				r3 = "";
+				screenSegDisps[0].setValue("", 0);
+				screenSegDisps[1].setValue("", 0);
+				screenSegDisps[2].setValue("", 0);
+				runOnce = false;
 			}
 		}
 
 		private void runProg1()
 		{
 			/*
-			 * COARSE ALIGN OF FDAI
+			 * COARSE ALIGN OF FDAI TO LAUNCH ANGLES R: 0, P: 0; Y: 0
 			 */
-			int FR = (int)Math.Round(FDAIRoll * 100);
-			int FP = (int)Math.Round(FDAIPitch * 100);
-			int FY = (int)Math.Round(FDAIYaw * 100);
-			int TR = (int)Math.Round(roll * 100);
-			int TP = (int)Math.Round(pitch * 100);
-			int TY = (int)Math.Round(yaw * 100);
+			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
+			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
+			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
+			int TR = (int)Math.Round(0f * 100);
+			int TP = (int)Math.Round(0f * 100);
+			int TY = (int)Math.Round(0f * 100);
 
 			int DR = FR - TR;
 			int DP = FP - TP;
@@ -135,11 +177,11 @@ namespace KSP_MOCR
 				{
 					if (DR > 0)
 					{
-						FDAIRoll -= 1f;
+						FDAIOffsetRoll -= 1f;
 					}
 					else
 					{
-						FDAIRoll += 1f;
+						FDAIOffsetRoll += 1f;
 					}
 				}
 				
@@ -147,11 +189,11 @@ namespace KSP_MOCR
 				{
 					if (DP > 0)
 					{
-						FDAIPitch -= 1f;
+						FDAIOffsetPitch -= 1f;
 					}
 					else
 					{
-						FDAIPitch += 1f;
+						FDAIOffsetPitch += 1f;
 					}
 				}
 				
@@ -159,11 +201,11 @@ namespace KSP_MOCR
 				{
 					if (DY > 0)
 					{
-						FDAIYaw -= 1f;
+						FDAIOffsetYaw -= 1f;
 					}
 					else
 					{
-						FDAIYaw += 1f;
+						FDAIOffsetYaw += 1f;
 					}
 				}
 				
@@ -173,64 +215,55 @@ namespace KSP_MOCR
 		private void runProg2()
 		{
 			/*
-			 * FINE ALIGN OF FDAI
+			 * FINE ALIGN OF LAUNCH REFSMMAT
+			 *  (This continues to run, and hold the FDAI at 0,0,0 until launch)
 			 */
-			int FR = (int)Math.Round(FDAIRoll * 100);
-			int FP = (int)Math.Round(FDAIPitch * 100);
-			int FY = (int)Math.Round(FDAIYaw * 100);
-			int TR = (int)Math.Round(roll * 100);
-			int TP = (int)Math.Round(pitch * 100);
-			int TY = (int)Math.Round(yaw * 100);
-			if (FR == TR && FP == TP && FY == TY)
-			{
-				activeProg = 3;
-			}
-			else
-			{
-				if (FR != TR)
-				{
-					int diff = FR - TR;
-					if (diff > 0)
-					{
-						FDAIRoll -= 0.01f;
-					}
-					else
-					{
-						FDAIRoll += 0.01f;
-					}
-				}
-				
-				if (FP != TP)
-				{
-					int diff = FP - TP;
-					if (diff > 0)
-					{
-						FDAIPitch -= 0.01f;
-					}
-					else
-					{
-						FDAIPitch += 0.01f;
-					}
-				}
-				
-				if (FY != TY)
-				{
-					int diff = FY - TY;
-					if (diff > 0)
-					{
-						FDAIYaw -= 0.01f;
-					}
-					else
-					{
-						FDAIYaw += 0.01f;
-					}
-				}
-				
-			}
-		}
+			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
+			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
+			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
+			int TR = (int)Math.Round(0f * 100);
+			int TP = (int)Math.Round(0f * 100);
+			int TY = (int)Math.Round(0f * 100);
 		
-		private void runProg3()
-		{
+			if (FR != TR)
+			{
+				int diff = FR - TR;
+				if (diff > 0)
+				{
+					FDAIOffsetRoll -= 0.01f;
+				}
+				else
+				{
+					FDAIOffsetRoll += 0.01f;
+				}
+			}
+			
+			if (FP != TP)
+			{
+				int diff = FP - TP;
+				if (diff > 0)
+				{
+					FDAIOffsetPitch -= 0.01f;
+				}
+				else
+				{
+					FDAIOffsetPitch += 0.01f;
+				}
+			}
+			
+			if (FY != TY)
+			{
+				int diff = FY - TY;
+				if (diff > 0)
+				{
+					FDAIOffsetYaw -= 0.01f;
+				}
+				else
+				{
+					FDAIOffsetYaw += 0.01f;
+				}
+			}
+			
 			if (MET > 0)
 			{
 				activeProg = 11;
@@ -239,6 +272,323 @@ namespace KSP_MOCR
 		
 		private void runProg11()
 		{
+		}
+		
+		private void runProg30()
+		{
+			switch (progStep)
+			{
+				case 0:
+					activeVerb = -1;
+					activeNoun = 20;
+					r1 = " "; // Set to 1 space to show the decimal point
+					r2 = " "; // Set to 1 space to show the decimal point
+					r3 = " "; // Set to 1 space to show the decimal point
+					r1precision = 2;
+					r2precision = 2;
+					r3precision = 2;
+					r1sign = SegDisp.SignState.NONE;
+					r2sign = SegDisp.SignState.NONE;
+					r3sign = SegDisp.SignState.NONE;
+					flashing = true;
+					entrPress = false;
+					progStep++;
+					enterR1 = true;
+					break;
+				case 1:
+					if (!keyRel) { activeNoun = 20; }
+					if (entrPress && r1.Length == 5)
+					{
+						if (r1sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r1) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r1));
+						}
+						entrPress = false;
+						progStep++;
+						enterR2 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 2:
+					if (!keyRel) { activeNoun = 20; }
+					if (entrPress && r2.Length == 5)
+					{
+						if (r2sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r2) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r2));
+						}
+						entrPress = false;
+						progStep++;
+						enterR3 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 3:
+					if (!keyRel) { activeNoun = 20; }
+					if (entrPress && r3.Length == 5)
+					{
+						if (r3sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r3) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r3));
+						}
+						entrPress = false;
+						progStep++;
+						activeNoun = 34;
+						enterR1 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 4: // BLANK REGISTERS FOR FETCH OF N34 DATA
+					r1 = " "; // Set to 1 space to show the decimal point
+					r2 = " "; // Set to 1 space to show the decimal point
+					r3 = " "; // Set to 1 space to show the decimal point
+					r1precision = 0;
+					r2precision = 0;
+					r3precision = 2;
+					r1sign = SegDisp.SignState.NONE;
+					r2sign = SegDisp.SignState.NONE;
+					r3sign = SegDisp.SignState.NONE;
+					progStep++;
+					break;
+				case 5:
+					if (!keyRel) { activeNoun = 34; }
+					if (entrPress && r1.Length == 5)
+					{
+						if (r1sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r1) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r1));
+						}
+						entrPress = false;
+						progStep++;
+						enterR2 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 6:
+					if (!keyRel) { activeNoun = 34; }
+					if (entrPress && r2.Length == 5)
+					{
+						if (r2sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r2) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r2));
+						}
+						entrPress = false;
+						progStep++;
+						enterR3 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 7:
+					if (!keyRel) { activeNoun = 34; }
+					if (entrPress && r3.Length == 5)
+					{
+						if (r3sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r3) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r3));
+						}
+						entrPress = false;
+						progStep++;
+						activeNoun = 80;
+						enterR1 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 8: // BLANK REGISTERS FOR FETCH OF N80 DATA
+					r1 = " "; // Set to 1 space to show the decimal point
+					r2 = " "; // Set to 1 space to show the decimal point
+					r3 = " "; // Set to 1 space to show the decimal point
+					r1precision = 1;
+					r2precision = 0;
+					r3precision = 2;
+					r1sign = SegDisp.SignState.NONE;
+					r2sign = SegDisp.SignState.NONE;
+					r3sign = SegDisp.SignState.NONE;
+					progStep++;
+					break;
+				case 9:
+					if (!keyRel) { activeNoun = 80; }
+					if (entrPress && r1.Length == 5)
+					{
+						if (r1sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r1) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r1));
+						}
+						entrPress = false;
+						progStep++;
+						enterR2 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 10:
+					if (!keyRel) { activeNoun = 80; }
+					if (entrPress && r2.Length == 5)
+					{
+						if (r2sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r2) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r2));
+						}
+						entrPress = false;
+						progStep++;
+						enterR3 = true;
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 11:
+					if (!keyRel) { activeNoun = 80; }
+					if (entrPress && r3.Length == 5)
+					{
+						if (r3sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r3) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r3));
+						}
+
+						// Store all the data
+						FDAIOffsetRoll = dataStorage[0] / 100f;
+						FDAIOffsetPitch = dataStorage[1] / 100f;
+						FDAIOffsetYaw = dataStorage[2] / 100f;
+
+						TIG = (dataStorage[3] * 3600) + (dataStorage[4] * 60) + (dataStorage[5] / 100f);
+
+						deltaV = dataStorage[6] * 10f;
+
+						burnTime = (dataStorage[7] * 60) + (dataStorage[8] / 100f);
+
+						// Clear registers
+						r1 = "";
+						r2 = "";
+						r3 = "";
+						
+						entrPress = false;
+						progStep++;
+						activeVerb = 16;
+						activeNoun = 34;
+						flashing = false;
+						flashOn = false;
+						flashTime.Stop();
+					}
+					else if (entrPress && activeVerb == -1)
+					{
+						oprError = true;
+						entrPress = false;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 12: // SHOWING TTI (TIME TO IGNITION)
+					if (!keyRel) { activeVerb = 16; activeNoun = 34; }
+					if (TIG - MET <= 0)
+					{
+						activeVerb = 16;
+						activeNoun = 80;
+						progStep++;
+					}
+					break;
+				case 13:
+					activeProg = -1;
+					break;
+			}
 		}
 
 		private void runVerb(int verb, int noun)
@@ -257,19 +607,20 @@ namespace KSP_MOCR
 				case 69: // Reset Display
 					verb69();
 					break;
+				default:
+					oprError = true;
+					this.verb = verb.ToString().Length < 2 ? "0" + verb.ToString(): verb.ToString();
+					this.noun = noun.ToString().Length < 2 ? "0" + noun.ToString(): noun.ToString();
+					activeVerb = -1;
+					activeNoun = -1;
+					break;
 			}
 		}
 
+		
+
 		private void verb16(int noun)
 		{
-			// Registers (aka output)
-			String r1 = "";
-			String r2 = "";
-			String r3 = "";
-			// Precision
-			int p1 = 0;
-			int p2 = 0;
-			int p3 = 0;
 			// Noun data
 			int?[] nounData = getNounData(noun);
 
@@ -301,12 +652,19 @@ namespace KSP_MOCR
 		private void verb37(int noun)
 		{
 			activeProg = noun;
+			progStep = 0;
+			dataStorage.Clear();
+			dataStorage.TrimExcess();
 			activeVerb = -1;
 			activeNoun = -1;
 		}
 
 		private void verb69()
 		{
+			// Clear any register data
+			this.r1 = "";
+			this.r2 = "";
+			this.r3 = "";
 			// Registers (aka output)
 			String r1 = "";
 			String r2 = "";
@@ -333,6 +691,11 @@ namespace KSP_MOCR
 
 		private int?[] getNounData(int noun)
 		{
+			// Shared Properties
+			double secs;
+			int mins;
+			int hrs;
+			
 			/*
 			 * values structure:
 			 * values[0]: R1
@@ -347,25 +710,48 @@ namespace KSP_MOCR
 			int?[] values = new int?[6];
 			switch (noun)
 			{
-				case 17: // Attitude
+				case 17: // Surface Reference Attitude
 					values[0] = (int)Math.Round(roll * 100);
 					values[1] = (int)Math.Round(pitch * 100);
 					values[2] = (int)Math.Round(yaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					
-				case 20: // FDAI angles
-					values[0] = (int)Math.Round(FDAIRoll * 100);
-					values[1] = (int)Math.Round(FDAIPitch* 100);
-					values[2] = (int)Math.Round(FDAIYaw * 100);
+				case 18: // Inertial Reference Attitude
+					values[0] = (int)Math.Round(inerRoll * 100);
+					values[1] = (int)Math.Round(inerPitch * 100);
+					values[2] = (int)Math.Round(inerYaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					
-				case 36: // MET
-					double secs = MET;
-					int mins = (int)Math.Floor(secs / 60f);
+				case 19: // FDAI VIEW ANGLES
+					if (FDAImode == FDAIMode.SURF)
+					{
+						values[0] = (int)Math.Round((FDAIOffsetRoll + roll) * 100);
+						values[1] = (int)Math.Round((FDAIOffsetPitch + pitch) * 100);
+						values[2] = (int)Math.Round((FDAIOffsetYaw + yaw) * 100);
+					}
+					else
+					{
+						values[0] = (int)Math.Round(inerRoll * 100);
+						values[1] = (int)Math.Round(inerPitch * 100);
+						values[2] = (int)Math.Round(inerYaw * 100);
+					}
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+				case 20: // FDAI angles
+					values[0] = (int)Math.Round(FDAIOffsetRoll * 100);
+					values[1] = (int)Math.Round(FDAIOffsetPitch* 100);
+					values[2] = (int)Math.Round(FDAIOffsetYaw * 100);
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+				case 34: // TIG (Time of ignition of event)
+					secs = TIG;
+					mins = (int)Math.Floor(secs / 60f);
 					secs = secs - (mins * 60);
-					int hrs = (int)Math.Floor(mins / 60f);
+					hrs = (int)Math.Floor(mins / 60f);
 					mins = mins - (hrs * 60);
 					
 					values[0] = hrs;
@@ -376,20 +762,73 @@ namespace KSP_MOCR
 					values[4] = 0;
 					values[5] = 2;
 					break;
+					
+				case 35: // TTI (Time to ignition of event)
+					secs = TIG - MET;
+					mins = (int)Math.Floor(secs / 60f);
+					secs = secs - (mins * 60);
+					hrs = (int)Math.Floor(mins / 60f);
+					mins = mins - (hrs * 60);
+					
+					values[0] = hrs;
+					values[1] = mins;
+					values[2] = (int)Math.Round(secs * 100);
+
+					values[3] = 0;
+					values[4] = 0;
+					values[5] = 2;
+					break;
+					
+				case 36: // MET
+					secs = MET;
+					mins = (int)Math.Floor(secs / 60f);
+					secs = secs - (mins * 60);
+					hrs = (int)Math.Floor(mins / 60f);
+					mins = mins - (hrs * 60);
+					
+					values[0] = hrs;
+					values[1] = mins;
+					values[2] = (int)Math.Round(secs * 100);
+
+					values[3] = 0;
+					values[4] = 0;
+					values[5] = 2;
+					break;
+					
+				case 44: // Apoapsis and Periapsis
+					values[0] = (int)Math.Round(apoapsis / 10);
+					values[1] = (int)Math.Round(periapsis / 10);
+					values[2] = (int)Math.Round(meanAltitude / 10);;
+					values[3] = values[4] = values[5] = 2;
+					break;
 				case 73: // Flight Data
 					values[0] = (int)Math.Round(meanAltitude / 10);
 					values[1] = (int)Math.Round(orbitSpeed * 10);
 					values[2] = (int)Math.Round(pitch * 100);
 
-					// Peg altitude
-					if (meanAltitude > 1000000)
-					{
-						values[0] = 99999;
-					}
-
 					values[3] = 2;
 					values[4] = 1;
 					values[5] = 2;
+					break;
+					
+				case 80: // Burn data
+					secs = burnTime;
+					mins = (int)Math.Floor(secs / 60f);
+					secs = secs - (mins * 60);
+					values[0] = (int)Math.Round(deltaV * 10);
+					values[1] = mins;
+					values[2] = (int)Math.Round(secs * 100);
+
+					values[3] = 1;
+					values[4] = 0;
+					values[5] = 2;
+					break;
+				default:
+					oprError = true;
+					this.verb = activeVerb.ToString().Length < 2 ? "0" + activeVerb.ToString(): activeVerb.ToString();
+					this.noun = activeNoun.ToString().Length < 2 ? "0" + activeNoun.ToString(): activeNoun.ToString();
+					activeVerb = -1;
+					activeNoun = -1;
 					break;
 			}
 			return values;

@@ -12,7 +12,13 @@ namespace KSP_MOCR
 		private float roll = -10;
 		private float yaw = 0;
 
-		readonly Pen borderPen = new Pen(Color.FromArgb(255, 255, 255, 255), 1.0f);
+		float Tpitch = 0;
+		float Troll = -10;
+		float Tyaw = 0;
+
+		float driveRate = 1;
+
+		readonly Pen borderPen = new Pen(Color.FromArgb(255, 96, 96, 96), 1.0f);
 		readonly Pen FDAIPen = new Pen(Color.FromArgb(200, 255, 255, 255), 1.0f);
 		readonly Pen crosshairPen = new Pen(Color.FromArgb(255, 255, 255, 0), 1.5f);
 		readonly Brush skyPen = new SolidBrush(Color.FromArgb(255, 0, 101, 204));
@@ -28,20 +34,73 @@ namespace KSP_MOCR
             this.DoubleBuffered = true;
 		}
 
-		public void setAttitude(float pitch, float roll, float yaw)
+		public void setAttitude(float roll, float pitch, float yaw)
 		{
-			this.pitch = pitch;
-			this.roll = roll;
-			this.yaw = yaw;
+			this.Tpitch = pitch;
+			this.Troll = roll;
+			this.Tyaw = yaw;
 		}
 
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			//Console.WriteLine("Painting FDAI");
+			driveAngles();
+		
 			Graphics g = e.Graphics;
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
+			//newPaint(e, g);
+			oldPaint(e, g);
+		}
+
+		private void driveAngles()
+		{
+			roll = driveAngle(roll, Troll);
+			pitch = driveAngle(pitch, Tpitch);
+			yaw = driveAngle(yaw, Tyaw);
+		}
+
+		private float driveAngle(float current, float target)
+		{
+			float ret = current;
+			if((int)(current*100) != (int)(target * 100))
+			{
+				float space = (current * 100) - (target * 100);
+				float dist = Math.Abs(space);
+				if (dist < driveRate * 100)
+				{
+					ret = target;
+				}
+				else
+				{
+					if (space < 0)
+					{
+						ret += 1f;
+					}
+					else
+					{
+						ret -= 1f;
+					}
+				}
+			}
+			return ret;
+		}
+
+		private void newPaint(PaintEventArgs e, Graphics g)
+		{
+			/**
+			 * THIS IS THE FLIGHT DIRECTOR ATTITUDE INDICATOR (FDAI) TYPE
+			 **/
+			int FDAI_size;
+			int FDAI_left;
+			int FDAI_top;
+		}
+		
+		private void oldPaint(PaintEventArgs e, Graphics g)
+		{
+			/**
+			 * THIS IS THE PRIMARY FLIGHT DISPLAY (PFD) TYPE 
+			 **/
 			int FDAI_size;
 			int FDAI_left;
 			int FDAI_top;

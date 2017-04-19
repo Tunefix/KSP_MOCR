@@ -10,11 +10,17 @@ namespace KSP_MOCR
 		readonly bool sign = true;
 		String value = "";
 		int precision = 0; // Number of decimals
+		SignState signState = SignState.AUTO; // Force state of sign (+/-)
+		bool pad = true;
+		Align align = Align.RIGHT;
 
 		public float pxPrDigitW = 0;
 		public float pxPrDigitH = 0;
 
 		PointF[] points;
+		
+		public enum SignState { NONE, PLUS, MINUS, AUTO }
+		public enum Align{LEFT, RIGHT}
 
 		readonly Brush digitBrush = new SolidBrush(Color.FromArgb(255, 0, 200, 0));
 		readonly Brush digitDimBrush = new SolidBrush(Color.FromArgb(16, 240, 255, 230));
@@ -27,11 +33,15 @@ namespace KSP_MOCR
 			this.DoubleBuffered = true;
 		}
 
-		public void setValue(String value) { setValue(value, 0); }
-		public void setValue(String value, int precision)
+		public void setValue(String value) { setValue(value, 0, SignState.AUTO, true, Align.RIGHT); }
+		public void setValue(String value, int precision) { setValue(value, precision, SignState.AUTO, true, Align.RIGHT); }
+		public void setValue(String value, int precision, SignState sign, bool pad, Align align)
 		{
 			this.value = value;
 			this.precision = precision;
+			this.signState = sign;
+			this.pad = pad;
+			this.align = align;
 			this.Invalidate();
 		}
 
@@ -99,11 +109,33 @@ namespace KSP_MOCR
 					try
 					{
 						int number = int.Parse(value);
-						if (number < 0) { drawMinus(g, rect); } else { drawPlus(g, rect); }
+						if ((signState == SignState.AUTO && number < 0) || signState == SignState.MINUS)
+						{
+							drawMinus(g, rect);
+						}
+						else if ((signState == SignState.AUTO && number >= 0) || signState == SignState.PLUS)
+						{
+							drawPlus(g, rect);
+						}
+						else
+						{
+							drawSignBlank(g, rect);
+						}
 					}
 					catch (Exception)
 					{
-						drawSignBlank(g, rect);
+						if (signState == SignState.MINUS)
+						{
+							drawMinus(g, rect);
+						}
+						else if (signState == SignState.PLUS)
+						{
+							drawPlus(g, rect);
+						}
+						else
+						{
+							drawSignBlank(g, rect);
+						}
 					}
 					
 					start = 1;
@@ -124,7 +156,7 @@ namespace KSP_MOCR
 				}
 				else
 				{
-					if (precision != 0) // Pad with 0's leftwards to decimal point (i.e. make [   . 0] to [  0.00]
+					if (precision != 0 && pad) // Pad with 0's leftwards to decimal point (i.e. make [   . 0] to [  0.00]
 					{
 						while (value.Length < numbers)
 						{
@@ -143,7 +175,14 @@ namespace KSP_MOCR
 					{
 						while (value.Length < numbers)
 						{
-							value = " " + value;
+							if (align == Align.LEFT)
+							{
+								value = value + " ";
+							}
+							else
+							{
+								value = " " + value;
+							}
 						}
 					}
 				}
