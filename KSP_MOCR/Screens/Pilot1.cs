@@ -119,6 +119,7 @@ namespace KSP_MOCR
 		double orbitSpeed = 0;
 		double apoapsis = 0;
 		double periapsis = 0;
+		Tuple<double, double, double> vesselInerRotation;
 
 		ReferenceFrame surfaceRefsmmat;
 		ReferenceFrame inertialRefsmmat;
@@ -609,9 +610,6 @@ namespace KSP_MOCR
 				pitch = screenStreams.GetData(DataType.flight_pitch);
 				roll = screenStreams.GetData(DataType.flight_roll);
 				yaw = screenStreams.GetData(DataType.flight_heading);
-				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
-				inerPitch = screenStreams.GetData(DataType.flight_inertial_pitch);
-				inerYaw = screenStreams.GetData(DataType.flight_inertial_yaw);
 				SAS = screenStreams.GetData(DataType.control_SAS);
 				RCS = screenStreams.GetData(DataType.control_RCS);
 				gear = screenStreams.GetData(DataType.control_gear);
@@ -660,6 +658,27 @@ namespace KSP_MOCR
 
 				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
 				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
+				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_direction);
+
+				// Calculate inertial angles
+				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
+				inerPitch = (float)Helper.rad2deg(Math.Asin(vesselInerRotation.Item2));
+				inerYaw = (float)Helper.rad2deg(Math.Atan(vesselInerRotation.Item3 / vesselInerRotation.Item1));
+				if (vesselInerRotation.Item1 > 0)
+				{
+					if (vesselInerRotation.Item3 > 0)
+					{
+						// Leave Yaw alone
+					}
+					else
+					{
+						inerYaw = 360 + inerYaw;
+					}
+				}
+				else
+				{
+					inerYaw = 180 + inerYaw;
+				}
 
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
@@ -848,31 +867,56 @@ namespace KSP_MOCR
 				//data.Add(chartData["geeTime"]);
 				//form.showData(0, data, false);
 
-				// SET AUTOPILOT REFERENCE FRAME
-				ReferenceFrame refsmmat;
+
+				// SET CONTROL ANGLES FOR AUTOPILOTS
+				double tRoll = 0;
+				double tPitch = 0;
+				double tYaw = 0;
+				if (controlMode == 1)
+				{
+					tRoll= this.setRotR;
+					tPitch = this.setRotP;
+					tYaw = this.setRotY;
+				}
+				else if (controlMode == 2)
+				{
+					tRoll = this.lockRotR;
+					tPitch = this.lockRotP;
+					tYaw = this.lockRotY;
+				}
+
+				// SET AUTOPILOT REFERENCE FRAME AND TARGET UNIT VECTOR
+				double X = 0;
+				double Y = 0;
+				double Z = 0;
+
+				X = Math.Cos(Helper.deg2rad(tYaw)) * Math.Cos(Helper.deg2rad(tPitch));
+				Y = Math.Sin(Helper.deg2rad(tYaw)) * Math.Cos(Helper.deg2rad(tPitch));
+				Z = Math.Sin(Helper.deg2rad(tPitch));
+				
+				Tuple<double, double, double> targetVector = new Tuple<double, double, double>(1,0,0);
 				if (FDAImode == FDAIMode.INER)
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
+					targetVector = new Tuple<double, double, double>(X, Z, Y);
 				}
 				else
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = surfaceRefsmmat;
+					targetVector = new Tuple<double, double, double>(Z, X, Y);
 				}
+
+				Console.WriteLine("TV: " + targetVector.ToString());
+				Console.WriteLine("VR: " + vesselInerRotation);
 
 				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
-				if (controlMode == 1)
+				if (controlMode == 1 || controlMode == 2)
 				{
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.setRotP;
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = this.setRotR;
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = this.setRotY;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetDirection = targetVector;
+					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll;
+					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tPitch;
+					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tYaw;
 				}
-				else if (controlMode == 2)
-				{
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.lockRotP;
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = this.lockRotR;
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = this.lockRotY;
-				}
-
 
 				screenIndicators[50].setStatus(Indicator.status.GREEN);
 				updateDSKY();

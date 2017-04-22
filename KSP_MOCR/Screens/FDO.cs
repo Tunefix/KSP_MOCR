@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using KRPC.Client.Services.KRPC;
 using KRPC.Client.Services.SpaceCenter;
+using KRPC.Client.Services.Drawing;
 
 namespace KSP_MOCR
 {
@@ -107,7 +108,29 @@ namespace KSP_MOCR
 				Tuple<double, double, double> positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
 				Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>> referencePlane = getGeocentricReferenceFrame(lOAN, inclination, argOP);
 
-				
+				double alpha = Math.Acos(velocityVectorInPlane.Item1 / Math.Sqrt(Math.Pow(velocityVectorInPlane.Item1, 2) + Math.Pow(velocityVectorInPlane.Item2, 2)));
+				if (velocityVectorInPlane.Item1 > 0)
+				{
+					if (velocityVectorInPlane.Item2 > 0)
+					{
+						// Leave alpha as is
+					}
+					else
+					{
+						alpha = -alpha;
+					}
+				}
+				else
+				{
+					if (velocityVectorInPlane.Item2 > 0)
+					{
+						alpha = Math.PI - alpha;
+					}
+					else
+					{
+						alpha = -(Math.PI - alpha);
+					}
+				}
 				
 				String totalV = "N.A.";
 
@@ -128,22 +151,48 @@ namespace KSP_MOCR
 					velocityVectorInPlane = vectorChangeMagnitude(velocityVectorInPlane, bX);
 					velocityVectorInPlane = vectorAddLeftMagnitude(velocityVectorInPlane, bY);
 					velocityVectorInPlane = vectorAddUpMagnitude(velocityVectorInPlane, bZ);
+
+					
 				}
 				catch (Exception ex)
 				{
 					MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
+
+				
 				
 				// Tranform vectors
+				Tuple<double, double, double> burnVectorInPlane = rotateVectorAroundZ(burnVector, alpha);
 				Tuple<double, double, double> velocityVector = transform(velocityVectorInPlane, referencePlane);
 				Tuple<double, double, double> positionVector = transform(positionVectorInPlane, referencePlane);
-				
-				double baR = Helper.rad2deg(angleBetweenVecotrs(velocityVector, new Tuple<double, double, double>(0,1,0)));
-				double baP = Helper.rad2deg(angleBetweenVecotrs(velocityVector, new Tuple<double, double, double>(0,0,1)));
-				double baY = Helper.rad2deg(angleBetweenVecotrs(velocityVector, new Tuple<double, double, double>(1,0,0)));
+				Tuple<double, double, double> inertialBurnVector = transform(burnVectorInPlane, referencePlane);
 				
 				screenLabels[20].Text = "Total ΔV: " + totalV;
-				screenLabels[21].Text = "Burn Ang: " + Helper.toFixed(baR,2) + ", " + Helper.toFixed(baP,2) + ", " + Helper.toFixed(baY,2);
+
+				// BURN ANGLES
+				Console.WriteLine(inertialBurnVector);
+
+				double yaw = Helper.rad2deg(Math.Atan(inertialBurnVector.Item2 / inertialBurnVector.Item1));
+
+				if (inertialBurnVector.Item1 > 0)
+				{
+					if (inertialBurnVector.Item2 > 0)
+					{
+						// Kepp yaw as is
+					}
+					else
+					{
+						yaw = 360 + yaw;
+					}
+				}
+				else
+				{
+					yaw = 180 + yaw;
+				}
+
+				double pitch = Helper.rad2deg(Math.Asin(inertialBurnVector.Item3 / vectorMagnitude(inertialBurnVector)));
+				
+				screenLabels[21].Text = "Burn Ang: " + Helper.toFixed(0,2) + ", " + Helper.toFixed(pitch,2) + ", " + Helper.toFixed(yaw,2);
 
 				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
@@ -278,6 +327,36 @@ namespace KSP_MOCR
 		private void changeZoom(Object sender, EventArgs e, float change)
 		{
 			screenOrbit.setZoom(screenOrbit.getZoom() + change);
+		}
+
+		private Tuple<double, double, double> rotateVectorAroundZ(Tuple<double, double, double> v, double alpha)
+		{
+			double x = (v.Item1 * Math.Cos(alpha)) - (v.Item2 * Math.Sin(alpha));
+			double y = (v.Item1 * Math.Sin(alpha)) + (v.Item2 * Math.Cos(alpha));
+			double z = v.Item3;
+
+			return new Tuple<double, double, double>(x, y, z);
+		}
+
+		private Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>> getRotationMatrix(double alpha)
+		{
+			double a = Math.Cos(alpha);
+			double b = -Math.Sin(alpha);
+			double c = 0;
+
+			double p = Math.Sin(alpha);
+			double q = Math.Cos(alpha);
+			double r = 0;
+
+			double u = 0;
+			double v = 0;
+			double w = 1;
+
+			Tuple<double, double, double> T1 = new Tuple<double, double, double>(a, b, c);
+			Tuple<double, double, double> T2 = new Tuple<double, double, double>(p, q, r);
+			Tuple<double, double, double> T3 = new Tuple<double, double, double>(u, v, w);
+			
+			return new Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>>(T1, T2, T3);
 		}
 		
 		private double angleBetweenVecotrs(Tuple<double, double, double> a, Tuple<double, double, double> b)

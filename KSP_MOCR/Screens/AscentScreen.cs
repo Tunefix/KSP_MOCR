@@ -26,6 +26,7 @@ namespace KSP_MOCR
 		float inertRoll = 0;
 		float inertPitch = 0;
 		float inertYaw = 0;
+		Tuple<double, double, double> inertDirection;
 
 
 		public AscentScreen(Form1 form)
@@ -188,10 +189,12 @@ namespace KSP_MOCR
 				flight = flight_stream.Get();
 				orbit = orbit_stream.Get();
 
+				inertDirection = screenStreams.GetData(DataType.flight_inertial_direction);
+
 
 				inertRoll = screenStreams.GetData(DataType.flight_inertial_roll);
-				inertPitch = screenStreams.GetData(DataType.flight_inertial_pitch);
-				inertYaw = screenStreams.GetData(DataType.flight_inertial_yaw);
+				inertPitch = (float)Helper.rad2deg(Math.Asin(inertDirection.Item2));
+				inertYaw = (float)Helper.rad2deg(Math.Atan(inertDirection.Item3 / inertDirection.Item1));
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);

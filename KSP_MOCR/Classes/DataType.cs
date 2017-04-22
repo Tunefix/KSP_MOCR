@@ -89,6 +89,7 @@ namespace KSP_MOCR
 		flight_inertial_velocty,
 		flight_inertial_speed,
 		flight_inertial_direction,
+		flight_inertial_rotation,
 		
 
 		orbit_celestialBody, // CelestialBody

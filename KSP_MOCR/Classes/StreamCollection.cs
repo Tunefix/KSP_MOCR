@@ -254,6 +254,12 @@ namespace KSP_MOCR
 				case DataType.flight_inertial_yaw:
 					stream = new floatStream(connection.AddStream(() => inertFlight.Heading));
 					break;
+				case DataType.flight_inertial_direction:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Direction));
+					break;
+				case DataType.flight_inertial_rotation:
+					stream = new tuple4Stream(connection.AddStream(() => inertFlight.Rotation));
+					break;
 
 
 				///// ORBIT DATA /////
