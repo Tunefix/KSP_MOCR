@@ -26,13 +26,17 @@ namespace KSP_MOCR
 
 			// Re-usable data variable for graph data
 			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+			List<Plot.Type> types = new List<Plot.Type>();
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				data = new List<Dictionary<int, double?>>();
+				types = new List<Plot.Type>();
 				data.Add(chartData["altitudeTime"]);
+				types.Add(Plot.Type.LINE);
 				data.Add(chartData["terrainTime"]);
-				screenCharts[0].setData(data, false);
+				types.Add(Plot.Type.LINE);
+				screenCharts[0].setData(data, types, false);
 			}
 		}
 

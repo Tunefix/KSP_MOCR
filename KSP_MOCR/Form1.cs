@@ -23,6 +23,8 @@ namespace KSP_MOCR
 	public partial class Form1 : Form
 	{
 		public Connection connection;
+		IPAddress[] connectionAdrs;
+		String connectionName;
 
 		public KRPC.Client.Services.KRPC.Service krpc;
 		public KRPC.Client.Services.SpaceCenter.Service spaceCenter;
@@ -262,41 +264,48 @@ namespace KSP_MOCR
 
 		public void ConnectToServer(object sender, EventArgs e)
 		{
-			Console.WriteLine("You pressed the 'Connect'-button, you clever you... :-)");
-			activeScreen.screenLabels[0].Text = "Connecting to " + activeScreen.screenInputs[0].Text;
-
-			try
+			if (!connected)
 			{
-				IPAddress[] adrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
-				System.Net.IPAddress IP = adrs[0]; // IPv4
+				Console.WriteLine("You pressed the 'Connect'-button, you clever you... :-)");
+				activeScreen.screenLabels[0].Text = "Connecting to " + activeScreen.screenInputs[0].Text;
 
-				String name = activeScreen.screenInputs[0].Text;
+				try
+				{
+					IPAddress[] connectionAdrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
+					System.Net.IPAddress IP = connectionAdrs[0]; // IPv4
 
-				connection = new Connection(name: name, address: IP);
+					String connectionName = activeScreen.screenInputs[1].Text;
 
-				krpc = connection.KRPC();
-				spaceCenter = connection.SpaceCenter();
+					connection = new Connection(name: connectionName, address: IP);
 
-				// Setup graphable data
-				setupChartData();
+					krpc = connection.KRPC();
+					spaceCenter = connection.SpaceCenter();
 
-				activeScreen.screenLabels[0].Text = "Connected";
-				connected = true;
+					// Setup graphable data
+					setupChartData();
+
+					activeScreen.screenLabels[0].Text = "Connected";
+					connected = true;
+				}
+				catch (System.Net.Sockets.SocketException)
+				{
+					MessageBox.Show("KRPC SERVER NOT RESPONDING");
+					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+				}
+				catch (System.FormatException)
+				{
+					MessageBox.Show("NOT A VALID IP-ADDRESS");
+					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+				}
+				catch (System.IO.IOException)
+				{
+					MessageBox.Show("IO ERROR");
+					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+				}
 			}
-			catch(System.Net.Sockets.SocketException)
+			else
 			{
-				MessageBox.Show("KRPC SERVER NOT RESPONDING");
-				activeScreen.screenLabels[0].Text = "NOT CONNECTED";
-			}
-			catch(System.FormatException)
-			{
-				MessageBox.Show("NOT A VALID IP-ADDRESS");
-				activeScreen.screenLabels[0].Text = "NOT CONNECTED";
-			}
-			catch(System.IO.IOException)
-			{
-				MessageBox.Show("IO ERROR");
-				activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+				MessageBox.Show("Already Connected", "INFORMATION", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 

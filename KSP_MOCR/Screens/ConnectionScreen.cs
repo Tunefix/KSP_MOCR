@@ -34,6 +34,8 @@ namespace KSP_MOCR
 			if (form.connected && form.connection != null)
 			{
 				status = form.krpc.GetStatus();
+				
+				
 
 				screenLabels[0].Text = "CONNECTED\n\n"
 					+ "  VERSION: " + status.Version + "\n"

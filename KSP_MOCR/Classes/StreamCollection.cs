@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KRPC.Client;
+using KRPC.Client.Services;
 using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
@@ -13,6 +14,7 @@ namespace KSP_MOCR
 		private int stage;
 
 		// Some much used variables
+		Service spaceCenter;
 		Flight flight;
 		Vessel vessel;
 		Control control;
@@ -66,14 +68,15 @@ namespace KSP_MOCR
 		private void addStream(DataType type)
 		{
 			// Some much used variables
-			Flight flight = connection.SpaceCenter().ActiveVessel.Flight();
-			Vessel vessel = connection.SpaceCenter().ActiveVessel;
-			Control control = connection.SpaceCenter().ActiveVessel.Control;
-			Orbit orbit = connection.SpaceCenter().ActiveVessel.Orbit;
-			Resources resources = connection.SpaceCenter().ActiveVessel.Resources;
-			Resources resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
-			ReferenceFrame inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
-			Flight inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
+			spaceCenter = connection.SpaceCenter();
+			flight = connection.SpaceCenter().ActiveVessel.Flight();
+			vessel = connection.SpaceCenter().ActiveVessel;
+			control = connection.SpaceCenter().ActiveVessel.Control;
+			orbit = connection.SpaceCenter().ActiveVessel.Orbit;
+			resources = connection.SpaceCenter().ActiveVessel.Resources;
+			resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
+			inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
+			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
 
 			Kstream stream;
 
@@ -299,8 +302,23 @@ namespace KSP_MOCR
 					stream = new doubleStream(connection.AddStream(() => orbit.LongitudeOfAscendingNode));
 					break;
 
+				case DataType.orbit_eccentricity:
+					stream = new doubleStream(connection.AddStream(() => orbit.Eccentricity));
+					break;
+
+				case DataType.orbit_inclination:
+					stream = new doubleStream(connection.AddStream(() => orbit.Inclination));
+					break;
+
 				case DataType.orbit_trueAnomaly:
 					stream = new doubleStream(connection.AddStream(() => orbit.TrueAnomaly));
+					break;
+					
+				case DataType.orbit_timeToApoapsis:
+					stream = new doubleStream(connection.AddStream(() => orbit.TimeToApoapsis));
+					break;
+				case DataType.orbit_timeToPeriapsis:
+					stream = new doubleStream(connection.AddStream(() => orbit.TimeToPeriapsis));
 					break;
 
 
@@ -372,7 +390,12 @@ namespace KSP_MOCR
 				case DataType.resource_total_amount_oxidizer:
 					stream = new floatStream(connection.AddStream(() => resources.Amount("Oxidizer")));
 					break;
-
+					
+					
+				///// SPACECENTER DATA /////
+				case DataType.spacecenter_universial_time:
+					stream = new doubleStream(connection.AddStream(() => spaceCenter.UT));
+					break;
 
 
 				///// VESSEL DATA /////

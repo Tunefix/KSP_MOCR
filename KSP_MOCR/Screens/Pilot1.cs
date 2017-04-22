@@ -120,6 +120,9 @@ namespace KSP_MOCR
 		double apoapsis = 0;
 		double periapsis = 0;
 
+		ReferenceFrame surfaceRefsmmat;
+		ReferenceFrame inertialRefsmmat;
+
 
 		DateTime start;
 		DateTime end;
@@ -655,6 +658,9 @@ namespace KSP_MOCR
 				actionGroup8 = screenStreams.GetData(DataType.control_actionGroup8);
 				actionGroup9 = screenStreams.GetData(DataType.control_actionGroup9);
 
+				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
+				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
+
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
@@ -835,14 +841,25 @@ namespace KSP_MOCR
 				}
 				
 				screenFDAI.Invalidate();
-				
+
 
 				// Graphs
 				//data = new List<Dictionary<int, Nullable<double>>>();
 				//data.Add(chartData["geeTime"]);
 				//form.showData(0, data, false);
 
-					// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
+				// SET AUTOPILOT REFERENCE FRAME
+				ReferenceFrame refsmmat;
+				if (FDAImode == FDAIMode.INER)
+				{
+					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
+				}
+				else
+				{
+					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = surfaceRefsmmat;
+				}
+
+				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
 				if (controlMode == 1)
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = this.setRotP;

@@ -156,6 +156,7 @@ namespace KSP_MOCR
 		{
 			// Re-usable data variable for graph data
 			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+			List<Plot.Type> types = new List<Plot.Type>();
 
 		
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
@@ -327,17 +328,26 @@ namespace KSP_MOCR
 				targetP[600] = tgtP;
 
 				data = new List<Dictionary<int, double?>>();
+				types = new List<Plot.Type>();
 				data.Add(targetA);
+				types.Add(Plot.Type.LINE);
 				data.Add(targetP);
+				types.Add(Plot.Type.LINE);
 				data.Add(chartData["apoapsisTime"]);
+				types.Add(Plot.Type.LINE);
 				data.Add(chartData["periapsisTime"]);
+				types.Add(Plot.Type.LINE);
 				data.Add(chartData["altitudeTime"]);
-				screenCharts[0].setData(data, false);
+				types.Add(Plot.Type.LINE);
+				screenCharts[0].setData(data, types, false);
 
 				data = new List<Dictionary<int, double?>>();
-				data.Add(chartData["geeTime"]); 
+				types = new List<Plot.Type>();
+				data.Add(chartData["geeTime"]);
+				types.Add(Plot.Type.LINE);
 				data.Add(chartData["dynPresTime"]);
-				screenCharts[1].setData(data, true);
+				types.Add(Plot.Type.LINE);
+				screenCharts[1].setData(data, types, true);
 			}
 		}
 	}

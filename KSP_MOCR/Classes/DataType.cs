@@ -134,6 +134,8 @@ namespace KSP_MOCR
 		resource_stage_amount_monoPropellant,
 		resource_stage_amount_liquidFuel,
 		resource_stage_amount_oxidizer,
+		
+		spacecenter_universial_time,
 
 		vessel_name,
 		vesel_type,
