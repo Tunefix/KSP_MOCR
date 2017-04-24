@@ -22,6 +22,7 @@ namespace KSP_MOCR
 		Resources resources;
 		Resources resources_stage;
 		ReferenceFrame inertialRefFrame;
+		ReferenceFrame surfaceRefFrame;
 		Flight inertFlight;
 
 		public StreamCollection(Connection con)
@@ -69,7 +70,7 @@ namespace KSP_MOCR
 		{
 			// Some much used variables
 			spaceCenter = connection.SpaceCenter();
-			flight = connection.SpaceCenter().ActiveVessel.Flight();
+			
 			vessel = connection.SpaceCenter().ActiveVessel;
 			control = connection.SpaceCenter().ActiveVessel.Control;
 			orbit = connection.SpaceCenter().ActiveVessel.Orbit;
@@ -77,6 +78,8 @@ namespace KSP_MOCR
 			resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
 			inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
 			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
+			surfaceRefFrame = vessel.SurfaceReferenceFrame;
+			flight = connection.SpaceCenter().ActiveVessel.Flight(surfaceRefFrame);
 
 			Kstream stream;
 

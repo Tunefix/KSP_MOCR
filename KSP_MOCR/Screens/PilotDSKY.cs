@@ -61,7 +61,7 @@ namespace KSP_MOCR
 			}
 
 			// REG DISPLAYS
-			if (activeVerb == -1)
+			if (activeVerb == -1 || activeVerb == 26)
 			{
 				if (r1 != "") { regValueShow(0, r1, r1sign, r1precision); }
 				if (r2 != "") { regValueShow(1, r2, r2sign, r2precision); }
@@ -587,6 +587,7 @@ namespace KSP_MOCR
 					break;
 				case 13:
 					activeProg = -1;
+					progStep = 0;
 					break;
 			}
 		}
@@ -597,6 +598,9 @@ namespace KSP_MOCR
 			{
 				case 16: // Monitor Data
 					verb16(noun);
+					break;
+				case 26: // Monitor Data
+					verb26(noun);
 					break;
 				case 35: // Lamp Test
 					verb35();
@@ -633,6 +637,97 @@ namespace KSP_MOCR
 			else
 			{
 				oprError = true;
+			}
+		}
+
+		// Load Decimal 1,2,3 in R1,R2,R3
+		private void verb26(int noun)
+		{
+			Console.WriteLine(progStep);
+			switch (progStep)
+			{
+				case 0:
+					dataStorage.Clear();
+					r1 = " ";
+					r2 = " ";
+					r3 = " ";
+					r1precision = 0;
+					r2precision = 0;
+					r3precision = 0;
+					r1sign = SegDisp.SignState.NONE;
+					r2sign = SegDisp.SignState.NONE;
+					r3sign = SegDisp.SignState.NONE;
+					flashing = true;
+					entrPress = false;
+					progStep++;
+					enterR1 = true;
+					break;
+				case 1:
+					if (entrPress && r1.Length == 5)
+					{
+						if (r1sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r1) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r1));
+						}
+						entrPress = false;
+						progStep++;
+						enterR2 = true;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 2:
+					if (entrPress && r2.Length == 5)
+					{
+						if (r2sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r2) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r2));
+						}
+						entrPress = false;
+						progStep++;
+						enterR3 = true;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 3:
+					if (entrPress && r3.Length == 5)
+					{
+						if (r3sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r3) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r3));
+						}
+						entrPress = false;
+						progStep++;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 4:
+					// STORE DATA IN NOUN
+					setNounData(noun, dataStorage);
+					activeVerb = -1;
+					activeNoun = -1;
+					progStep = 0;
+					break;
 			}
 		}
 
@@ -687,6 +782,19 @@ namespace KSP_MOCR
 			screenSegDisps[0].setValue(r1,p1);
 			screenSegDisps[1].setValue(r2,p2);
 			screenSegDisps[2].setValue(r3,p3);
+		}
+
+		private void setNounData(int noun, List<int> data)
+		{
+			switch (noun)
+			{
+				case 20:
+					// STORE THE DATA
+					FDAIOffsetRoll = data[0] / 100;
+					FDAIOffsetPitch = data[1] / 100;
+					FDAIOffsetYaw = data[2] / 100;
+					break;
+			}
 		}
 
 		private int?[] getNounData(int noun)
@@ -744,6 +852,22 @@ namespace KSP_MOCR
 					values[0] = (int)Math.Round(FDAIOffsetRoll * 100);
 					values[1] = (int)Math.Round(FDAIOffsetPitch* 100);
 					values[2] = (int)Math.Round(FDAIOffsetYaw * 100);
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+					
+				case 21: // Autopilot Direction vector
+					values[0] = (int)Math.Round(vector1 * 100);
+					values[1] = (int)Math.Round(vector2 * 100);
+					values[2] = (int)Math.Round(vector3 * 100);
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+					
+				case 22: // Vessel SURF-mode Direction vector
+					values[0] = (int)Math.Round(vesselSurfDirection.Item1 * 100);
+					values[1] = (int)Math.Round(vesselSurfDirection.Item2 * 100);
+					values[2] = (int)Math.Round(vesselSurfDirection.Item3 * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					

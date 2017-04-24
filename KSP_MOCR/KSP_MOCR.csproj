@@ -196,6 +196,8 @@
     <Compile Include="Classes\7SegDisp.cs" />
     <Compile Include="Screens\PilotDSKY.cs" />
     <Compile Include="Screens\PilotKeyHandling.cs" />
+    <Compile Include="Classes\FDAIComponents.cs" />
+    <Compile Include="Classes\FDAINumbers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

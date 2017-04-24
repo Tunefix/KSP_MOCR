@@ -17,8 +17,8 @@ namespace KSP_MOCR
 	partial class Pilot1 : MocrScreen
 	{
 		private int setRotR = 0;
-		private int setRotP = 90;
-		private int setRotY = 90;
+		private int setRotP = 0;
+		private int setRotY = 0;
 		private int rotStep = 5;
 
 		private int lockRotR;
@@ -119,11 +119,17 @@ namespace KSP_MOCR
 		double orbitSpeed = 0;
 		double apoapsis = 0;
 		double periapsis = 0;
-		Tuple<double, double, double> vesselInerRotation;
+		Tuple<double, double, double> vesselSurfDirection;
+		Tuple<double, double, double, double> vesselSurfRotation;
+		Tuple<double, double, double> vesselInerDirection;
 
 		ReferenceFrame surfaceRefsmmat;
 		ReferenceFrame inertialRefsmmat;
 
+		// VECTOR DATA (FOR DIRECTION)
+		double vector1 = 0;
+		double vector2 = 0;
+		double vector3 = 0;
 
 		DateTime start;
 		DateTime end;
@@ -658,15 +664,19 @@ namespace KSP_MOCR
 
 				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
 				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
-				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_direction);
+				vesselInerDirection = screenStreams.GetData(DataType.flight_inertial_direction);
+				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
+				
+				vesselSurfDirection = screenStreams.GetData(DataType.flight_direction);
+				vesselSurfRotation = screenStreams.GetData(DataType.flight_rotation);
 
 				// Calculate inertial angles
-				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
-				inerPitch = (float)Helper.rad2deg(Math.Asin(vesselInerRotation.Item2));
-				inerYaw = (float)Helper.rad2deg(Math.Atan(vesselInerRotation.Item3 / vesselInerRotation.Item1));
-				if (vesselInerRotation.Item1 > 0)
+				
+				inerPitch = (float)Helper.rad2deg(Math.Asin(vesselInerDirection.Item2));
+				inerYaw = (float)Helper.rad2deg(Math.Atan(vesselInerDirection.Item3 / vesselInerDirection.Item1));
+				if (vesselInerDirection.Item1 > 0)
 				{
-					if (vesselInerRotation.Item3 > 0)
+					if (vesselInerDirection.Item3 > 0)
 					{
 						// Leave Yaw alone
 					}
@@ -679,7 +689,6 @@ namespace KSP_MOCR
 				{
 					inerYaw = 180 + inerYaw;
 				}
-
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
@@ -899,21 +908,36 @@ namespace KSP_MOCR
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
 					targetVector = new Tuple<double, double, double>(X, Z, Y);
+					vector1 = X;
+					vector2 = Z;
+					vector3 = Y;
 				}
 				else
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = surfaceRefsmmat;
 					targetVector = new Tuple<double, double, double>(Z, X, Y);
+					vector1 = Z;
+					vector2 = X;
+					vector3 = Y;
 				}
-
-				Console.WriteLine("TV: " + targetVector.ToString());
-				Console.WriteLine("VR: " + vesselInerRotation);
 
 				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
 				if (controlMode == 1 || controlMode == 2)
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.TargetDirection = targetVector;
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll;
+
+					if (tPitch == 90)
+					{
+						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = 0f;
+					}
+					else if (tPitch > 90 || tPitch < -90)
+					{
+						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll + 180;
+					}
+					else
+					{
+						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll;
+					}
 					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tPitch;
 					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tYaw;
 				}
@@ -945,10 +969,10 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void pitchUp(object sender, EventArgs e){ this.setRotP += this.rotStep; if (setRotP > 90) setRotP = (setRotP - ((setRotP - 90) * 2));}
-		private void pitchDown(object sender, EventArgs e) { this.setRotP -= this.rotStep; if (setRotP < -90) setRotP = (setRotP - ((setRotP + 90) * 2));}
-		private void yawLeft(object sender, EventArgs e) { this.setRotY -= this.rotStep; if (setRotY < 0) setRotY += 360;}
-		private void yawRight(object sender, EventArgs e) { this.setRotY += this.rotStep; if (setRotY >= 360) setRotY -= 360;}
+		private void pitchUp(object sender, EventArgs e){ this.setRotP += this.rotStep; if (setRotP > 360) setRotP = (setRotP - 360);}
+		private void pitchDown(object sender, EventArgs e) { this.setRotP -= this.rotStep; if (setRotP < -360) setRotP = (setRotP + 360);}
+		private void yawLeft(object sender, EventArgs e) { this.setRotY -= this.rotStep; if (setRotY < -180) setRotY += 360;}
+		private void yawRight(object sender, EventArgs e) { this.setRotY += this.rotStep; if (setRotY >= 180) setRotY -= 360;}
 		private void rollLeft(object sender, EventArgs e) { this.setRotR -= this.rotStep; if (setRotR < -180) setRotR += 360;}
 		private void rollRight(object sender, EventArgs e) { this.setRotR += this.rotStep; if (setRotR > 180) setRotR -= 360;}
 
@@ -1216,7 +1240,6 @@ namespace KSP_MOCR
 			Console.WriteLine("Block " + block++ + outName + ": " + (int)dur.TotalMilliseconds);
 			start = DateTime.Now;
 		}
-
 		
 	}
 }
