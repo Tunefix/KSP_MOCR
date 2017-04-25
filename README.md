@@ -43,7 +43,18 @@ As it stands, the programs has the following screens:
 * Pilot-mode, for controlling the spacecraft, with _very_ simple DSKY
 
 ## Pilot DSKY
-The DSKY in the pilot-screen has the following implemented:
+Keyboard shortcuts for the DSKY are as follows:
+```
+ENTR - [E] (Sometimes the Enter/Return button works also. There is a bug somewhere.)
+VERB - [V]
+NOUN - [N]
+CLR  - [C] (this clears the current active input, to correct any typing errors)
+ +   - [+]
+ -   - [-]
+0-9  - [0]-[9]
+```
+
+The DSKY in the pilot-screen has the following VERBs and NOUNs implemented:
 
 #### VERBS
 ```
