@@ -73,6 +73,7 @@ namespace KSP_MOCR
 			screenLabels[27] = Helper.CreateLabel(44, 14, 1, 1, "│");
 			screenLabels[28] = Helper.CreateLabel(84, 13, 1, 1, "│");
 			screenLabels[29] = Helper.CreateLabel(84, 14, 1, 1, "│");
+			screenLabels[30] = Helper.CreateLabel(44, 15, 1, 1, "│");
 
 
 
@@ -87,19 +88,33 @@ namespace KSP_MOCR
 			screenLabels[47] = Helper.CreateLabel(45, 10, 30, 1, ""); // Engine 7
 			screenLabels[48] = Helper.CreateLabel(45, 11, 30, 1, ""); // Engine 8
 			screenLabels[49] = Helper.CreateLabel(45, 12, 30, 1, ""); // Engine 9
+			screenLabels[50] = Helper.CreateLabel(45, 13, 30, 1, ""); // Engine 10
+			screenLabels[51] = Helper.CreateLabel(45, 14, 30, 1, ""); // Engine 11
+			screenLabels[52] = Helper.CreateLabel(45, 15, 30, 1, ""); // Engine 12
+			screenLabels[53] = Helper.CreateLabel(45, 16, 30, 1, ""); // Engine 13
+			screenLabels[54] = Helper.CreateLabel(45, 17, 30, 1, ""); // Engine 14
+			screenLabels[55] = Helper.CreateLabel(45, 18, 30, 1, ""); // Engine 15
+			screenLabels[56] = Helper.CreateLabel(45, 19, 30, 1, ""); // Engine 16
+			screenLabels[57] = Helper.CreateLabel(45, 20, 30, 1, ""); // Engine 17
+			screenLabels[58] = Helper.CreateLabel(45, 21, 30, 1, ""); // Engine 18
+			screenLabels[59] = Helper.CreateLabel(45, 22, 30, 1, ""); // Engine 19
+			screenLabels[60] = Helper.CreateLabel(45, 23, 30, 1, ""); // Engine 20
 
 			// Weight and TWR
-			screenLabels[30] = Helper.CreateLabel(45, 13, 30, 1, ""); // Weight
-			screenLabels[31] = Helper.CreateLabel(45, 14, 30, 1, ""); // TWR
+			screenLabels[35] = Helper.CreateLabel(0, 16, 45, 1, "────────────────────────────────────────────┤");
+			screenLabels[36] = Helper.CreateLabel(1, 17, 30, 1, ""); // Weight
+			screenLabels[37] = Helper.CreateLabel(1, 18, 30, 1, "        CUR   LOW   MAX");
+			screenLabels[38] = Helper.CreateLabel(1, 19, 30, 1, ""); // TWR
+			
 
 			// Supplies
-			screenLabels[50] = Helper.CreateLabel(85, 8, 35, 1, "                     "); // Supply line 1
-			screenLabels[51] = Helper.CreateLabel(85, 9, 35, 1, "                     "); // Supply line 2
-			screenLabels[52] = Helper.CreateLabel(85, 10, 35, 1, "                     "); // Supply line 3
-			screenLabels[53] = Helper.CreateLabel(85, 11, 35, 1, "                     "); // Supply line 4
-			screenLabels[54] = Helper.CreateLabel(85, 12, 35, 1, "                     "); // Supply line 5
-			screenLabels[55] = Helper.CreateLabel(85, 13, 35, 1, "                     "); // Supply line 5
-			screenLabels[58] = Helper.CreateLabel(85, 14, 35, 1, "└─────────────────────────────────┘"); // Supply line 6
+			screenLabels[70] = Helper.CreateLabel(85, 8, 35, 1, "                     "); // Supply line 1
+			screenLabels[71] = Helper.CreateLabel(85, 9, 35, 1, "                     "); // Supply line 2
+			screenLabels[72] = Helper.CreateLabel(85, 10, 35, 1, "                     "); // Supply line 3
+			screenLabels[73] = Helper.CreateLabel(85, 11, 35, 1, "                     "); // Supply line 4
+			screenLabels[74] = Helper.CreateLabel(85, 12, 35, 1, "                     "); // Supply line 5
+			screenLabels[75] = Helper.CreateLabel(85, 13, 35, 1, "                     "); // Supply line 5
+			screenLabels[78] = Helper.CreateLabel(85, 14, 35, 1, "└─────────────────────────────────┘"); // Supply line 6
 
 			// Status
 			screenIndicators[0] = Helper.CreateIndicator(86, 1, 10, 1, "SAS");
@@ -116,16 +131,17 @@ namespace KSP_MOCR
 			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
 
-			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
+			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Charts
 
 			// Gee-Force vs. Time Graph
-			//form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
+			screenCharts[0] = Helper.CreatePlot(85, 15, 35, 15, 0, 300);
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 			// Re-usable data variable for graph data
 			List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
+			List<Plot.Type> types = new List<Plot.Type>();
 
 
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
@@ -227,26 +243,27 @@ namespace KSP_MOCR
 						break;
 					}
 				}
-				/*
+
 				// Disable other engineIndicators
 				while(n < screenEngines.Count)
 				{
 					screenEngines[n].Dispose();
+					screenEngines.RemoveAt(n);
 					screenLabels[41 + n].Text = "";
 					n++;
 				}
-
+				screenEngines.TrimExcess();
+				
 				// Weight and TWR
 				double weight = vessel.Mass / 1000;
 				double TWRc = (stageCurThr / 1000) / (weight * 9.81);
 				double TWRm = (stageMaxThr / 1000) / (weight * 9.81); ;
-				screenLabels[30].Text = "Weight: " + Helper.prtlen(Helper.toFixed(weight, 1), 5, Helper.Align.RIGHT) + "t";
-				screenLabels[31].Text = "   TWR: " + Helper.prtlen(Helper.toFixed(TWRc, 2), 4, Helper.Align.RIGHT)
+				screenLabels[36].Text = "Weight: " + Helper.prtlen(Helper.toFixed(weight, 1), 5, Helper.Align.RIGHT) + "t";
+				screenLabels[38].Text = "   TWR: " + Helper.prtlen(Helper.toFixed(TWRc, 2), 4, Helper.Align.RIGHT)
 					+ "  " + Helper.prtlen(Helper.toFixed(TWRm, 2), 4, Helper.Align.RIGHT);
 
-				/**/
+				
 				// Supplies
-				/*
 				double mF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
 				double cF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
 
@@ -259,13 +276,13 @@ namespace KSP_MOCR
 				double mE = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("ElectricCharge");
 				double cE = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("ElectricCharge");
 
-				//screenLabels[50].Text = "         LF     LO     MP     EC";
-				/*screenLabels[51].Text = "STAGE:"
+				screenLabels[70].Text = "         LF     LO     MP     EC";
+				screenLabels[71].Text = "STAGE:"
 										+ Helper.prtlen(Math.Round(cF).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round(cO).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Helper.toFixed(cM, 2), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round(cE).ToString(), 7, Helper.Align.RIGHT);
-				screenLabels[52].Text = "    %:"
+				screenLabels[72].Text = "    %:"
 										+ Helper.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
@@ -283,51 +300,50 @@ namespace KSP_MOCR
 				mE = vessel.Resources.Max("ElectricCharge");
 				cE = vessel.Resources.Amount("ElectricCharge");
 
-				screenLabels[54].Text = "  TOT:"
+				screenLabels[74].Text = "  TOT:"
 										+ Helper.prtlen(Math.Round(cF).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round(cO).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Helper.toFixed(cM, 2), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round(cE).ToString(), 7, Helper.Align.RIGHT);
-				screenLabels[55].Text = "    %:"
+				screenLabels[75].Text = "    %:"
 										+ Helper.prtlen(Math.Round((cF / mF) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
-				*/
 
 				// Status
-				/*
-				if (vessel.Control.SAS) { screenIndicators[0].setStatus(1); } else { screenIndicators[0].setStatus(0); } // SAS
-				if (vessel.Control.RCS) { screenIndicators[1].setStatus(1); } else { screenIndicators[1].setStatus(0); } // RCS
-				if (vessel.Control.Gear) { screenIndicators[2].setStatus(1); } else { screenIndicators[2].setStatus(0); } // GEAR
-				if (vessel.Control.Brakes) { screenIndicators[3].setStatus(2); } else { screenIndicators[3].setStatus(0); } // Break
-				if (vessel.Control.Lights) { screenIndicators[4].setStatus(4); } else { screenIndicators[4].setStatus(0); } // Lights
-				if (vessel.Control.Abort) { screenIndicators[5].setStatus(2); } else { screenIndicators[5].setStatus(0); } // Abort
+				if (vessel.Control.SAS) { screenIndicators[0].setStatus(Indicator.status.GREEN); } else { screenIndicators[0].setStatus(Indicator.status.OFF); } // SAS
+				if (vessel.Control.RCS) { screenIndicators[1].setStatus(Indicator.status.GREEN); } else { screenIndicators[1].setStatus(Indicator.status.OFF); } // RCS
+				if (vessel.Control.Gear) { screenIndicators[2].setStatus(Indicator.status.GREEN); } else { screenIndicators[2].setStatus(Indicator.status.OFF); } // GEAR
+				if (vessel.Control.Brakes) { screenIndicators[3].setStatus(Indicator.status.RED); } else { screenIndicators[3].setStatus(Indicator.status.OFF); } // Break
+				if (vessel.Control.Lights) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); } // Lights
+				if (vessel.Control.Abort) { screenIndicators[5].setStatus(Indicator.status.RED); } else { screenIndicators[5].setStatus(Indicator.status.OFF); } // Abort
 
-				if (flight.GForce > 4) { screenIndicators[7].setStatus(4); } else { screenIndicators[7].setStatus(0); } // G High
+				if (flight.GForce > 4) { screenIndicators[7].setStatus(Indicator.status.RED); } else { screenIndicators[7].setStatus(Indicator.status.OFF); } // G High
 
 				float maxR = vessel.Resources.Max("ElectricCharge");
 				float curR = vessel.Resources.Amount("ElectricCharge");
-				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(1); } else { screenIndicators[6].setStatus(0); } // Power High
-				if (curR / maxR < 0.1) { screenIndicators[9].setStatus(2); } else { screenIndicators[9].setStatus(0); } // Power Low
+				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(Indicator.status.GREEN); } else { screenIndicators[6].setStatus(Indicator.status.OFF); } // Power High
+				if (curR / maxR < 0.1) { screenIndicators[9].setStatus(Indicator.status.RED); } else { screenIndicators[9].setStatus(Indicator.status.OFF); } // Power Low
 
 				maxR = vessel.Resources.Max("MonoPropellant");
 				curR = vessel.Resources.Amount("MonoPropellant");
-				if (curR / maxR < 0.1) { screenIndicators[10].setStatus(2); } else { screenIndicators[10].setStatus(0); } // Monopropellant Low
+				if (curR / maxR < 0.1) { screenIndicators[10].setStatus(Indicator.status.RED); } else { screenIndicators[10].setStatus(Indicator.status.OFF); } // Monopropellant Low
 
 				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
-				if (curR / maxR < 0.1) { screenIndicators[11].setStatus(2); } else { screenIndicators[11].setStatus(0); } // Fuel Low
+				if (curR / maxR < 0.1) { screenIndicators[11].setStatus(Indicator.status.RED); } else { screenIndicators[11].setStatus(Indicator.status.OFF); } // Fuel Low
 
 				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("Oxidizer");
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
-				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(2); } else { screenIndicators[8].setStatus(0); } // LOW Low
+				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(Indicator.status.RED); } else { screenIndicators[8].setStatus(Indicator.status.OFF); } // LOW Low
 
-				/**/
 				// Graphs
-				//data = new List<Dictionary<int, Nullable<double>>>();
-				//data.Add(chartData["geeTime"]);
-				//form.showData(0, data, false);
+				data = new List<Dictionary<int, double?>>();
+				types = new List<Plot.Type>();
+				data.Add(Helper.limit(chartData["geeTime"],300));
+				types.Add(Plot.Type.LINE);
+				screenCharts[0].setData(data, types, true);
 			}
 		}
 	}

@@ -65,6 +65,7 @@ namespace KSP_MOCR
 		float deltaV = 0;
 		float burnTime = 0;
 		List<int> dataStorage = new List<int>();
+		double launchAzimuth = 90;
 
 		// FDAI PROPERTIES
 		float FDAIOffsetRoll = 0;
@@ -130,6 +131,10 @@ namespace KSP_MOCR
 		double vector1 = 0;
 		double vector2 = 0;
 		double vector3 = 0;
+		
+		double tRoll = 0;
+		double tPitch = 0;
+		double tYaw = 0;
 
 		DateTime start;
 		DateTime end;
@@ -444,14 +449,14 @@ namespace KSP_MOCR
 			screenLabels[72] = Helper.CreateLabel(82, 5, 38, 1, "  ACCEL  LF  OX    LF  OX    MP  EL");
 
 			// DSKY
-			screenSegDisps[0] = Helper.CreateSegDisp(83, 15.75, 5, true);
-			screenSegDisps[1] = Helper.CreateSegDisp(83, 18.25, 5, true);
-			screenSegDisps[2] = Helper.CreateSegDisp(83, 20.75, 5, true);
+			screenSegDisps[0] = Helper.CreateSegDisp(83, 15.75, 5, true, "R1");
+			screenSegDisps[1] = Helper.CreateSegDisp(83, 18.25, 5, true, "R2");
+			screenSegDisps[2] = Helper.CreateSegDisp(83, 20.75, 5, true, "R3");
 			
-			screenSegDisps[3] = Helper.CreateSegDisp(104, 20.75, 2, false);
-			screenSegDisps[4] = Helper.CreateSegDisp(112, 20.75, 2, false);
+			screenSegDisps[3] = Helper.CreateSegDisp(104, 20.75, 2, false, "V");
+			screenSegDisps[4] = Helper.CreateSegDisp(112, 20.75, 2, false, "N");
 			
-			screenSegDisps[5] = Helper.CreateSegDisp(112, 17, 2, false);
+			screenSegDisps[5] = Helper.CreateSegDisp(112, 17, 2, false, "P");
 			
 			// DSKY INDICATORS
 			screenIndicators[50] = Helper.CreateIndicator(103, 15.75, 7, 1, "COMP ACT");
@@ -878,20 +883,17 @@ namespace KSP_MOCR
 
 
 				// SET CONTROL ANGLES FOR AUTOPILOTS
-				double tRoll = 0;
-				double tPitch = 0;
-				double tYaw = 0;
 				if (controlMode == 1)
 				{
-					tRoll= this.setRotR;
-					tPitch = this.setRotP;
-					tYaw = this.setRotY;
+					tRoll = this.setRotR;// - FDAIOffsetRoll;
+					tPitch = this.setRotP;// - FDAIOffsetPitch;
+					tYaw = this.setRotY;// - FDAIOffsetYaw;
 				}
 				else if (controlMode == 2)
 				{
-					tRoll = this.lockRotR;
-					tPitch = this.lockRotP;
-					tYaw = this.lockRotY;
+					tRoll = this.lockRotR;// - FDAIOffsetRoll;
+					tPitch = this.lockRotP;// - FDAIOffsetPitch;
+					tYaw = this.lockRotY;// - FDAIOffsetYaw;
 				}
 
 				// SET AUTOPILOT REFERENCE FRAME AND TARGET UNIT VECTOR

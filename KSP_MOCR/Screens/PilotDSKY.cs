@@ -61,7 +61,8 @@ namespace KSP_MOCR
 			}
 
 			// REG DISPLAYS
-			if (activeVerb == -1 || activeVerb == 26)
+			int[] inputVerbs = { 21, 26 };
+			if (activeVerb == -1 || inputVerbs.Contains(activeVerb))
 			{
 				if (r1 != "") { regValueShow(0, r1, r1sign, r1precision); }
 				if (r2 != "") { regValueShow(1, r2, r2sign, r2precision); }
@@ -103,7 +104,7 @@ namespace KSP_MOCR
 					break;
 				case 1: // Initialisation program
 					activeVerb = 16;
-					activeNoun = 20;
+					activeNoun = 19;
 					runProg1();
 					break;
 				case 2: // Ready to launch, holding FDAI angles
@@ -151,13 +152,13 @@ namespace KSP_MOCR
 		private void runProg1()
 		{
 			/*
-			 * COARSE ALIGN OF FDAI TO LAUNCH ANGLES R: 0, P: 0; Y: 0
+			 * COARSE ALIGN OF FDAI TO LAUNCH ANGLES R: 90 + azimuth, P: 90; Y: 0
 			 */
 			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
 			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
 			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
-			int TR = (int)Math.Round(0f * 100);
-			int TP = (int)Math.Round(0f * 100);
+			int TR = (int)Math.Round((90 + launchAzimuth) * 100);
+			int TP = (int)Math.Round(90f * 100);
 			int TY = (int)Math.Round(0f * 100);
 
 			int DR = FR - TR;
@@ -169,6 +170,15 @@ namespace KSP_MOCR
 				&& (FY == TY || Math.Abs(DY) < 100)
 			)
 			{
+				// SET LAUNCH ANGLES INTO LockROT, set mode to lock
+				// and load roll/pitch program values into setRot.
+				lockRotR = 180;
+				lockRotP = 87;
+				lockRotY = (int)launchAzimuth;
+				controlMode = 2;
+				setRotR = (int)(90 + launchAzimuth);
+				setRotP = 80;
+				setRotY = (int)launchAzimuth;
 				activeProg = 2;
 			}
 			else
@@ -208,7 +218,6 @@ namespace KSP_MOCR
 						FDAIOffsetYaw += 1f;
 					}
 				}
-				
 			}
 		}
 		
@@ -216,25 +225,42 @@ namespace KSP_MOCR
 		{
 			/*
 			 * FINE ALIGN OF LAUNCH REFSMMAT
-			 *  (This continues to run, and hold the FDAI at 0,0,0 until launch)
+			 *  (This continues to run, and hold the FDAI at 180 + azimuth,90,0 until launch)
+			 *  It also updates setRotR with new angle should launch azimuth change
 			 */
 			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
 			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
 			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
-			int TR = (int)Math.Round(0f * 100);
-			int TP = (int)Math.Round(0f * 100);
+			int TR = (int)Math.Round((90 + launchAzimuth) * 100);
+			int TP = (int)Math.Round(90f * 100);
 			int TY = (int)Math.Round(0f * 100);
+			
+			setRotR = (int)(90 + launchAzimuth);
 		
 			if (FR != TR)
 			{
 				int diff = FR - TR;
 				if (diff > 0)
 				{
-					FDAIOffsetRoll -= 0.01f;
+					if (diff > 1)
+					{
+						FDAIOffsetRoll -= 1f;
+					}
+					else
+					{
+						FDAIOffsetRoll -= 0.01f;
+					}
 				}
 				else
 				{
-					FDAIOffsetRoll += 0.01f;
+					if (diff > 1)
+					{
+						FDAIOffsetRoll += 1f;
+					}
+					else
+					{
+						FDAIOffsetRoll += 0.01f;
+					}
 				}
 			}
 			
@@ -598,8 +624,11 @@ namespace KSP_MOCR
 			{
 				case 16: // Monitor Data
 					verb16(noun);
+					break;					
+				case 21: // Load R1
+					verb21(noun);
 					break;
-				case 26: // Monitor Data
+				case 26: // Load R1,R2,R3
 					verb26(noun);
 					break;
 				case 35: // Lamp Test
@@ -630,9 +659,17 @@ namespace KSP_MOCR
 
 			if (nounData[0] != null)
 			{
-				screenSegDisps[0].setValue(nounData[0].ToString(), (int)nounData[3]);
-				screenSegDisps[1].setValue(nounData[1].ToString(), (int)nounData[4]);
-				screenSegDisps[2].setValue(nounData[2].ToString(), (int)nounData[5]);
+				screenSegDisps[0].setValue(Math.Abs((int)nounData[0]).ToString(), (int)nounData[3], nounData[0] < 0 ? SegDisp.SignState.MINUS: SegDisp.SignState.PLUS);
+
+				if (nounData[1] != null)
+				{
+					screenSegDisps[1].setValue(Math.Abs((int)nounData[1]).ToString(), (int)nounData[4], nounData[1] < 0 ? SegDisp.SignState.MINUS : SegDisp.SignState.PLUS);
+				}
+
+				if (nounData[2] != null)
+				{
+					screenSegDisps[2].setValue(Math.Abs((int)nounData[2]).ToString(), (int)nounData[5], nounData[2] < 0 ? SegDisp.SignState.MINUS : SegDisp.SignState.PLUS);
+				}
 			}
 			else
 			{
@@ -640,10 +677,63 @@ namespace KSP_MOCR
 			}
 		}
 
+		// Load decimal 1 in R1
+		private void verb21(int noun)
+		{
+			switch (progStep)
+			{
+				case 0:
+					dataStorage.Clear();
+					r1 = " ";
+					r2 = " ";
+					r3 = " ";
+					r1precision = 0;
+					r2precision = 0;
+					r3precision = 0;
+					r1sign = SegDisp.SignState.NONE;
+					r2sign = SegDisp.SignState.NONE;
+					r3sign = SegDisp.SignState.NONE;
+					flashing = true;
+					entrPress = false;
+					progStep++;
+					enterR1 = true;
+					break;
+				case 1:
+					if (entrPress && r1.Length == 5)
+					{
+						if (r1sign == SegDisp.SignState.MINUS)
+						{
+							dataStorage.Add(int.Parse(r1) * -1);
+						}
+						else
+						{
+							dataStorage.Add(int.Parse(r1));
+						}
+						entrPress = false;
+						progStep++;
+					}
+					else if (entrPress)
+					{
+						entrPress = false;
+					}
+					break;
+				case 2:
+					// STORE DATA IN NOUN AND CLEAR INPUTS
+					setNounData(noun, dataStorage);
+					r1 = "";
+					r2 = "";
+					r3 = "";
+					blankRegisters();
+					activeVerb = -1;
+					activeNoun = -1;
+					progStep = 0;
+					break;
+			}
+		}
+
 		// Load Decimal 1,2,3 in R1,R2,R3
 		private void verb26(int noun)
 		{
-			Console.WriteLine(progStep);
 			switch (progStep)
 			{
 				case 0:
@@ -722,8 +812,12 @@ namespace KSP_MOCR
 					}
 					break;
 				case 4:
-					// STORE DATA IN NOUN
+					// STORE DATA IN NOUN AND CLEAR INPUTS
 					setNounData(noun, dataStorage);
+					r1 = "";
+					r2 = "";
+					r3 = "";
+					blankRegisters();
 					activeVerb = -1;
 					activeNoun = -1;
 					progStep = 0;
@@ -784,17 +878,28 @@ namespace KSP_MOCR
 			screenSegDisps[2].setValue(r3,p3);
 		}
 
+		private void blankRegisters()
+		{
+			screenSegDisps[0].setValue("", 0, SegDisp.SignState.NONE);
+			screenSegDisps[1].setValue("", 0, SegDisp.SignState.NONE);
+			screenSegDisps[2].setValue("", 0, SegDisp.SignState.NONE);
+		}
+
 		private void setNounData(int noun, List<int> data)
 		{
 			switch (noun)
 			{
-				case 20:
-					// STORE THE DATA
-					FDAIOffsetRoll = data[0] / 100;
-					FDAIOffsetPitch = data[1] / 100;
-					FDAIOffsetYaw = data[2] / 100;
+				case 20: // FDAI Offset angles
+					FDAIOffsetRoll = data[0] / 100f;
+					FDAIOffsetPitch = data[1] / 100f;
+					FDAIOffsetYaw = data[2] / 100f;
+					break;
+					
+				case 29: // Launch Azimuth
+					launchAzimuth = data[0] / 100f;
 					break;
 			}
+			
 		}
 
 		private int?[] getNounData(int noun)
@@ -841,16 +946,16 @@ namespace KSP_MOCR
 					}
 					else
 					{
-						values[0] = (int)Math.Round(inerRoll * 100);
-						values[1] = (int)Math.Round(inerPitch * 100);
-						values[2] = (int)Math.Round(inerYaw * 100);
+						values[0] = (int)Math.Round((FDAIOffsetRoll + inerRoll) * 100);
+						values[1] = (int)Math.Round((FDAIOffsetPitch + inerPitch) * 100);
+						values[2] = (int)Math.Round((FDAIOffsetYaw + inerYaw) * 100);
 					}
 					values[3] = values[4] = values[5] = 2;
 					break;
 					
 				case 20: // FDAI angles
 					values[0] = (int)Math.Round(FDAIOffsetRoll * 100);
-					values[1] = (int)Math.Round(FDAIOffsetPitch* 100);
+					values[1] = (int)Math.Round(FDAIOffsetPitch * 100);
 					values[2] = (int)Math.Round(FDAIOffsetYaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
@@ -869,6 +974,22 @@ namespace KSP_MOCR
 					values[1] = (int)Math.Round(vesselSurfDirection.Item2 * 100);
 					values[2] = (int)Math.Round(vesselSurfDirection.Item3 * 100);
 					values[3] = values[4] = values[5] = 2;
+					break;
+					
+					
+				case 23: // Autopilot target RPY
+					values[0] = (int)Math.Round(tRoll * 100);
+					values[1] = (int)Math.Round(tPitch * 100);
+					values[2] = (int)Math.Round(tYaw * 100);
+					values[3] = values[4] = values[5] = 2;
+					break;
+					
+				case 29: // Launch Azimuth
+					values[0] = (int)Math.Round(launchAzimuth * 100);
+					values[1] = null;
+					values[2] = null;
+					values[3] = 2;
+					values[4] = values[5] = 0;
 					break;
 					
 				case 34: // TIG (Time of ignition of event)

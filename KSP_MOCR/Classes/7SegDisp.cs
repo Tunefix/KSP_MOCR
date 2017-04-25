@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -25,16 +26,20 @@ namespace KSP_MOCR
 		readonly Brush digitBrush = new SolidBrush(Color.FromArgb(255, 0, 200, 0));
 		readonly Brush digitDimBrush = new SolidBrush(Color.FromArgb(16, 240, 255, 230));
 		readonly Pen borderPen = new Pen(Color.FromArgb(255, 32, 32, 32), 3f);
+
+		readonly String name;
 		
-		public SegDisp(int numbers, bool signed)
+		public SegDisp(int numbers, bool signed, String name)
 		{
 			this.numbers = numbers;
 			this.sign = signed;
 			this.DoubleBuffered = true;
+			this.name = name;
 		}
 
 		public void setValue(String value) { setValue(value, 0, SignState.AUTO, true, Align.RIGHT); }
 		public void setValue(String value, int precision) { setValue(value, precision, SignState.AUTO, true, Align.RIGHT); }
+		public void setValue(String value, int precision, SignState sign) { setValue(value, precision, sign, true, Align.RIGHT); }
 		public void setValue(String value, int precision, SignState sign, bool pad, Align align)
 		{
 			this.value = value;
@@ -148,6 +153,7 @@ namespace KSP_MOCR
 					stop = numbers;
 					indexOffset = 0;
 				}
+
 
 				// Pad/cut value to fit
 				if (value.Length > numbers)

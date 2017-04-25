@@ -299,21 +299,11 @@ namespace KSP_MOCR
 			int top = (int)(y * form.pxPrLine) + form.padding_top;
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
-			Color fColor = form.foreColor;
 			EngineIndicator label = new EngineIndicator();
-			label.form = form;
 			label.Font = form.font;
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
 			label.Text = t;
-			label.Padding = new Padding(0);
-			label.Margin = new Padding(0);
-			label.BorderStyle = BorderStyle.None;
-			label.UseCompatibleTextRendering = true;
-			label.TextAlign = ContentAlignment.MiddleCenter;
-			label.ForeColor = Color.FromArgb(128, fColor.R, fColor.G, fColor.B);
-			label.Image = form.engineOff;
-			label.ImageAlign = ContentAlignment.MiddleCenter;
 
 			form.Controls.Add(label);
 
@@ -348,7 +338,7 @@ namespace KSP_MOCR
 		}
 		
 		
-		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed)
+		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed, String name)
 		{
 			int w;
 			if (signed)
@@ -367,7 +357,7 @@ namespace KSP_MOCR
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
 			Color fColor = form.foreColor;
-			SegDisp label = new SegDisp(length, signed);
+			SegDisp label = new SegDisp(length, signed, name);
 			label.Font = form.font;
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
@@ -480,10 +470,13 @@ namespace KSP_MOCR
 				int index = r.IndexOf(".");
 				if (index == -1)
 				{
-					r += ",";
+					r += ".";
 				}
 
-				while (r.Length < b.Length + 1 + p) // The +1 is for the decimal sign
+				int extraSigns = 1; // The decimal sign
+				if (d2 < 0) { extraSigns++; } // The minus sign
+
+				while (r.Length < b.Length + extraSigns + p) // The +1 is for the decimal sign
 				{
 					r += "0";
 				}
@@ -499,6 +492,52 @@ namespace KSP_MOCR
 		static public double deg2rad(double deg)
 		{
 			return deg * (Math.PI / 180);
+		}
+
+		static public Dictionary<int, double?> limit(Dictionary<int, double?> data, int count)
+		{
+			Dictionary<int, double?> output = new Dictionary<int, double?>();
+			if (data[count + 1].HasValue)
+			{
+				// Find last value key
+				int index = 599;
+				while (index > count)
+				{
+					if (data[index].HasValue)
+					{
+						break;
+					}
+					index--;
+				}
+
+				for (int i = (index - count); i < index; i++)
+				{
+					if (data[i].HasValue)
+					{
+						output.Add(i, data[i].Value);
+					}
+					else
+					{
+						output.Add(i, null);
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < count; i++)
+				{
+					if (data[i].HasValue)
+					{
+						output.Add(i, data[i].Value);
+					}
+					else
+					{
+						output.Add(i, null);
+					}
+				}
+			}
+
+			return output;
 		}
 	}
 }

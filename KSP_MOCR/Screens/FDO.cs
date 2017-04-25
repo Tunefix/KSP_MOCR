@@ -192,7 +192,17 @@ namespace KSP_MOCR
 
 				double pitch = Helper.rad2deg(Math.Asin(inertialBurnVector.Item3 / vectorMagnitude(inertialBurnVector)));
 				
-				screenLabels[21].Text = "Burn Ang: " + Helper.toFixed(0,2) + ", " + Helper.toFixed(pitch,2) + ", " + Helper.toFixed(yaw,2);
+				screenLabels[21].Text = "BURN ANGLES: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yaw, 2), 6);
+				double yawOffset = 0;
+				if (yaw >= 180)
+				{
+					yawOffset = 360 - yaw;
+				}
+				else
+				{
+					yawOffset = -yaw;
+				}
+				screenLabels[22].Text = "FDAI OFFSET: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(-pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yawOffset, 2), 6);
 
 				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
@@ -280,22 +290,22 @@ namespace KSP_MOCR
 			screenLabels[23] = Helper.CreateLabel(62, 1, 12, 1, "ZOOM: ");
 
 			// ZOOM BUTTONS
-			screenButtons[0] = Helper.CreateButton(72, 1, 5, 1, "-5");
+			screenButtons[0] = Helper.CreateButton(74, 1, 5, 1, "-5");
 			screenButtons[0].Font = form.buttonFont;
 			screenButtons[0].Click += (sender, e) => changeZoom(sender, e, -5f);
-			screenButtons[1] = Helper.CreateButton(78, 1, 5, 1, "-1");
+			screenButtons[1] = Helper.CreateButton(80, 1, 5, 1, "-1");
 			screenButtons[1].Font = form.buttonFont;
 			screenButtons[1].Click += (sender, e) => changeZoom(sender, e, -1f);
-			screenButtons[2] = Helper.CreateButton(84, 1, 5, 1, "-.1");
+			screenButtons[2] = Helper.CreateButton(86, 1, 5, 1, "-.1");
 			screenButtons[2].Font = form.buttonFont;
 			screenButtons[2].Click += (sender, e) => changeZoom(sender, e, -0.1f);
-			screenButtons[3] = Helper.CreateButton(90, 1, 5, 1, "+.1");
+			screenButtons[3] = Helper.CreateButton(92, 1, 5, 1, "+.1");
 			screenButtons[3].Font = form.buttonFont;
 			screenButtons[3].Click += (sender, e) => changeZoom(sender, e, 0.1f);
-			screenButtons[4] = Helper.CreateButton(96, 1, 5, 1, "+1");
+			screenButtons[4] = Helper.CreateButton(98, 1, 5, 1, "+1");
 			screenButtons[4].Font = form.buttonFont;
 			screenButtons[4].Click += (sender, e) => changeZoom(sender, e, 1f);
-			screenButtons[5] = Helper.CreateButton(102, 1, 5, 1, "+5");
+			screenButtons[5] = Helper.CreateButton(104, 1, 5, 1, "+5");
 			screenButtons[5].Font = form.buttonFont;
 			screenButtons[5].Click += (sender, e) => changeZoom(sender, e, 5f);
 			

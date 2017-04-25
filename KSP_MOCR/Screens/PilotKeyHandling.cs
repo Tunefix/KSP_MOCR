@@ -251,10 +251,12 @@ namespace KSP_MOCR
 			{
 				activeVerb = int.Parse(verb);
 				verb = null;
-				activeNoun = int.Parse(noun);
+ 				activeNoun = int.Parse(noun);
 				noun = null;
-				
-				runOnce = true;
+				if (verb == "37")
+				{
+					runOnce = true;
+				}
 			}
 			else if (activeVerb != -1 && noun != null)
 			{

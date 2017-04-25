@@ -225,10 +225,9 @@ namespace KSP_MOCR
 			/*
 			 * DRAW THE LINE
 			 */
-			linePen = new Pen(chartLineColors[n], 1.0f);
+			linePen = new Pen(chartLineColors[n], 2.0f);
 			bool started = false;
 
-			KeyValuePair<int, double?> point;
 			double? value;
 			for (int i = 0; i < serie.Count; i++)
 			{
@@ -422,7 +421,14 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			return (int)Math.Ceiling((double)tMax);
+			if (tMax != null)
+			{
+				return (int)Math.Ceiling((double)tMax);
+			}
+			else
+			{
+				return 1;
+			}
 		}
 
 		private int findMinY(Dictionary<int, double?> serie)
