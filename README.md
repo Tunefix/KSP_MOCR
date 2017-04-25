@@ -5,7 +5,24 @@ Ascent screen:
 ![alt tag](http://i.imgur.com/KO8Et8M.png)
 
 Pilot screen:
-![alt tag](http://i.imgur.com/dD8qffP.png)
+![alt tag](http://i.imgur.com/Tk9I864.png)
+
+To set up the FDAI for launch type the following into the DSKY:
+```
+VERB 26 NOUN 20 ENTR
++00000 ENTR
++00000 ENTR
+-09000 ENTR
+```
+The FDAI will be upside down, because this setup is based on a heads-down pitch-over manouver at due east.
+
+If you want the FDAI the "right side up", with a a 72° launch angle do this:
+```
+VERB 26 NOUN 20 ENTR
++18000 ENTR
++00000 ENTR
+-07200 ENTR
+```
 
 As it stands, the programs has the following screens:
 * Ascent
