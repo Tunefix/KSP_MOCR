@@ -15,3 +15,37 @@ As it stands, the programs has the following screens:
 * Altitude/Terrain-Height Graph
 * Altitude/Speed Plot
 * Pilot-mode, for controlling the spacecraft, with _very_ simple DSKY
+
+## Pilot DSKY
+The DSKY in the pilot-screen has the following implemented:
+
+#### VERBS
+```
+* 16 - Monitor Noun in R1 or R1,R2 or R1,R2,R3
+* 21 - Load component 1 into R1
+* 26 - Load component 1,2,3 into R1,R2,R3
+* 69 - Clear DSKY displays
+```
+
+#### NOUNS
+```
+* 17 - XXX.XX deg - Current vessel angles R,P,Y (Surface Reference)
+* 18 - XXX.XX deg - Current vessel angles R,P,Y (Body Non Rotating Reference)
+* 19 - XXX.XX deg - Current angles on FDAI
+* 20 - XXX.XX deg - FDAI offset angles
+* 29 - XXX.XX deg - Launch azimuth
+* 36 - 000XX. hrs - Mission Elapsed Time
+       000XX. min
+       0XX.XX sec
+* 44 - XXX.XX km - Apogee
+       XXX.XX km - Perigee
+       XXX.XX km - Current Altitude
+* 73 - XXX.XX km - Altitude
+       XXXX.X m/s - Orbital speed
+       XXX.XX deg - Pitch angle
+```
+### DSKY Examples
+#### Monitor current apogee, perigee and altitude:
+```
+VERB 16 NOUN 44 ENTR
+```
