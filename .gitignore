@@ -3,5 +3,8 @@ KSP_MOCR/bin*
 KSP_MOCR/obj/*
 *CSTest.exe*
 
+# Ignore Release directory
+Releases/*
+
 # Ignore userprefs
 KSP_MOCR.userprefs
