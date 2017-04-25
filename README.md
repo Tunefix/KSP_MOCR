@@ -24,6 +24,15 @@ VERB 26 NOUN 20 ENTR
 -07200 ENTR
 ```
 
+To set up the FDAI for a standard KSP "lean right" ascent:
+(This has the FDAI "right side up", but Pitch and Yaw axis are rotated by 90°. To have the FDAI upside down, use +09000 for the first number.)
+```
+VERB 26 NOUN 20 ENTR
+-09000 ENTR
++00000 ENTR
+-09000 ENTR
+```
+
 As it stands, the programs has the following screens:
 * Ascent
 * Booster
