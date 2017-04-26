@@ -16,6 +16,8 @@ namespace KSP_MOCR
 {
 	partial class Pilot1
 	{
+		
+		
 		private void updateDSKY()
 		{
 			// VERB DISPLAY
@@ -154,9 +156,9 @@ namespace KSP_MOCR
 			/*
 			 * COARSE ALIGN OF FDAI TO LAUNCH ANGLES R: 90 + azimuth, P: 90; Y: 0
 			 */
-			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
-			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
-			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
+			int FR = (int)Math.Round((inerRoll + screenFDAI.offsetR) * 100);
+			int FP = (int)Math.Round((inerPitch + screenFDAI.offsetP) * 100);
+			int FY = (int)Math.Round((inerYaw + screenFDAI.offsetY) * 100);
 			int TR = (int)Math.Round((90 + launchAzimuth) * 100);
 			int TP = (int)Math.Round(90f * 100);
 			int TY = (int)Math.Round(0f * 100);
@@ -187,11 +189,11 @@ namespace KSP_MOCR
 				{
 					if (DR > 0)
 					{
-						FDAIOffsetRoll -= 1f;
+						screenFDAI.offsetR -= 1f;
 					}
 					else
 					{
-						FDAIOffsetRoll += 1f;
+						screenFDAI.offsetR += 1f;
 					}
 				}
 				
@@ -199,11 +201,11 @@ namespace KSP_MOCR
 				{
 					if (DP > 0)
 					{
-						FDAIOffsetPitch -= 1f;
+						screenFDAI.offsetP -= 1f;
 					}
 					else
 					{
-						FDAIOffsetPitch += 1f;
+						screenFDAI.offsetP += 1f;
 					}
 				}
 				
@@ -211,11 +213,11 @@ namespace KSP_MOCR
 				{
 					if (DY > 0)
 					{
-						FDAIOffsetYaw -= 1f;
+						screenFDAI.offsetY -= 1f;
 					}
 					else
 					{
-						FDAIOffsetYaw += 1f;
+						screenFDAI.offsetY += 1f;
 					}
 				}
 			}
@@ -228,9 +230,9 @@ namespace KSP_MOCR
 			 *  (This continues to run, and hold the FDAI at 180 + azimuth,90,0 until launch)
 			 *  It also updates setRotR with new angle should launch azimuth change
 			 */
-			int FR = (int)Math.Round((inerRoll + FDAIOffsetRoll) * 100);
-			int FP = (int)Math.Round((inerPitch + FDAIOffsetPitch) * 100);
-			int FY = (int)Math.Round((inerYaw + FDAIOffsetYaw) * 100);
+			int FR = (int)Math.Round((inerRoll + screenFDAI.offsetR) * 100);
+			int FP = (int)Math.Round((inerPitch + screenFDAI.offsetP) * 100);
+			int FY = (int)Math.Round((inerYaw + screenFDAI.offsetY) * 100);
 			int TR = (int)Math.Round((90 + launchAzimuth) * 100);
 			int TP = (int)Math.Round(90f * 100);
 			int TY = (int)Math.Round(0f * 100);
@@ -244,22 +246,22 @@ namespace KSP_MOCR
 				{
 					if (diff > 1)
 					{
-						FDAIOffsetRoll -= 1f;
+						screenFDAI.offsetR -= 1f;
 					}
 					else
 					{
-						FDAIOffsetRoll -= 0.01f;
+						screenFDAI.offsetR -= 0.01f;
 					}
 				}
 				else
 				{
 					if (diff > 1)
 					{
-						FDAIOffsetRoll += 1f;
+						screenFDAI.offsetR += 1f;
 					}
 					else
 					{
-						FDAIOffsetRoll += 0.01f;
+						screenFDAI.offsetR += 0.01f;
 					}
 				}
 			}
@@ -269,11 +271,11 @@ namespace KSP_MOCR
 				int diff = FP - TP;
 				if (diff > 0)
 				{
-					FDAIOffsetPitch -= 0.01f;
+					screenFDAI.offsetP -= 0.01f;
 				}
 				else
 				{
-					FDAIOffsetPitch += 0.01f;
+					screenFDAI.offsetP += 0.01f;
 				}
 			}
 			
@@ -282,11 +284,11 @@ namespace KSP_MOCR
 				int diff = FY - TY;
 				if (diff > 0)
 				{
-					FDAIOffsetYaw -= 0.01f;
+					screenFDAI.offsetY -= 0.01f;
 				}
 				else
 				{
-					FDAIOffsetYaw += 0.01f;
+					screenFDAI.offsetY += 0.01f;
 				}
 			}
 			
@@ -569,9 +571,9 @@ namespace KSP_MOCR
 						}
 
 						// Store all the data
-						FDAIOffsetRoll = dataStorage[0] / 100f;
-						FDAIOffsetPitch = dataStorage[1] / 100f;
-						FDAIOffsetYaw = dataStorage[2] / 100f;
+						screenFDAI.offsetR = dataStorage[0] / 100f;
+						screenFDAI.offsetP = dataStorage[1] / 100f;
+						screenFDAI.offsetY = dataStorage[2] / 100f;
 
 						TIG = (dataStorage[3] * 3600) + (dataStorage[4] * 60) + (dataStorage[5] / 100f);
 
@@ -890,9 +892,9 @@ namespace KSP_MOCR
 			switch (noun)
 			{
 				case 20: // FDAI Offset angles
-					FDAIOffsetRoll = data[0] / 100f;
-					FDAIOffsetPitch = data[1] / 100f;
-					FDAIOffsetYaw = data[2] / 100f;
+					screenFDAI.offsetR = data[0] / 100f;
+					screenFDAI.offsetP = data[1] / 100f;
+					screenFDAI.offsetY = data[2] / 100f;
 					break;
 					
 				case 29: // Launch Azimuth
@@ -938,25 +940,16 @@ namespace KSP_MOCR
 					break;
 					
 				case 19: // FDAI VIEW ANGLES
-					if (FDAImode == FDAIMode.SURF)
-					{
-						values[0] = (int)Math.Round((FDAIOffsetRoll + roll) * 100);
-						values[1] = (int)Math.Round((FDAIOffsetPitch + pitch) * 100);
-						values[2] = (int)Math.Round((FDAIOffsetYaw + yaw) * 100);
-					}
-					else
-					{
-						values[0] = (int)Math.Round((FDAIOffsetRoll + inerRoll) * 100);
-						values[1] = (int)Math.Round((FDAIOffsetPitch + inerPitch) * 100);
-						values[2] = (int)Math.Round((FDAIOffsetYaw + inerYaw) * 100);
-					}
+					values[0] = (int)Math.Round((screenFDAI.offsetR + screenFDAI.roll) * 100);
+					values[1] = (int)Math.Round((screenFDAI.offsetP + screenFDAI.pitch) * 100);
+					values[2] = (int)Math.Round((screenFDAI.offsetY + screenFDAI.yaw) * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					
 				case 20: // FDAI angles
-					values[0] = (int)Math.Round(FDAIOffsetRoll * 100);
-					values[1] = (int)Math.Round(FDAIOffsetPitch * 100);
-					values[2] = (int)Math.Round(FDAIOffsetYaw * 100);
+					values[0] = (int)Math.Round(screenFDAI.offsetR * 100);
+					values[1] = (int)Math.Round(screenFDAI.offsetP * 100);
+					values[2] = (int)Math.Round(screenFDAI.offsetY * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
 					

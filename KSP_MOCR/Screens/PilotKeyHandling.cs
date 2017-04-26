@@ -18,7 +18,7 @@ namespace KSP_MOCR
 	{
 	public override void keyDown(object sender, KeyEventArgs e)
 		{
-			Console.WriteLine("KD: " + e.KeyCode.ToString());
+			//Console.WriteLine("KD: " + e.KeyCode.ToString());
 			switch (e.KeyCode)
 			{
 				case Keys.V:
@@ -137,7 +137,7 @@ namespace KSP_MOCR
 		
 		public override void keyUp(object sender, KeyEventArgs e)
 		{
-			Console.WriteLine("KU: " + e.KeyCode.ToString());
+			//Console.WriteLine("KU: " + e.KeyCode.ToString());
 			switch (e.KeyCode)
 			{
 				case Keys.V:
@@ -230,7 +230,7 @@ namespace KSP_MOCR
 		
 		private void keyRelClick(object sender, EventArgs e)
 		{
-			Console.WriteLine("KeyRelease");
+			//Console.WriteLine("KeyRelease");
 			keyRel = false;
 			activeVerb = -1;
 			activeNoun = -1;
@@ -242,10 +242,10 @@ namespace KSP_MOCR
 		{
 			entrPress = true;
 
-			Console.WriteLine("B AV: " + activeVerb.ToString());
-			Console.WriteLine("B AN: " + activeNoun.ToString());
-			Console.WriteLine("B ve: " + verb);
-			Console.WriteLine("B no: " + noun);
+			//Console.WriteLine("B AV: " + activeVerb.ToString());
+			//Console.WriteLine("B AN: " + activeNoun.ToString());
+			//Console.WriteLine("B ve: " + verb);
+			//Console.WriteLine("B no: " + noun);
 
 			if (verb != null && noun != null)
 			{
@@ -283,10 +283,10 @@ namespace KSP_MOCR
 				}
 			}
 			
-			Console.WriteLine("A AV: " + activeVerb.ToString());
-			Console.WriteLine("A AN: " + activeNoun.ToString());
-			Console.WriteLine("A ve: " + verb);
-			Console.WriteLine("A no: " + noun);
+			//Console.WriteLine("A AV: " + activeVerb.ToString());
+			//Console.WriteLine("A AN: " + activeNoun.ToString());
+			//Console.WriteLine("A ve: " + verb);
+			//Console.WriteLine("A no: " + noun);
 		}
 		
 		private void proClick(object sender, EventArgs e)

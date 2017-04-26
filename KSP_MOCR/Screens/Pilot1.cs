@@ -68,9 +68,6 @@ namespace KSP_MOCR
 		double launchAzimuth = 90;
 
 		// FDAI PROPERTIES
-		float FDAIOffsetRoll = 0;
-		float FDAIOffsetPitch = 0;
-		float FDAIOffsetYaw = 0;
 		enum FDAIMode { SURF, INER }
 		FDAIMode FDAImode;
 		
@@ -121,7 +118,6 @@ namespace KSP_MOCR
 		double apoapsis = 0;
 		double periapsis = 0;
 		Tuple<double, double, double> vesselSurfDirection;
-		Tuple<double, double, double, double> vesselSurfRotation;
 		Tuple<double, double, double> vesselInerDirection;
 
 		ReferenceFrame surfaceRefsmmat;
@@ -153,6 +149,56 @@ namespace KSP_MOCR
 			this.height = 30;
 			
 			oldStage = currentStage = screenStreams.GetData(DataType.control_currentStage);
+			
+			Thread thread = new Thread(updateFDAIDKSY);
+			thread.IsBackground = true;
+			thread.Start();
+		}
+
+		private void updateFDAIDKSY()
+		{
+			DateTime loopTime = new DateTime();
+			long start;
+			long duration;
+			
+			int sleepTime;
+
+			while (this != null)
+			{
+				start = loopTime.Ticks;
+				
+				// Refresh FDAI values and display
+				if (screenFDAI != null)
+				{
+					if (FDAImode == FDAIMode.SURF)
+					{
+						screenFDAI.setRotation(screenStreams.GetData(DataType.flight_rotation));
+					}
+					else
+					{
+						screenFDAI.setRotation(screenStreams.GetData(DataType.flight_inertial_rotation));
+					}
+					
+					screenFDAI.Invalidate();
+				}
+
+				// Refresh DSKY displays
+				if (screenSegDisps.Count > 5)
+				{
+					if (screenSegDisps[0] != null) { screenSegDisps[0].Invalidate(); }
+					if (screenSegDisps[1] != null) { screenSegDisps[1].Invalidate(); }
+					if (screenSegDisps[2] != null) { screenSegDisps[2].Invalidate(); }
+					if (screenSegDisps[3] != null) { screenSegDisps[3].Invalidate(); }
+					if (screenSegDisps[4] != null) { screenSegDisps[4].Invalidate(); }
+					if (screenSegDisps[5] != null) { screenSegDisps[5].Invalidate(); }
+				}
+
+
+				duration = loopTime.Ticks - start;
+				sleepTime = (int)(40 - (double)(duration / 10000));
+				if (sleepTime < 20) { sleepTime = 20; }
+				Thread.Sleep(sleepTime);
+			}
 		}
 
 		public override void makeElements()
@@ -670,30 +716,11 @@ namespace KSP_MOCR
 				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
 				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
 				vesselInerDirection = screenStreams.GetData(DataType.flight_inertial_direction);
+				//vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
 				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
 				
 				vesselSurfDirection = screenStreams.GetData(DataType.flight_direction);
-				vesselSurfRotation = screenStreams.GetData(DataType.flight_rotation);
-
-				// Calculate inertial angles
-				
-				inerPitch = (float)Helper.rad2deg(Math.Asin(vesselInerDirection.Item2));
-				inerYaw = (float)Helper.rad2deg(Math.Atan(vesselInerDirection.Item3 / vesselInerDirection.Item1));
-				if (vesselInerDirection.Item1 > 0)
-				{
-					if (vesselInerDirection.Item3 > 0)
-					{
-						// Leave Yaw alone
-					}
-					else
-					{
-						inerYaw = 360 + inerYaw;
-					}
-				}
-				else
-				{
-					inerYaw = 180 + inerYaw;
-				}
+				//vesselSurfRotation = screenStreams.GetData(DataType.flight_rotation);
 
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
@@ -863,14 +890,11 @@ namespace KSP_MOCR
 				{
 					screenIndicators[60].setStatus(Indicator.status.AMBER);
 					screenIndicators[61].setStatus(Indicator.status.OFF);
-					screenFDAI.setAttitude(roll + FDAIOffsetRoll, pitch + FDAIOffsetPitch, yaw + FDAIOffsetYaw);
-				
 				}
 				else
 				{
 					screenIndicators[60].setStatus(Indicator.status.OFF);
 					screenIndicators[61].setStatus(Indicator.status.AMBER);
-					screenFDAI.setAttitude(inerRoll + FDAIOffsetRoll, inerPitch + FDAIOffsetPitch, inerYaw + FDAIOffsetYaw);
 				}
 				
 				screenFDAI.Invalidate();
@@ -885,15 +909,15 @@ namespace KSP_MOCR
 				// SET CONTROL ANGLES FOR AUTOPILOTS
 				if (controlMode == 1)
 				{
-					tRoll = this.setRotR;// - FDAIOffsetRoll;
-					tPitch = this.setRotP;// - FDAIOffsetPitch;
-					tYaw = this.setRotY;// - FDAIOffsetYaw;
+					tRoll = this.setRotR - screenFDAI.offsetR;
+					tPitch = this.setRotP - screenFDAI.offsetP;
+					tYaw = this.setRotY - screenFDAI.offsetY;
 				}
 				else if (controlMode == 2)
 				{
-					tRoll = this.lockRotR;// - FDAIOffsetRoll;
-					tPitch = this.lockRotP;// - FDAIOffsetPitch;
-					tYaw = this.lockRotY;// - FDAIOffsetYaw;
+					tRoll = this.lockRotR - screenFDAI.offsetR;
+					tPitch = this.lockRotP - screenFDAI.offsetP;
+					tYaw = this.lockRotY - screenFDAI.offsetY;
 				}
 
 				// SET AUTOPILOT REFERENCE FRAME AND TARGET UNIT VECTOR
@@ -1054,6 +1078,7 @@ namespace KSP_MOCR
 		{
 			controlMode = 3;
 			Thread thread = new Thread(rollProgram);
+			thread.IsBackground = true;
 			thread.Start();
 		}
 
@@ -1061,6 +1086,7 @@ namespace KSP_MOCR
 		{
 			controlMode = 4;
 			Thread thread = new Thread(pitchProgram);
+			thread.IsBackground = true;
 			thread.Start();
 		}
 

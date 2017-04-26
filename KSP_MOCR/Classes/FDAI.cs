@@ -1,20 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace KSP_MOCR
 {
 	partial class FDAI : Label
 	{
-		private float pitch = 0;
-		private float roll = -10;
-		private float yaw = 0;
+		/**
+		 * The rotation order is: Yaw, Pitch, Roll (YXZ)
+		 *
+		 * The axis are:
+		 *   X: left/right
+		 *   Y: up/down
+		 *   Z: in/out
+		 */
+		public double pitch = 0;
+		public double roll = 0;
+		public double yaw = 0;
+
+		public double offsetR = 0;
+		public double offsetP = 0;
+		public double offsetY = 0;
 		
-		double zeroX = 0;
-		double zeroY = 90;
-		double zeroZ = 0;
+		double zeroR = 0;
+		double zeroP = 0;
+		double zeroY = -90;
+
+		Tuple<double, double, double, double> rotation;
+		readonly Tuple<double, double, double, double> baseDirection = new Tuple<double, double, double, double>(0, 1, 0, 0); // w, x, y, z
 		
 		
 		int FDAI_size;
@@ -57,11 +74,17 @@ namespace KSP_MOCR
             this.DoubleBuffered = true;
 		}
 
+		/*
 		public void setAttitude(float roll, float pitch, float yaw)
 		{
 			this.pitch = pitch;
 			this.roll = roll;
 			this.yaw = yaw;
+		}*/
+
+		public void setRotation(Tuple<double, double, double, double> q)
+		{
+			this.rotation = q;
 		}
 
 
@@ -69,6 +92,11 @@ namespace KSP_MOCR
 		{
 			Graphics g = e.Graphics;
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+			if (this.rotation != null)
+			{
+				setRotFromQuaternion(this.rotation);
+			}
 
 			paintFDAI(e, g);
 			//paintPFD(e, g);
@@ -102,9 +130,10 @@ namespace KSP_MOCR
 			double shortLineLength = FDAI_size / 14;
 			double crosshairLength = FDAI_size / 2;
 
-			double rotX = pitch;
-			double rotY = yaw;
-			double rotZ = -roll;
+			double rotX = -yaw - offsetY + zeroY;
+			double rotY = -pitch + offsetP + zeroP;
+			double rotZ = roll - offsetR + zeroR;
+			//Console.WriteLine("R: " + roll + ", P: " + pitch + ", Y:" + yaw);
 
 			float midPointX = (float)FDAI_centerX;
 			float midPointY = (float)FDAI_centerY;
@@ -211,9 +240,6 @@ namespace KSP_MOCR
 			// Rotate, clip, project, transform and Draw Polygons
 			for (int i = 0; i < collection.Count; i++)
 			{
-				// Initial rotaion to zero FDAI
-				collection[i] = rotPolygon(collection[i], zeroX, zeroY, zeroZ);
-				
 				collection[i] = rotPolygon(collection[i], rotX, rotY, rotZ);
 				collection[i] = clipPolygonAtZPoint(collection[i], 0);
 
@@ -234,9 +260,6 @@ namespace KSP_MOCR
 			// Rotate, clip, project, transform and Draw Lines
 			for (int i = 0; i < collection.Count; i++)
 			{
-				// Initial rotaion to zero FDAI
-				collection[i] = rotPoints(collection[i], zeroX, zeroY, zeroZ);
-				
 				collection[i] = rotPoints(collection[i], rotX, rotY, rotZ);
 				collection[i] = clipLineAtZPoint(collection[i], 10);
 
@@ -313,7 +336,7 @@ namespace KSP_MOCR
 			GraphicsState state = g.Save();
 			g.ResetTransform();
 			g.TranslateTransform((float)FDAI_centerX, (float)FDAI_centerY);
-			g.RotateTransform((float)-roll);
+			g.RotateTransform((float)(roll + 90 - offsetR));
 
 			Point[] arrow = new Point[4];
 			arrow[0] = new Point(0, 0 - (FDAI_size / 2));
@@ -875,18 +898,21 @@ namespace KSP_MOCR
 			return output;
 		}
 
+		/**
+		 * Rotation order is X,Y,Z
+		 */
 		private Tuple<double, double, double> rotPoint(Tuple<double, double, double> point, double rotX, double rotY, double rotZ)
 		{
 			double x;
 			double y;
 			double z;
-
+			
 			// Rotate around X-axis
 			x = point.Item1;
 			y = (point.Item2 * Math.Sin(Helper.deg2rad(rotX))) - (point.Item3 * Math.Cos(Helper.deg2rad(rotX)));
 			z = (point.Item2 * Math.Cos(Helper.deg2rad(rotX))) + (point.Item3 * Math.Sin(Helper.deg2rad(rotX)));
 			point = new Tuple<double, double, double>(x, y, z);
-
+			
 			// Rotate around Y-axis
 			x = (point.Item1 * Math.Cos(Helper.deg2rad(rotY))) - (point.Item3 * Math.Sin(Helper.deg2rad(rotY)));
 			y = point.Item2;
@@ -1075,7 +1101,7 @@ namespace KSP_MOCR
 			GraphicsState state = g.Save();
 			g.ResetTransform();
 			g.TranslateTransform((float)FDAI_centerX, (float)FDAI_centerY);
-			g.RotateTransform(-roll);
+			g.RotateTransform((float)-roll);
 
 			// If 0 degrees pitch was not found, draw either all sky or all ground.
 			if (!horizon)
@@ -1210,6 +1236,128 @@ namespace KSP_MOCR
 
 		}
 
+		private Tuple<double, double, double> Q2V(Tuple<double, double, double, double> q)
+		{
+			Tuple<double, double, double, double> R = new Tuple<double, double, double, double>(q.Item4, q.Item1, q.Item2, q.Item3); // Rotation to be applied
+			Tuple<double, double, double, double> P = baseDirection;
+ 			Tuple<double, double, double, double> Rc = new Tuple<double, double, double, double>(q.Item4, -q.Item1, -q.Item2, -q.Item3); // R-conjugate R'
+
+			// The new vector
+			Tuple<double, double, double, double> Pc = H(H(R, P), Rc);
+
+			return new Tuple<double, double, double>(Pc.Item2, Pc.Item3, Pc.Item4);
+		}
+
+		private Tuple<double, double, double, double> H(Tuple<double, double, double, double> a, Tuple<double, double, double, double> b)
+		{
+			return HamiltonProduct(a, b);
+		}
 		
+		private Tuple<double, double, double, double> HamiltonProduct(Tuple<double, double, double, double> a, Tuple<double, double, double, double> b)
+		{
+			// r = b, q = a
+			double w = b.Item1 * a.Item1 - b.Item2 * a.Item2 - b.Item3 * a.Item3 - b.Item4 * a.Item4;
+			double x = b.Item1 * a.Item2 + b.Item2 * a.Item1 - b.Item3 * a.Item4 + b.Item4 * a.Item3;
+			double y = b.Item1 * a.Item3 + b.Item2 * a.Item4 + b.Item3 * a.Item1 - b.Item4 * a.Item2;
+			double z = b.Item1 * a.Item4 - b.Item2 * a.Item3 + b.Item3 * a.Item2 + b.Item4 * a.Item1;
+
+			return new Tuple<double, double, double, double>(w, x, y, z);
+			
+			/*
+		return [r[0]*q[0]-r[1]*q[1]-r[2]*q[2]-r[3]*q[3],
+            r[0]*q[1]+r[1]*q[0]-r[2]*q[3]+r[3]*q[2],
+            r[0]*q[2]+r[1]*q[3]+r[2]*q[0]-r[3]*q[1],
+            r[0]*q[3]-r[1]*q[2]+r[2]*q[1]+r[3]*q[0]]
+            */
+		}
+
+		private void setRotFromVector(Tuple<double, double, double, double> q)
+		{
+			double w = q.Item1;
+			double x = q.Item2;
+			double y = q.Item3;
+			double z = q.Item4;
+			
+			roll  = (float)Helper.rad2deg(Math.Atan2(2*y*w + 2*x*z, 1 - 2*y*y - 2*z*z));
+			pitch = (float)Helper.rad2deg(Math.Atan2(2*x*w + 2*y*z, 1 - 2*x*x - 2*z*z));
+			yaw   = (float)Helper.rad2deg(Math.Asin(2*x*y + 2*z*w));
+		}
+
+		private void setRotFromQuaternion(Tuple<double, double, double, double> q)
+		{
+			// 1:X, 2:Y, 3:Z, 4:W
+			double x = q.Item1;
+			double y = q.Item2;
+			double z = q.Item3;
+			double w = q.Item4;
+
+			double a = 0;
+			double b = 0;
+			double c = 0;
+			double d = 0;
+			double e = 0;
+
+			String order = "XZY";//XYZ
+
+			switch (order)
+			{
+
+				case "ZYX":
+					a = 2 * (x * y + w * z);
+					b = w * w + x * x - y * y - z * z;
+					c = -2 * (x * z - w * y);
+					d = 2 * (y * z + w * x);
+					e = w * w - x * x - y * y + z * z;
+					break;
+				case "ZXY":
+					a = -2 * (x * y - w * z);
+					b = w * w - x * x + y * y - z * z;
+					c = 2 * (y * z + w * x);
+					d = -2 * (x * z - w * y);
+					e = w * w - x * x - y * y + z * z;
+					break;
+				case "XYZ":
+					a = -2 * (y * z - w * x);
+					b = w * w - x * x - y * y + z * z;
+					c = 2 * (x * z + w * y);
+					d = -2 * (x * y - w * z);
+					e = w * w + x * x - y * y - z * z;
+					break;
+				case "XZY":
+					a = 2 * (y * z + w * x);
+					b = w * w - x * x + y * y - z * z;
+					c = -2 * (x * y - w * z);
+					d = 2 * (x * z + w * y);
+					e = w * w + x * x - y * y - z * z;
+					break;
+				case "YXZ":
+					a = 2 * (x * z + w * y);
+					b = w * w - x * x - y * y + z * z;
+					c = -2 * (y * z - w * x);
+					d = 2 * (x * y + w * z);
+					e = w * w - x * x + y * y - z * z;
+					break;
+			}
+			
+			roll = Helper.rad2deg(Math.Atan2(d, e)); // Z
+			pitch = Helper.rad2deg(Math.Asin(c)); // Y
+			yaw = Helper.rad2deg(Math.Atan2(a, b)); // X
+
+			/*
+			yaw = Helper.rad2deg(Math.Atan2(d, e)); // X
+			pitch = Helper.rad2deg(Math.Asin(c)); // Y
+			roll = Helper.rad2deg(Math.Atan2(a, b)); // Z
+			/*
+			threeaxisrot( 2*(q.x*q.y + q.w*q.z),
+                     q.w*q.w + q.x*q.x - q.y*q.y - q.z*q.z,
+                    -2*(q.x*q.z - q.w*q.y),
+                     2*(q.y*q.z + q.w*q.x),
+                     q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z,
+                     res);
+			res[0] = atan2( r31, r32 );
+  			res[1] = asin ( r21 );
+  			res[2] = atan2( r11, r12 );
+			*/
+		}
 	}
 }

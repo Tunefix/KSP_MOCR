@@ -175,7 +175,7 @@ namespace KSP_MOCR
 				catch (Exception) { }
 
 				// Load Images
-				Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
+				//Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
 				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
 				indicatorImages[9][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator9x1.png");
 				indicatorImages[8][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator8x1.png");
@@ -256,7 +256,7 @@ namespace KSP_MOCR
 			int remainTime = activeScreen.updateRate - (int)updateDuration.TotalMilliseconds;
 
 			if (remainTime < 100) { remainTime = 100; }
-			Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString());
+			//Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString());
 
 			screenTimer.Interval = remainTime;
 			screenTimer.Start();
