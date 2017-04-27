@@ -151,8 +151,6 @@ namespace KSP_MOCR
 				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x1.png");
 				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator1x1.png");
 				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x2.png");
-				engineOn = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/EngineOn.png");
-				engineOff = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/EngineOff.png");
 			}
 			else
 			{
@@ -187,8 +185,6 @@ namespace KSP_MOCR
 				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x1.png");
 				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator1x1.png");
 				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x2.png");
-				engineOn = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\EngineOn.png");
-				engineOff = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\EngineOff.png");
 			}
 
 			// Setup Helper
@@ -248,6 +244,7 @@ namespace KSP_MOCR
 			if (activeScreen != null)
 			{
 				activeScreen.updateElements(sender, e);
+				this.Invalidate();
 			}
 
 			updateEnd = DateTime.Now;

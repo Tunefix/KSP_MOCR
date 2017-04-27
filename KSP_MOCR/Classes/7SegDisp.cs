@@ -18,6 +18,8 @@ namespace KSP_MOCR
 		public float pxPrDigitW = 0;
 		public float pxPrDigitH = 0;
 
+		public bool off = false; // When true, dont display anything
+
 		PointF[] points;
 		
 		public enum SignState { NONE, PLUS, MINUS, AUTO }
@@ -75,7 +77,7 @@ namespace KSP_MOCR
 			Rectangle irect = new Rectangle(0, 0, Width, Height);
 			g.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 0, 0)), irect);
 
-			if (value == "")
+			if (value == "" || off == true)
 			{
 				int start;
 				int stop;
@@ -175,7 +177,6 @@ namespace KSP_MOCR
 								value = " " + value;
 							}
 						}
-						
 					}
 					else
 					{
@@ -198,7 +199,16 @@ namespace KSP_MOCR
 					rect = new RectangleF((i * charWidth) + marginLeft, marginTop, charWidth * 0.95f, charHeight);
 					
 					int index = i + indexOffset;
-					String digit = value.Substring(index, 1);
+					String digit;
+					if (value.Length <= index)
+					{
+						digit = " ";
+					}
+					else
+					{
+						digit = value.Substring(index, 1);
+					}
+					
 					switch (digit)
 					{
 						case "0":

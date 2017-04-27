@@ -16,8 +16,8 @@ namespace KSP_MOCR
 {
 	partial class Pilot1
 	{
-		
-		
+
+
 		private void updateDSKY()
 		{
 			// VERB DISPLAY
@@ -27,13 +27,13 @@ namespace KSP_MOCR
 				verbStr = verb;
 				if (verbStr.Length == 1) { verbStr = verbStr + " "; }
 			}
-			else if(activeVerb != -1)
+			else if (activeVerb != -1)
 			{
 				verbStr = activeVerb.ToString();
-				if (verbStr.Length == 1) { verbStr = verbStr + " "; }
-			}			
+				if (verbStr.Length == 1) { verbStr = "0" + verbStr; }
+			}
 			screenSegDisps[3].setValue(verbStr);
-			
+
 			// NOUN DISPLAY
 			String nounStr = "";
 			if (noun != null)
@@ -44,17 +44,17 @@ namespace KSP_MOCR
 			else if (activeNoun != -1)
 			{
 				nounStr = activeNoun.ToString();
-				if (nounStr.Length == 1) { nounStr = nounStr + " "; }
-			}			
+				if (nounStr.Length == 1) { nounStr = "0" + nounStr; }
+			}
 			screenSegDisps[4].setValue(nounStr);
-			
+
 			// PROG DISPLAY
 			String progStr = "";
 			if (activeProg != -1)
 			{
 				progStr = activeProg.ToString();
 				if (progStr.Length == 1) { progStr = "0" + progStr; }
-			}			
+			}
 			screenSegDisps[5].setValue(progStr);
 
 			if (activeNoun != -1 && activeVerb != -1 && activeVerb != 88)
@@ -124,13 +124,16 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void keyRelCheck()
+		private bool keyRelCheck()
 		{
-			if (activeVerb != -1)
+			// VERB KEY REL CHECK			
+			if (!string.IsNullOrEmpty(verb) || !string.IsNullOrEmpty(verb) || enterVerb || enterNoun)
 			{
 				keyRelPress = false;
 				keyRel = true;
+				return false;
 			}
+			return true;
 		}
 
 		private void runProg0()
@@ -139,15 +142,19 @@ namespace KSP_MOCR
 			 * IDLE PROGRAM
 			 * Clear DKSY and idle
 			 */
-			if (runOnce)
+			if (runOnceProg)
 			{
+				activeVerb = -1;
+				activeNoun = -1;
+				verb = "";
+				noun = "";
 				r1 = "";
 				r2 = "";
 				r3 = "";
 				screenSegDisps[0].setValue("", 0);
 				screenSegDisps[1].setValue("", 0);
 				screenSegDisps[2].setValue("", 0);
-				runOnce = false;
+				runOnceProg = false;
 			}
 		}
 
@@ -166,7 +173,7 @@ namespace KSP_MOCR
 			int DR = FR - TR;
 			int DP = FP - TP;
 			int DY = FY - TY;
-			
+
 			if ((FR == TR || Math.Abs(DR) < 100)
 				&& (FP == TP || Math.Abs(DP) < 100)
 				&& (FY == TY || Math.Abs(DY) < 100)
@@ -196,7 +203,7 @@ namespace KSP_MOCR
 						screenFDAI.offsetR += 1f;
 					}
 				}
-				
+
 				if (FP != TP)
 				{
 					if (DP > 0)
@@ -208,7 +215,7 @@ namespace KSP_MOCR
 						screenFDAI.offsetP += 1f;
 					}
 				}
-				
+
 				if (FY != TY)
 				{
 					if (DY > 0)
@@ -222,7 +229,7 @@ namespace KSP_MOCR
 				}
 			}
 		}
-		
+
 		private void runProg2()
 		{
 			/*
@@ -236,9 +243,9 @@ namespace KSP_MOCR
 			int TR = (int)Math.Round((90 + launchAzimuth) * 100);
 			int TP = (int)Math.Round(90f * 100);
 			int TY = (int)Math.Round(0f * 100);
-			
+
 			setRotR = (int)(90 + launchAzimuth);
-		
+
 			if (FR != TR)
 			{
 				int diff = FR - TR;
@@ -265,7 +272,7 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			
+
 			if (FP != TP)
 			{
 				int diff = FP - TP;
@@ -278,7 +285,7 @@ namespace KSP_MOCR
 					screenFDAI.offsetP += 0.01f;
 				}
 			}
-			
+
 			if (FY != TY)
 			{
 				int diff = FY - TY;
@@ -291,17 +298,17 @@ namespace KSP_MOCR
 					screenFDAI.offsetY += 0.01f;
 				}
 			}
-			
+
 			if (MET > 0)
 			{
 				activeProg = 11;
 			}
 		}
-		
+
 		private void runProg11()
 		{
 		}
-		
+
 		private void runProg30()
 		{
 			switch (progStep)
@@ -318,7 +325,7 @@ namespace KSP_MOCR
 					r1sign = SegDisp.SignState.NONE;
 					r2sign = SegDisp.SignState.NONE;
 					r3sign = SegDisp.SignState.NONE;
-					flashing = true;
+					flashNoun = true;
 					entrPress = false;
 					progStep++;
 					enterR1 = true;
@@ -585,14 +592,12 @@ namespace KSP_MOCR
 						r1 = "";
 						r2 = "";
 						r3 = "";
-						
+
 						entrPress = false;
 						progStep++;
 						activeVerb = 16;
 						activeNoun = 34;
-						flashing = false;
-						flashOn = false;
-						flashTime.Stop();
+						flashNoun = false;
 					}
 					else if (entrPress && activeVerb == -1)
 					{
@@ -624,9 +629,15 @@ namespace KSP_MOCR
 		{
 			switch (verb)
 			{
+				case 6: // Display Data
+					verb6(noun);
+					break;
 				case 16: // Monitor Data
-					verb16(noun);
-					break;					
+					if (keyRelCheck())
+					{
+						verb16(noun);
+					}
+					break;
 				case 21: // Load R1
 					verb21(noun);
 					break;
@@ -644,15 +655,24 @@ namespace KSP_MOCR
 					break;
 				default:
 					oprError = true;
-					this.verb = verb.ToString().Length < 2 ? "0" + verb.ToString(): verb.ToString();
-					this.noun = noun.ToString().Length < 2 ? "0" + noun.ToString(): noun.ToString();
+					this.verb = verb.ToString().Length < 2 ? "0" + verb.ToString() : verb.ToString();
+					this.noun = noun.ToString().Length < 2 ? "0" + noun.ToString() : noun.ToString();
 					activeVerb = -1;
 					activeNoun = -1;
 					break;
 			}
 		}
 
-		
+		private void verb6(int noun)
+		{
+			if (runOnceVerb)
+			{
+				verb16(noun);
+				runOnceVerb = false;
+			}
+		}
+
+
 
 		private void verb16(int noun)
 		{
@@ -661,7 +681,7 @@ namespace KSP_MOCR
 
 			if (nounData[0] != null)
 			{
-				screenSegDisps[0].setValue(Math.Abs((int)nounData[0]).ToString(), (int)nounData[3], nounData[0] < 0 ? SegDisp.SignState.MINUS: SegDisp.SignState.PLUS);
+				screenSegDisps[0].setValue(Math.Abs((int)nounData[0]).ToString(), (int)nounData[3], nounData[0] < 0 ? SegDisp.SignState.MINUS : SegDisp.SignState.PLUS);
 
 				if (nounData[1] != null)
 				{
@@ -695,7 +715,8 @@ namespace KSP_MOCR
 					r1sign = SegDisp.SignState.NONE;
 					r2sign = SegDisp.SignState.NONE;
 					r3sign = SegDisp.SignState.NONE;
-					flashing = true;
+					flashVerb = true;
+					flashNoun = true;
 					entrPress = false;
 					progStep++;
 					enterR1 = true;
@@ -729,6 +750,8 @@ namespace KSP_MOCR
 					activeVerb = -1;
 					activeNoun = -1;
 					progStep = 0;
+					flashNoun = false;
+					flashVerb = false;
 					break;
 			}
 		}
@@ -749,7 +772,8 @@ namespace KSP_MOCR
 					r1sign = SegDisp.SignState.NONE;
 					r2sign = SegDisp.SignState.NONE;
 					r3sign = SegDisp.SignState.NONE;
-					flashing = true;
+					flashVerb = true;
+					flashNoun = true;
 					entrPress = false;
 					progStep++;
 					enterR1 = true;
@@ -823,6 +847,8 @@ namespace KSP_MOCR
 					activeVerb = -1;
 					activeNoun = -1;
 					progStep = 0;
+					flashVerb = false;
+					flashNoun = false;
 					break;
 			}
 		}
@@ -874,10 +900,10 @@ namespace KSP_MOCR
 				activeProg = storeProg;
 				storeProg = -1;
 			}
-			
-			screenSegDisps[0].setValue(r1,p1);
-			screenSegDisps[1].setValue(r2,p2);
-			screenSegDisps[2].setValue(r3,p3);
+
+			screenSegDisps[0].setValue(r1, p1);
+			screenSegDisps[1].setValue(r2, p2);
+			screenSegDisps[2].setValue(r3, p3);
 		}
 
 		private void blankRegisters()
@@ -896,12 +922,12 @@ namespace KSP_MOCR
 					screenFDAI.offsetP = data[1] / 100f;
 					screenFDAI.offsetY = data[2] / 100f;
 					break;
-					
+
 				case 29: // Launch Azimuth
 					launchAzimuth = data[0] / 100f;
 					break;
 			}
-			
+
 		}
 
 		private int?[] getNounData(int noun)
@@ -910,7 +936,7 @@ namespace KSP_MOCR
 			double secs;
 			int mins;
 			int hrs;
-			
+
 			/*
 			 * values structure:
 			 * values[0]: R1
@@ -931,52 +957,52 @@ namespace KSP_MOCR
 					values[2] = (int)Math.Round(yaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
+
 				case 18: // Inertial Reference Attitude
 					values[0] = (int)Math.Round(inerRoll * 100);
 					values[1] = (int)Math.Round(inerPitch * 100);
 					values[2] = (int)Math.Round(inerYaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
+
 				case 19: // FDAI VIEW ANGLES
 					values[0] = (int)Math.Round((screenFDAI.offsetR + screenFDAI.roll) * 100);
 					values[1] = (int)Math.Round((screenFDAI.offsetP + screenFDAI.pitch) * 100);
 					values[2] = (int)Math.Round((screenFDAI.offsetY + screenFDAI.yaw) * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
+
 				case 20: // FDAI angles
 					values[0] = (int)Math.Round(screenFDAI.offsetR * 100);
 					values[1] = (int)Math.Round(screenFDAI.offsetP * 100);
 					values[2] = (int)Math.Round(screenFDAI.offsetY * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
-					
+
+
 				case 21: // Autopilot Direction vector
 					values[0] = (int)Math.Round(vector1 * 100);
 					values[1] = (int)Math.Round(vector2 * 100);
 					values[2] = (int)Math.Round(vector3 * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
-					
+
+
 				case 22: // Vessel SURF-mode Direction vector
 					values[0] = (int)Math.Round(vesselSurfDirection.Item1 * 100);
 					values[1] = (int)Math.Round(vesselSurfDirection.Item2 * 100);
 					values[2] = (int)Math.Round(vesselSurfDirection.Item3 * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
-					
+
+
 				case 23: // Autopilot target RPY
 					values[0] = (int)Math.Round(tRoll * 100);
 					values[1] = (int)Math.Round(tPitch * 100);
 					values[2] = (int)Math.Round(tYaw * 100);
 					values[3] = values[4] = values[5] = 2;
 					break;
-					
+
 				case 29: // Launch Azimuth
 					values[0] = (int)Math.Round(launchAzimuth * 100);
 					values[1] = null;
@@ -984,14 +1010,14 @@ namespace KSP_MOCR
 					values[3] = 2;
 					values[4] = values[5] = 0;
 					break;
-					
+
 				case 34: // TIG (Time of ignition of event)
 					secs = TIG;
 					mins = (int)Math.Floor(secs / 60f);
 					secs = secs - (mins * 60);
 					hrs = (int)Math.Floor(mins / 60f);
 					mins = mins - (hrs * 60);
-					
+
 					values[0] = hrs;
 					values[1] = mins;
 					values[2] = (int)Math.Round(secs * 100);
@@ -1000,14 +1026,14 @@ namespace KSP_MOCR
 					values[4] = 0;
 					values[5] = 2;
 					break;
-					
+
 				case 35: // TTI (Time to ignition of event)
 					secs = TIG - MET;
 					mins = (int)Math.Floor(secs / 60f);
 					secs = secs - (mins * 60);
 					hrs = (int)Math.Floor(mins / 60f);
 					mins = mins - (hrs * 60);
-					
+
 					values[0] = hrs;
 					values[1] = mins;
 					values[2] = (int)Math.Round(secs * 100);
@@ -1016,14 +1042,14 @@ namespace KSP_MOCR
 					values[4] = 0;
 					values[5] = 2;
 					break;
-					
+
 				case 36: // MET
 					secs = MET;
 					mins = (int)Math.Floor(secs / 60f);
 					secs = secs - (mins * 60);
 					hrs = (int)Math.Floor(mins / 60f);
 					mins = mins - (hrs * 60);
-					
+
 					values[0] = hrs;
 					values[1] = mins;
 					values[2] = (int)Math.Round(secs * 100);
@@ -1032,11 +1058,11 @@ namespace KSP_MOCR
 					values[4] = 0;
 					values[5] = 2;
 					break;
-					
+
 				case 44: // Apoapsis and Periapsis
 					values[0] = (int)Math.Round(apoapsis / 10);
 					values[1] = (int)Math.Round(periapsis / 10);
-					values[2] = (int)Math.Round(meanAltitude / 10);;
+					values[2] = (int)Math.Round(meanAltitude / 10); ;
 					values[3] = values[4] = values[5] = 2;
 					break;
 				case 73: // Flight Data
@@ -1048,7 +1074,7 @@ namespace KSP_MOCR
 					values[4] = 1;
 					values[5] = 2;
 					break;
-					
+
 				case 80: // Burn data
 					secs = burnTime;
 					mins = (int)Math.Floor(secs / 60f);
@@ -1063,8 +1089,8 @@ namespace KSP_MOCR
 					break;
 				default:
 					oprError = true;
-					this.verb = activeVerb.ToString().Length < 2 ? "0" + activeVerb.ToString(): activeVerb.ToString();
-					this.noun = activeNoun.ToString().Length < 2 ? "0" + activeNoun.ToString(): activeNoun.ToString();
+					this.verb = activeVerb.ToString().Length < 2 ? "0" + activeVerb.ToString() : activeVerb.ToString();
+					this.noun = activeNoun.ToString().Length < 2 ? "0" + activeNoun.ToString() : activeNoun.ToString();
 					activeVerb = -1;
 					activeNoun = -1;
 					break;

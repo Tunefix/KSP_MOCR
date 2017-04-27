@@ -31,7 +31,8 @@ namespace KSP_MOCR
 		private int controlMode = 0; // 0: Free, 1: Autopilot, 2: Lock, 3: Roll program, 4: pitch program
 
 		// DKSY PROPERITES
-		bool runOnce = false;
+		bool runOnceProg = false;
+		bool runOnceVerb = false;
 		int progStep = 0;
 		bool proPress = false;
 		bool entrPress = false;
@@ -56,9 +57,16 @@ namespace KSP_MOCR
 		int activeNoun = -1;
 		int activeProg = 0;
 		int storeProg = -1;
-		bool flashing = false;
-		bool flashOn;
-		Stopwatch flashTime = new Stopwatch();
+		bool flashVerb = false;
+		bool flashNoun = false;
+		bool flashProg = false;
+		bool flashR1 = false;
+		bool flashR2 = false;
+		bool flashR3 = false;
+		bool flashOn = false;
+		long flashStart = 0;
+		DateTime flashNow;
+		long flashDur = 500;
 		bool oprError = false;
 		bool keyRel = false;
 		float TIG = 0;
@@ -143,7 +151,7 @@ namespace KSP_MOCR
 			this.chartData = form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
-			this.updateRate = 200;
+			this.updateRate = 500;
 
 			this.width = 120;
 			this.height = 30;
@@ -166,7 +174,7 @@ namespace KSP_MOCR
 			while (this != null)
 			{
 				start = loopTime.Ticks;
-				
+
 				// Refresh FDAI values and display
 				if (screenFDAI != null)
 				{
@@ -178,27 +186,86 @@ namespace KSP_MOCR
 					{
 						screenFDAI.setRotation(screenStreams.GetData(DataType.flight_inertial_rotation));
 					}
-					
+
 					screenFDAI.Invalidate();
 				}
 
-				// Refresh DSKY displays
-				if (screenSegDisps.Count > 5)
+				// Rotate flashing status
+				if (flashR1 || flashR2 || flashR3 || flashVerb || flashNoun || flashProg)
 				{
-					if (screenSegDisps[0] != null) { screenSegDisps[0].Invalidate(); }
-					if (screenSegDisps[1] != null) { screenSegDisps[1].Invalidate(); }
-					if (screenSegDisps[2] != null) { screenSegDisps[2].Invalidate(); }
-					if (screenSegDisps[3] != null) { screenSegDisps[3].Invalidate(); }
-					if (screenSegDisps[4] != null) { screenSegDisps[4].Invalidate(); }
-					if (screenSegDisps[5] != null) { screenSegDisps[5].Invalidate(); }
+					if (flashOn)
+					{
+						flashNow = DateTime.Now;
+						if (flashNow.Ticks > (flashStart + (flashDur * 10000)))
+						{
+							flashOn = false;
+							flashStart = flashNow.Ticks;
+						}
+					}
+					else
+					{
+						flashNow = DateTime.Now;
+						if (flashNow.Ticks > (flashStart + (flashDur * 10000)))
+						{
+							flashOn = true;
+							flashStart = flashNow.Ticks;
+						}
+					}
+				}
+
+				// Run the computer
+				// Refresh DSKY displays
+				if (screenSegDisps.Count > 5 && screenSegDisps[5] != null)
+				{
+					updateDSKY();
+					if (screenSegDisps[0] != null) { update7Seg(screenSegDisps[0], flashR1); }
+					if (screenSegDisps[1] != null) { update7Seg(screenSegDisps[1], flashR2); }
+					if (screenSegDisps[2] != null) { update7Seg(screenSegDisps[2], flashR3); }
+					if (screenSegDisps[3] != null) { update7Seg(screenSegDisps[3], flashVerb); }
+					if (screenSegDisps[4] != null) { update7Seg(screenSegDisps[4], flashNoun); }
+					if (screenSegDisps[5] != null) { update7Seg(screenSegDisps[5], flashProg); }
 				}
 
 
 				duration = loopTime.Ticks - start;
 				sleepTime = (int)(40 - (double)(duration / 10000));
-				if (sleepTime < 20) { sleepTime = 20; }
+				if (sleepTime < 20)
+				{
+					sleepTime = 20;
+					if (screenIndicators.Count > 50 && screenIndicators[50] != null)
+					{
+						screenIndicators[50].setStatus(Indicator.status.GREEN);
+					}
+				}
+				else
+				{
+					if (screenIndicators.Count > 50 && screenIndicators[50] != null)
+					{
+						screenIndicators[50].setStatus(Indicator.status.OFF);
+					}
+				}
 				Thread.Sleep(sleepTime);
 			}
+		}
+
+		private void update7Seg(SegDisp disp, bool flash)
+		{
+			if (flash)
+			{
+				if (flashOn)
+				{
+					disp.off = true;
+				}
+				else
+				{
+					disp.off = false;
+				}
+			}
+			else
+			{
+				disp.off = false;
+			}
+			disp.Invalidate();
 		}
 
 		public override void makeElements()
@@ -585,12 +652,6 @@ namespace KSP_MOCR
 			screenButtons[68].Font = form.buttonFont;
 			screenButtons[68].Click += rsetClick;
 			
-			// FDAI
-			screenFDAI = new FDAI();
-			screenFDAI.Font = form.buttonFont;
-			screenFDAI.Location = new Point((int)(46 * form.pxPrChar)+4, (int)(3 * form.pxPrLine) + 4);
-			screenFDAI.Size = new Size((int)(36 * form.pxPrChar), (int)(17 * form.pxPrLine));
-			form.Controls.Add(screenFDAI);
 			
 			// FDAI LABELS
 			screenLabels[80] = Helper.CreateLabel(38, 3, 8, 1, "┌ FDAI ─");
@@ -624,6 +685,13 @@ namespace KSP_MOCR
 			screenButtons[71].Font = form.buttonFont;
 			screenButtons[71].Click += (sender, e) => setFDAIMode(sender, e, FDAIMode.INER);
 			
+			
+			// FDAI
+			screenFDAI = new FDAI();
+			screenFDAI.Font = form.buttonFont;
+			screenFDAI.Location = new Point((int)(46 * form.pxPrChar)+4, (int)(3 * form.pxPrLine) + 4);
+			screenFDAI.Size = new Size((int)(36 * form.pxPrChar), (int)(17 * form.pxPrLine));
+			form.Controls.Add(screenFDAI);
 
 			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
@@ -968,10 +1036,6 @@ namespace KSP_MOCR
 					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tYaw;
 				}
 
-				screenIndicators[50].setStatus(Indicator.status.GREEN);
-				updateDSKY();
-				screenIndicators[50].setStatus(Indicator.status.OFF);
-
 				if (oprError)
 				{
 					screenIndicators[52].setStatus(Indicator.status.WHITE);
@@ -1101,57 +1165,64 @@ namespace KSP_MOCR
 
 		private void setSAS(object sender, EventArgs e, int mode)
 		{
-			switch(mode)
+			try
 			{
-				case 0:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.StabilityAssist;
-					break;
-				case 1:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Prograde;
-					break;
-				case 2:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Retrograde;
-					break;
-				case 3:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Normal;
-					break;
-				case 4:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiNormal;
-					break;
-				case 5:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Radial;
-					break;
-				case 6:
-					form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiRadial;
-					break;
-				case 7:
-					if (form.spaceCenter.ActiveVessel.Control.Nodes.Count > 0)
-					{
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Maneuver;
-					}
-					break;
-				case 10:
-					if (form.spaceCenter.ActiveVessel.Control.RCS)
-					{
-						form.spaceCenter.ActiveVessel.Control.RCS = false;
-					}
-					else
-					{
-						form.spaceCenter.ActiveVessel.Control.RCS = true;
-					}
-					break;
-				case 11:
-					if (form.spaceCenter.ActiveVessel.Control.SAS)
-					{
-						form.spaceCenter.ActiveVessel.Control.SAS = false;
-					}
-					else
-					{
-						form.spaceCenter.ActiveVessel.Control.SAS = true;
-						form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
-						controlMode = 0;
-					}
-					break;
+				switch (mode)
+				{
+					case 0:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.StabilityAssist;
+						break;
+					case 1:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Prograde;
+						break;
+					case 2:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Retrograde;
+						break;
+					case 3:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Normal;
+						break;
+					case 4:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiNormal;
+						break;
+					case 5:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Radial;
+						break;
+					case 6:
+						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiRadial;
+						break;
+					case 7:
+						if (form.spaceCenter.ActiveVessel.Control.Nodes.Count > 0)
+						{
+							form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Maneuver;
+						}
+						break;
+					case 10:
+						if (form.spaceCenter.ActiveVessel.Control.RCS)
+						{
+							form.spaceCenter.ActiveVessel.Control.RCS = false;
+						}
+						else
+						{
+							form.spaceCenter.ActiveVessel.Control.RCS = true;
+						}
+						break;
+					case 11:
+						if (form.spaceCenter.ActiveVessel.Control.SAS)
+						{
+							form.spaceCenter.ActiveVessel.Control.SAS = false;
+						}
+						else
+						{
+							form.spaceCenter.ActiveVessel.Control.SAS = true;
+							form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
+							controlMode = 0;
+						}
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.GetType() + ": " + ex.Message + "\n" + ex.StackTrace);
 			}
 		}
 
@@ -1163,8 +1234,8 @@ namespace KSP_MOCR
 		private void rollProgram()
 		{
 			//Console.WriteLine("ROLL PROGRAM");
-			double curRoll = Math.Round(roll);
-			double dstRoll = setRotR;
+			double curRoll = Math.Round(roll) - screenFDAI.offsetR;
+			double dstRoll = setRotR - screenFDAI.offsetR;
 			double rate;
 			bool done = false;
 
@@ -1188,8 +1259,8 @@ namespace KSP_MOCR
 				curRoll = Math.Round(curRoll + (rate / 10), 2);
 
 				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)curRoll;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = setRotP;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading= setRotY;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)(setRotP - screenFDAI.offsetP);
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading= (float)(setRotY - screenFDAI.offsetY);
 
 				if (Math.Round(curRoll) == dstRoll)
 				{
@@ -1211,8 +1282,8 @@ namespace KSP_MOCR
 		private void pitchProgram()
 		{
 			//Console.WriteLine("PITCH PROGRAM");
-			double curPitch = Math.Round(pitch);
-			double dstPitch = setRotP;
+			double curPitch = Math.Round(pitch) - screenFDAI.offsetP;
+			double dstPitch = setRotP - screenFDAI.offsetP;
 			double rate;
 			bool done = false;
 
@@ -1238,8 +1309,8 @@ namespace KSP_MOCR
 				curPitch = Math.Round(curPitch + (rate / 10), 2);
 
 				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = setRotR;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = setRotY;
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)(setRotR - screenFDAI.offsetR);
+				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = (float)(setRotY - screenFDAI.offsetY);
 
 				if(Math.Round(curPitch) == dstPitch)
 				{

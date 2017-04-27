@@ -231,11 +231,12 @@ namespace KSP_MOCR
 		private void keyRelClick(object sender, EventArgs e)
 		{
 			//Console.WriteLine("KeyRelease");
+			keyRelPress = true;
 			keyRel = false;
-			activeVerb = -1;
-			activeNoun = -1;
 			verb = null;
 			noun = null;
+			enterVerb = false;
+			enterNoun = false;
 		}
 		
 		private void entrClick(object sender, EventArgs e)
@@ -249,14 +250,17 @@ namespace KSP_MOCR
 
 			if (verb != null && noun != null)
 			{
+				if (verb == "37")
+				{
+					flashVerb = false;
+					flashNoun = false;
+					runOnceProg = true;
+				}
 				activeVerb = int.Parse(verb);
 				verb = null;
  				activeNoun = int.Parse(noun);
 				noun = null;
-				if (verb == "37")
-				{
-					runOnce = true;
-				}
+				runOnceVerb = true;
 			}
 			else if (activeVerb != -1 && noun != null)
 			{
@@ -266,12 +270,17 @@ namespace KSP_MOCR
 			else if (verb == "37") // Run Program
 			{
 				enterNoun = true;
-				noun = null;
+				noun = "";
+				flashVerb = true;
+				flashNoun = true;
 			}
 			else
 			{
 				if (verb != "" && verb != null)
 				{
+					activeVerb = int.Parse(verb);
+					runOnceVerb = true;
+					
 					if (activeNoun != -1)
 					{
 						runVerb(int.Parse(verb), activeNoun);
@@ -283,10 +292,10 @@ namespace KSP_MOCR
 				}
 			}
 			
-			//Console.WriteLine("A AV: " + activeVerb.ToString());
-			//Console.WriteLine("A AN: " + activeNoun.ToString());
-			//Console.WriteLine("A ve: " + verb);
-			//Console.WriteLine("A no: " + noun);
+			Console.WriteLine("A AV: " + activeVerb.ToString());
+			Console.WriteLine("A AN: " + activeNoun.ToString());
+			Console.WriteLine("A ve: " + verb);
+			Console.WriteLine("A no: " + noun);
 		}
 		
 		private void proClick(object sender, EventArgs e)
