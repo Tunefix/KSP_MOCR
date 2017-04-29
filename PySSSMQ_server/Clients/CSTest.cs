@@ -45,6 +45,9 @@ public class CSTestClient {
 		client.Send(key, data);
 
 		System.Threading.Thread.Sleep(1000);
+		client.Pull(key);
+
+		System.Threading.Thread.Sleep(1000);
 	}
 
 	public void ReceiveData(string key, string val) {

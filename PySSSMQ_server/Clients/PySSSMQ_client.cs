@@ -94,6 +94,15 @@ public class PySSSMQ_client {
 		this.socket.Send(Encoding.ASCII.GetBytes(send_data));
 	}
 
+	public void Pull(string key) {
+		if(key.Length > 10) {
+			throw new Exception("Key cannont be more than 10 bytes");
+		}
+
+		string send_data = "&" + key.PadRight(10, ' ') + "".Length.ToString().PadLeft(4,'0');
+		this.socket.Send(Encoding.ASCII.GetBytes(send_data));
+	}
+
 	public void ReceiveData() {
 
 		byte[] bytes = new byte[256];
