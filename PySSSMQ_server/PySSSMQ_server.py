@@ -105,19 +105,26 @@ class PySSSMQ_client_connection:
             if (not data) or (data.strip() == 'exit'): 
                 print 'Exit'
                 break
+        
+            while True:
+                dataobj = self.parse_data(data)
+                if dataobj is False:
+                    print "Malformed data: " + data
+                else:
+                    print "Received data: " + data
+                    if dataobj['command'] == "|":
+                        self.client_list.message(dataobj["key"], dataobj["data"])
+                    elif dataobj['command'] == "&":
+                        for k in self.client_list.data.data:
+                            print "List: " + k + ":" + self.client_list.data.data[k]
+                            self.send(self.client_list.data.data[k],len(self.client_list.data.data[k]),k)
+                        break;
 
-            dataobj = self.parse_data(data)
-            
-            if dataobj is False:
-                print "Malformed data: " + data
-            else:
-                print "Received data: " + data
-                if dataobj['command'] == "|":
-                    self.client_list.message(dataobj["key"], dataobj["data"])
-                elif dataobj['command'] == "&":
-                    for k in self.client_list.data.data:
-                        print "List: " + self.client_list.data.data[k]
-                        self.send(self.client_list.data.data[k],len(self.client_list.data.data[k]),k)
+                if(dataobj is False or dataobj['more_data'] == ''):
+                    break;
+                
+                data = dataobj['more_data']
+
             
          
         #came out of loop
@@ -130,12 +137,13 @@ class PySSSMQ_client_connection:
             print "Error sending to " , self.addr[0]
 
     def parse_data(self, data):
+        more_data = "";
         if not type(data) is str:
             return False
         if (data[:1] != '|') and (data[:1] != '&'):
             return False
         if data[:1] == '&':
-            return { 'command' : "&", 'length' : 0, 'key' : None, 'data' : None }
+            return { 'command' : "&", 'length' : 0, 'key' : None, 'data' : None, 'more_data' : "" }
 
         if not self.is_int(data[11:15]):
             return False
@@ -145,7 +153,10 @@ class PySSSMQ_client_connection:
         length = int(data[11:15])
         data_string = data[15:(15+length)]
 
-        return { 'command' : command, 'length' : length, 'key' : key, 'data' : data_string }
+        if len(data) > 14+length:
+            more_data = data[(15+length):]
+
+        return { 'command' : command, 'length' : length, 'key' : key, 'data' : data_string, 'more_data' : more_data }
 
     def is_int(self, s):
         try: 

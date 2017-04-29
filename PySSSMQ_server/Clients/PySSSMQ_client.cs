@@ -109,6 +109,7 @@ public class PySSSMQ_client {
 		string data;
 		string key;
 		string val;
+		int length;
 
 		try {
 			while(true) {
@@ -119,10 +120,22 @@ public class PySSSMQ_client {
 				if(data.Substring(0,1) != "|") {
 
 				} else {
-					key = data.Substring(1,10).Trim();
-					val = data.Substring(15);
+					int offset = 0;
 
-					this.SendEvent(key, val);
+					while(true) {
+						length = int.Parse(data.Substring(offset+11, 4));
+						key = data.Substring(offset+1,10).Trim();
+						val = data.Substring(offset+15, length);
+						offset += length + 15;
+						this.SendEvent(key, val);
+
+						if((data.Length > offset && data[offset] == '|')) {
+
+						} else {
+							Console.WriteLine("Break");
+							break;
+						}
+					}
 				}
 			}
 		} catch {
