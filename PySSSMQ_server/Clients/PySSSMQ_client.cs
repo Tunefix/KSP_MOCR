@@ -132,7 +132,6 @@ public class PySSSMQ_client {
 						if((data.Length > offset && data[offset] == '|')) {
 
 						} else {
-							Console.WriteLine("Break");
 							break;
 						}
 					}
