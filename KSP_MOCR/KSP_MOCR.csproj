@@ -198,6 +198,15 @@
     <Compile Include="Screens\PilotKeyHandling.cs" />
     <Compile Include="Classes\FDAIComponents.cs" />
     <Compile Include="Classes\FDAINumbers.cs" />
+    <Compile Include="Classes\PySSSMQ.cs" />
+    <Compile Include="Classes\PySSSMQ_Handler.cs" />
+    <Compile Include="Screens\CompStat.cs" />
+    <Compile Include="Classes\DataStorage.cs" />
+    <Compile Include="Screens\StatusReport.cs" />
+    <Compile Include="Classes\MocrButton.cs" />
+    <Compile Include="Screens\StatusPanel.cs" />
+    <Compile Include="Classes\MocrDropdown.cs" />
+    <Compile Include="Classes\OrbitFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

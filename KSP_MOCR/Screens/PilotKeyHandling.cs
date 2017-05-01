@@ -22,114 +22,95 @@ namespace KSP_MOCR
 			switch (e.KeyCode)
 			{
 				case Keys.V:
-					screenButtons[50].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[50].Invalidate();
+					screenButtons[50].setPressedState(true);
 					screenButtons[50].PerformClick();
 					break;
 				case Keys.N:
-					screenButtons[51].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[51].Invalidate();
+					screenButtons[51].setPressedState(true);
 					screenButtons[51].PerformClick();
 					break;
-				case Keys.Enter:	
+				case Keys.Enter:
 				case Keys.E:
-					screenButtons[67].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[67].Invalidate();
+					screenButtons[67].setPressedState(true);
 					screenButtons[67].PerformClick();
 					break;	
 				case Keys.C:
-					screenButtons[64].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[64].Invalidate();
+					screenButtons[64].setPressedState(true);
 					screenButtons[64].PerformClick();
 					break;
 				case Keys.P:
-					screenButtons[65].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[65].Invalidate();
+					screenButtons[65].setPressedState(true);
 					screenButtons[65].PerformClick();
 					break;
 				case Keys.R:
-					screenButtons[68].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[68].Invalidate();
+					screenButtons[68].setPressedState(true);
 					screenButtons[68].PerformClick();
 					break;
 				case Keys.K:
-					screenButtons[66].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[66].Invalidate();
+					screenButtons[66].setPressedState(true);
 					screenButtons[66].PerformClick();
 					break;
 					
 				case Keys.Subtract:
 				case Keys.OemMinus:
-					screenButtons[53].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[53].Invalidate();
+					screenButtons[53].setPressedState(true);
 					screenButtons[53].PerformClick();
 					break;
 				case Keys.Add:
 				case Keys.Oemplus:
-					screenButtons[52].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[52].Invalidate();
+					screenButtons[52].setPressedState(true);
 					screenButtons[52].PerformClick();
 					break;
 					
 					
 				case Keys.D0:
 				case Keys.NumPad0:
-					screenButtons[54].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[54].Invalidate();
+					screenButtons[54].setPressedState(true);
 					screenButtons[54].PerformClick();
 					break;
 				case Keys.D1:
 				case Keys.NumPad1:
-					screenButtons[57].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[57].Invalidate();
+					screenButtons[57].setPressedState(true);
 					screenButtons[57].PerformClick();
 					break;
 				case Keys.D2:
 				case Keys.NumPad2:
-					screenButtons[60].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[60].Invalidate();
+					screenButtons[60].setPressedState(true);
 					screenButtons[60].PerformClick();
 					break;
 				case Keys.D3:
 				case Keys.NumPad3:
-					screenButtons[63].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[63].Invalidate();
+					screenButtons[63].setPressedState(true);
 					screenButtons[63].PerformClick();
 					break;
 				case Keys.D4:
 				case Keys.NumPad4:
-					screenButtons[56].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[56].Invalidate();
+					screenButtons[56].setPressedState(true);
 					screenButtons[56].PerformClick();
 					break;
 				case Keys.D5:
 				case Keys.NumPad5:
-					screenButtons[59].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[59].Invalidate();
+					screenButtons[59].setPressedState(true);
 					screenButtons[59].PerformClick();
 					break;
 				case Keys.D6:
 				case Keys.NumPad6:
-					screenButtons[62].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[62].Invalidate();
+					screenButtons[62].setPressedState(true);
 					screenButtons[62].PerformClick();
 					break;
 				case Keys.D7:
 				case Keys.NumPad7:
-					screenButtons[55].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[55].Invalidate();
+					screenButtons[55].setPressedState(true);
 					screenButtons[55].PerformClick();
 					break;
 				case Keys.D8:
 				case Keys.NumPad8:
-					screenButtons[58].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[58].Invalidate();
+					screenButtons[58].setPressedState(true);
 					screenButtons[58].PerformClick();
 					break;
 				case Keys.D9:
 				case Keys.NumPad9:
-					screenButtons[61].BackColor = Color.FromArgb(255, 16, 16, 16);
-					screenButtons[61].Invalidate();
+					screenButtons[61].setPressedState(true);
 					screenButtons[61].PerformClick();
 					break;
 			}
@@ -141,76 +122,76 @@ namespace KSP_MOCR
 			switch (e.KeyCode)
 			{
 				case Keys.V:
-					screenButtons[50].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[50].setPressedState(false);
 					break;
 				case Keys.N:
-					screenButtons[51].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[51].setPressedState(false);
 					break;
 				case Keys.Enter:	
 				case Keys.E:
-					screenButtons[67].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[67].setPressedState(false);
 					break;
 				case Keys.C:
-					screenButtons[64].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[64].setPressedState(false);
 					break;
 				case Keys.P:
-					screenButtons[65].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[65].setPressedState(false);
 					break;
 				case Keys.R:
-					screenButtons[68].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[68].setPressedState(false);
 					break;
 				case Keys.K:
-					screenButtons[66].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[66].setPressedState(false);
 					break;
 					
 				case Keys.Subtract:
 				case Keys.OemMinus:
-					screenButtons[53].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[53].setPressedState(false);
 					break;
 				case Keys.Add:
 				case Keys.Oemplus:
-					screenButtons[52].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[52].setPressedState(false);
 					break;
 					
 				case Keys.D0:
 				case Keys.NumPad0:
-					screenButtons[54].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[54].setPressedState(false);
 					break;
 				case Keys.D1:
 				case Keys.NumPad1:
-					screenButtons[57].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[57].setPressedState(false);
 					break;
 				case Keys.D2:
 				case Keys.NumPad2:
-					screenButtons[60].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[60].setPressedState(false);
 					break;
 				case Keys.D3:
 				case Keys.NumPad3:
-					screenButtons[63].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[63].setPressedState(false);
 					break;
 				case Keys.D4:
 				case Keys.NumPad4:
-					screenButtons[56].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[56].setPressedState(false);
 					break;
 				case Keys.D5:
 				case Keys.NumPad5:
-					screenButtons[59].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[59].setPressedState(false);
 					break;
 				case Keys.D6:
 				case Keys.NumPad6:
-					screenButtons[62].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[62].setPressedState(false);
 					break;
 				case Keys.D7:
 				case Keys.NumPad7:
-					screenButtons[55].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[55].setPressedState(false);
 					break;
 				case Keys.D8:
 				case Keys.NumPad8:
-					screenButtons[58].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[58].setPressedState(false);
 					break;
 				case Keys.D9:
 				case Keys.NumPad9:
-					screenButtons[61].BackColor = Color.FromArgb(255, 32, 32, 32);
+					screenButtons[61].setPressedState(false);
 					break;
 					
 			}
@@ -292,10 +273,10 @@ namespace KSP_MOCR
 				}
 			}
 			
-			Console.WriteLine("A AV: " + activeVerb.ToString());
-			Console.WriteLine("A AN: " + activeNoun.ToString());
-			Console.WriteLine("A ve: " + verb);
-			Console.WriteLine("A no: " + noun);
+			//Console.WriteLine("A AV: " + activeVerb.ToString());
+			//Console.WriteLine("A AN: " + activeNoun.ToString());
+			//Console.WriteLine("A ve: " + verb);
+			//Console.WriteLine("A no: " + noun);
 		}
 		
 		private void proClick(object sender, EventArgs e)

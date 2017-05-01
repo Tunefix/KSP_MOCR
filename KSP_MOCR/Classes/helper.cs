@@ -128,29 +128,27 @@ namespace KSP_MOCR
 		}
 
 
-		static public Button CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, ""); }
-		static public Button CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, ""); }
-		static public Button CreateButton(double x, double y, double w, double h, String t)
+		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, ""); }
+		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, ""); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
 			int top = (int)(y * form.pxPrLine) + form.padding_top;
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
-			Button button = new Button();
+			MocrButton button = new MocrButton();
 			button.Location = new Point(left, top);
 			button.Size = new Size(width, height);
-			button.BackColor = Color.FromArgb(255, 32, 32, 32);
-			button.FlatStyle = FlatStyle.Flat;
+			//button.BackColor = Color.FromArgb(255, 32, 32, 32);
 			button.Cursor = Cursors.Hand;
-			button.FlatAppearance.BorderColor = Color.FromArgb(255, 96, 96, 96);
-			button.FlatAppearance.BorderSize = 1;
-			button.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 64, 64, 64);
-			button.FlatAppearance.MouseDownBackColor = Color.FromArgb(255, 16, 16, 16);
+			//button.FlatAppearance.BorderColor = Color.FromArgb(255, 96, 96, 96);
+			//button.FlatAppearance.BorderSize = 1;
+			//button.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 64, 64, 64);
+			//button.FlatAppearance.MouseDownBackColor = Color.FromArgb(255, 16, 16, 16);
 			button.Font = form.font;
 			button.Text = t;
 			button.Padding = new Padding(0);
-			button.UseCompatibleTextRendering = true;
 			form.Controls.Add(button);
 			return button;
 		}
@@ -265,24 +263,6 @@ namespace KSP_MOCR
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
 			label.Text = t;
-			label.Padding = new Padding(0);
-			label.Margin = new Padding(0);
-			label.BorderStyle = BorderStyle.None;
-			label.UseCompatibleTextRendering = true;
-			label.TextAlign = ContentAlignment.MiddleCenter;
-			label.ForeColor = Color.FromArgb(128, fColor.R, fColor.G, fColor.B);
-			label.ImageAlign = ContentAlignment.MiddleCenter;
-			label.BackColor = Color.FromArgb(255, 255, 0, 0);
-
-			// Try to find appropriate background image
-			if(form.indicatorImages[w][h] != null)
-			{
-				label.Image = form.indicatorImages[w][h];
-			}
-			else
-			{
-				label.Image = form.indicatorImage;
-			}
 
 			// Set the status to OFF
 			label.setStatus(Indicator.status.OFF);
@@ -290,6 +270,25 @@ namespace KSP_MOCR
 			form.Controls.Add(label);
 
 			return label;
+		}
+
+		static public MocrDropdown CreateDropdown(double x, double y, int w, int h)
+		{
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			MocrDropdown dropdown = new MocrDropdown();
+			dropdown.Font = form.font;
+			dropdown.Location = new Point(left, top);
+			dropdown.Size = new Size(width, height);
+			dropdown.FlatStyle = FlatStyle.Flat;
+			dropdown.Margin = new Padding(0);
+
+			form.Controls.Add(dropdown);
+
+			return dropdown;
 		}
 
 		static public EngineIndicator CreateEngine(int x, int y, int w, int h, String t)
@@ -400,6 +399,13 @@ namespace KSP_MOCR
 					{
 						case Align.RIGHT:
 							s = " " + s;
+							break;
+						case Align.CENTER:
+							s = " " + s + " ";
+							if (s.Length > l)
+							{
+								s.Substring(0, s.Length - 1);
+							}
 							break;
 						case Align.LEFT:
 						default:
@@ -538,6 +544,27 @@ namespace KSP_MOCR
 			}
 
 			return output;
+		}
+
+		static public string int2str(int i, int length, String pad)
+		{
+			String str = i.ToString();
+			String pre = "";
+			
+			if (i < 0)
+			{
+				str = str.Substring(1);
+				pre = "-";
+			}
+
+			while (str.Length < length)
+			{
+				str = pad + str;
+			}
+
+			str = pre + str;
+
+			return str;
 		}
 	}
 }

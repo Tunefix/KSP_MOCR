@@ -229,7 +229,7 @@ namespace KSP_MOCR
 			bool started = false;
 
 			double? value;
-			for (int i = 0; i < serie.Count; i++)
+			for (int i = 0; i < this.maxX; i++)
 			{
 				if (serie.ContainsKey(i))
 				{
@@ -318,7 +318,7 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			return (int)tMax;
+			return tMax == null ? 1: (int)tMax;
 		}
 
 		private int findMinX()
@@ -344,7 +344,7 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			return (int)tMin;
+			return tMin == null ? 0: (int)tMin;
 		}
 
 		private int findMaxY()

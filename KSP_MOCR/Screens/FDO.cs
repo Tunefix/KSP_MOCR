@@ -11,6 +11,7 @@ namespace KSP_MOCR
 	class FDO :MocrScreen
 	{
 		CelestialBody body;
+		CelestialBody target;
 		float bodyRadius;
 		String bodyName;
 		
@@ -29,6 +30,7 @@ namespace KSP_MOCR
 		double trueAnomaly;
 		double timeToPe;
 		double timeToAp;
+		double period;
 		
 		NumberFormatInfo format = new NumberFormatInfo();
 			
@@ -36,12 +38,14 @@ namespace KSP_MOCR
 
 		public FDO(Form1 form)
 		{
-            this.form = form;
+			this.form = form;
 			this.chartData = form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 120;
-			this.height = 30;
+			this.height = 40;
+			
+			this.updateRate = 5000;
 
 			body = form.connection.SpaceCenter().ActiveVessel.Orbit.Body;
 			bodyRadius = body.EquatorialRadius;
@@ -59,6 +63,7 @@ namespace KSP_MOCR
 			
 			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
 			{
+				period = screenStreams.GetData(DataType.orbit_period);
 				apopapsis = screenStreams.GetData(DataType.orbit_apoapsis);
 				periapsis = screenStreams.GetData(DataType.orbit_periapsis);
 				sMa = screenStreams.GetData(DataType.orbit_semiMajorAxis);
@@ -167,10 +172,10 @@ namespace KSP_MOCR
 				Tuple<double, double, double> positionVector = transform(positionVectorInPlane, referencePlane);
 				Tuple<double, double, double> inertialBurnVector = transform(burnVectorInPlane, referencePlane);
 				
-				screenLabels[20].Text = "Total ΔV: " + totalV;
+				screenLabels[20].Text = "│ Total ΔV: " + totalV;
 
 				// BURN ANGLES
-				Console.WriteLine(inertialBurnVector);
+				//Console.WriteLine(inertialBurnVector);
 
 				double yaw = Helper.rad2deg(Math.Atan(inertialBurnVector.Item2 / inertialBurnVector.Item1));
 
@@ -192,7 +197,7 @@ namespace KSP_MOCR
 
 				double pitch = Helper.rad2deg(Math.Asin(inertialBurnVector.Item3 / vectorMagnitude(inertialBurnVector)));
 				
-				screenLabels[21].Text = "BURN ANGLES: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yaw, 2), 6);
+				screenLabels[21].Text = "│ BURN ANGLES: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yaw, 2), 6);
 				double yawOffset = 0;
 				if (yaw >= 180)
 				{
@@ -202,7 +207,7 @@ namespace KSP_MOCR
 				{
 					yawOffset = -yaw;
 				}
-				screenLabels[22].Text = "FDAI OFFSET: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(-pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yawOffset, 2), 6);
+				screenLabels[22].Text = "│ FDAI OFFSET: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(-pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yawOffset, 2), 6);
 
 				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
@@ -223,15 +228,154 @@ namespace KSP_MOCR
 				while (orbit.NextOrbit != null);
 				
 				screenLabels[32].Text = orbitsData;
+
+				// TARGET DATA
+				double vesselX = positionVector.Item1;
+				double vesselY = positionVector.Item2;
+				double vesselZ = positionVector.Item3;
+
+				double satX = 0;// = satPositionVector.Item1;
+				double satY = 0;
+				double satZ = 0;
+
+				CelestialBody sat;
+				Orbit satOrbit;
+				
+				if (screenDropdowns[0].SelectedItem != null)
+				{
+					sat = (CelestialBody)screenDropdowns[0].SelectedItem;
+					satOrbit = sat.Orbit;
+
+					double satSMA = satOrbit.SemiMajorAxis;
+					double satTA = satOrbit.TrueAnomaly;
+					double satEcc = satOrbit.Eccentricity;
+					
+					Tuple<double, double, double> satPositionVectorInPlane = getPositionVector(satSMA, satTA, satEcc);
+					Tuple<double, double, double> satPositionVector = transform(satPositionVectorInPlane, referencePlane);
+					
+					satX = satPositionVector.Item1;
+					satY = satPositionVector.Item2;
+					satZ = satPositionVector.Item3;
+				}
+
+				double deltaX = vesselX - satX;
+				double deltaY = vesselY - satY;
+				double deltaZ = vesselZ - satZ;
+
+				double total = Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+				
+				screenLabels[45].Text = "│ X:  " + Helper.prtlen(Math.Round(vesselX).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(satX).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(deltaX).ToString(), 8) + "  │";
+				screenLabels[46].Text = "│ Y:  " + Helper.prtlen(Math.Round(vesselY).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(satY).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(deltaY).ToString(), 8) + "  │";
+				screenLabels[47].Text = "│ Z:  " + Helper.prtlen(Math.Round(vesselZ).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(satZ).ToString(), 8) + "  "
+																			+ Helper.prtlen(Math.Round(deltaZ).ToString(), 8) + "  │";
+				screenLabels[49].Text = "│CURRENT TOTAL DISTANCE:  " + Helper.prtlen(Math.Round(total).ToString(), 8) + "  │";
+				
+				// CALCULATE BURN ORBIT DATA
+
+				// CALCULATE DISTANCES FOR THE NEXT ORBIT
+				Dictionary<int, double?> distances = new Dictionary<int, double?>();
+				double minDist = -1;
+				double minDistMET = 0;
+				Dictionary<int, double?> distancesB = new Dictionary<int, double?>();
+				double minDistB = -1;
+				double minDistMETB = 0;
+				Tuple<double, double, double> positionB = positionVector;
+				Tuple<double, double, double> speedB = burnVector;
+				if (screenDropdowns[0].SelectedItem != null)
+				{
+					sat = (CelestialBody)screenDropdowns[0].SelectedItem;
+					satOrbit = sat.Orbit;
+
+					int i = 0;
+					for (int ut = (int)Math.Round(UT); ut < (int)Math.Ceiling(UT + (period * 10)); ut += 60)
+					{
+						double satSMA = satOrbit.SemiMajorAxis;
+						double satTAAUT = satOrbit.TrueAnomalyAtUT(ut);
+						double satEcc = satOrbit.Eccentricity;
+						Tuple<double, double, double> satPositionVectorInPlane = getPositionVector(satSMA, satTAAUT, satEcc);
+						Tuple<double, double, double> satPositionVector = transform(satPositionVectorInPlane, referencePlane);
+						
+						TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(ut);
+						positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
+						positionVector = transform(positionVectorInPlane, referencePlane);
+						
+						deltaX = positionVector.Item1 - satPositionVector.Item1;
+						deltaY = positionVector.Item2 - satPositionVector.Item2;
+						deltaZ = positionVector.Item3 - satPositionVector.Item3;
+
+						double dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
+						distances.Add(i, dist);
+
+						if (dist < minDist || minDist == -1)
+						{
+							minDist = dist;
+							minDistMET = (ut - (UT - MET));
+						}
+
+						double currentGravity = my / OrbitFunctions.vectorMagnitude(positionB);
+						Tuple<double, double, double> gravVector = new Tuple<double, double, double>(-positionB.Item1, -positionB.Item2, -positionB.Item3);
+						double gravX = (gravVector.Item1 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
+						double gravY = (gravVector.Item2 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
+						double gravZ = (gravVector.Item3 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
+						gravVector = new Tuple<double, double, double>(gravX, gravY, gravZ);
+
+						double posX = positionB.Item1 + speedB.Item1;
+						double posY = positionB.Item2 + speedB.Item2;
+						double posZ = positionB.Item3 + speedB.Item3;
+
+						double speedX = speedB.Item1 + gravVector.Item1;
+						double speedY = speedB.Item2 + gravVector.Item2;
+						double speedZ = speedB.Item3 + gravVector.Item3;
+
+						positionB = new Tuple<double, double, double>(posX, posY, posZ);
+						speedB = new Tuple<double, double, double>(speedX, speedY, speedZ);
+						
+						deltaX = positionB.Item1 - satPositionVector.Item1;
+						deltaY = positionB.Item2 - satPositionVector.Item2;
+						deltaZ = positionB.Item3 - satPositionVector.Item3;
+
+						dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
+						distancesB.Add(i, dist);
+
+						if (dist < minDistB || minDistB == -1)
+						{
+							minDistB = dist;
+							minDistMETB = (ut - (UT - MET));
+						}
+
+						i++;
+					}
+				}
+				
+				screenLabels[52].Text = "┘ MET:  " + Helper.timeString(minDistMETB,3) + "  DIST:  " + Helper.prtlen(Math.Round(minDistB).ToString(), 8) + "  │";
+				
+				// GRAPH IT
+				List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+				List<Plot.Type> types = new List<Plot.Type>();
+				
+				data = new List<Dictionary<int, double?>>();
+				types = new List<Plot.Type>();
+				data.Add(distances);
+				types.Add(Plot.Type.LINE);
+				data.Add(distancesB);
+				types.Add(Plot.Type.LINE);
+				screenCharts[0].setData(data, types, false);
 			}	
 		}
 
 		public override void makeElements()
 		{
 			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Charts
-			for (int i = 0; i < 40; i++) screenLabels.Add(null); // Initialize Labels
+			for (int i = 0; i < 60; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 10; i++) screenInputs.Add(null); // Initialize Inputs
 			for (int i = 0; i < 10; i++) screenButtons.Add(null); // Initialize Buttons
+			for (int i = 0; i < 1; i++) screenDropdowns.Add(null); // Initialize Dropdowns
+			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Chart
 
 			//screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
@@ -258,7 +402,7 @@ namespace KSP_MOCR
 			screenLabels[16] = Helper.CreateLabel(59, 7, 1, 1, "│");
 			screenLabels[17] = Helper.CreateLabel(59, 8, 1, 1, "│");
 			screenLabels[18] = Helper.CreateLabel(59, 9, 1, 1, "│");
-			screenLabels[19] = Helper.CreateLabel(25, 10, 35, 1, "├─────────────────────────────────┘");
+			screenLabels[19] = Helper.CreateLabel(25, 10, 37, 1, "├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴─┐");
 			
 			// BURN DATA INPUTS
 			screenInputs[0] = Helper.CreateInput(41, 4, 5, 1); // HRS
@@ -282,9 +426,9 @@ namespace KSP_MOCR
 			screenInputs[5].Text = "0.0";
 			
 			// DEBUG BURN VALUES
-			screenLabels[20] = Helper.CreateLabel(26, 11, 35, 1, "");
-			screenLabels[21] = Helper.CreateLabel(26, 12, 35, 1, "");
-			screenLabels[22] = Helper.CreateLabel(26, 13, 35, 1, "");
+			screenLabels[20] = Helper.CreateLabel(25, 11, 35, 1, "");
+			screenLabels[21] = Helper.CreateLabel(25, 12, 35, 1, "");
+			screenLabels[22] = Helper.CreateLabel(25, 13, 35, 1, "");
 			
 			// ZOOM LABEL
 			screenLabels[23] = Helper.CreateLabel(62, 1, 12, 1, "ZOOM: ");
@@ -314,12 +458,41 @@ namespace KSP_MOCR
 			screenLabels[30] = Helper.CreateLabel(1, 4, 24, 1, "NEXT PERIAPSE: ");
 			screenLabels[31] = Helper.CreateLabel(1, 5, 24, 1, "NEXT APOAPSE: ");
 			
-			screenLabels[32] = Helper.CreateLabel(1, 7, 24, 23, "");
+			screenLabels[32] = Helper.CreateLabel(1, 7, 24, 18, "");
+
+			// TARGET
+			screenLabels[40] = Helper.CreateLabel(25, 14, 37, 1, "├───────────── TARGET ──────────────┤");
+			screenLabels[41] = Helper.CreateLabel(25, 15, 17, 1, "│ SELECT TARGET: ");
+			screenLabels[42] = Helper.CreateLabel(61, 15, 1, 1, "│");
+			screenLabels[43] = Helper.CreateLabel(25, 16, 37, 1, "│        ── BODY DISTANCE ──        │");
+			screenLabels[44] = Helper.CreateLabel(25, 17, 37, 1, "│      VESSEL     MUN      DELTA    │");
+			screenLabels[45] = Helper.CreateLabel(25, 18, 37, 1, "│ X:  20000000  20000000  20000000  │");
+			screenLabels[46] = Helper.CreateLabel(25, 19, 37, 1, "│ Y:  20000000  20000000  20000000  │");
+			screenLabels[47] = Helper.CreateLabel(25, 20, 37, 1, "│ Z:  20000000  20000000  20000000  │");
+			screenLabels[48] = Helper.CreateLabel(25, 21, 37, 1, "│                                   │");
+			screenLabels[49] = Helper.CreateLabel(25, 22, 37, 1, "│CURRENT TOTAL DISTANCE:  20000000  │");
+			screenLabels[50] = Helper.CreateLabel(25, 23, 37, 1, "│                                   │");
+			screenLabels[51] = Helper.CreateLabel(25, 24, 37, 1, "│      ── CLOSEST APPROACH ──       │");
+			screenLabels[52] = Helper.CreateLabel(25, 25, 37, 1, "┘ MET:  000:00:00  DIST:  20000000  │");
+			screenLabels[53] = Helper.CreateLabel(0, 25, 25, 1, "─────────────────────────");
+
+			// Target dropdown
+			screenDropdowns[0] = Helper.CreateDropdown(41, 15, 20, 1);
+			screenDropdowns[0].DisplayMember = "Name";
+
+			IList<CelestialBody> sats = body.Satellites;
+			foreach (CelestialBody sat in sats)
+			{
+				screenDropdowns[0].Items.Add(sat);
+			}
 
 			// OrbitGraph
 			screenOrbit = Helper.CreateOrbit(62, 3, 58, 27);
 			IList<CelestialBody> bodySatellites = body.Satellites;
 			screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
+			
+			// Closest approach chart
+			screenCharts[0] = Helper.CreatePlot(0, 26, 62, 14, 0);
 		}
 
 		private String getOrbitsData(Orbit orbit)

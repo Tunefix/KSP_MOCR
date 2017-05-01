@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace KSP_MOCR
 {
-	class EngineIndicator : Control
+	public class EngineIndicator : Control
 	{
 		bool status = false;
 

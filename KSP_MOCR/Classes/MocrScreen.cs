@@ -10,16 +10,17 @@ using KRPC.Client;
 
 namespace KSP_MOCR
 {
-	abstract class MocrScreen
+	public abstract class MocrScreen
 	{
 		public List<Color> chartLineColors = new List<Color>();
 		public List<Label> screenLabels = new List<Label>();
 		public List<TextBox> screenInputs = new List<TextBox>();
-		public List<Button> screenButtons = new List<Button>();
+		public List<MocrButton> screenButtons = new List<MocrButton>();
 		public List<Indicator> screenIndicators = new List<Indicator>();
 		public List<EngineIndicator> screenEngines = new List<EngineIndicator>();
 		public List<VerticalMeter> screenVMeters = new List<VerticalMeter>();
 		public List<SegDisp> screenSegDisps = new List<SegDisp>();
+		public List<MocrDropdown> screenDropdowns = new List<MocrDropdown>();
 		public List<Plot> screenCharts = new List<Plot>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
@@ -58,6 +59,38 @@ namespace KSP_MOCR
 					return new AltVel(form);
 				case 100:
 					return new Pilot1(form);
+				case 201:
+					return new StatusReport(form, "BOOSTER");
+				case 202:
+					return new StatusReport(form, "RETRO");
+				case 203:
+					return new StatusReport(form, "FIDO");
+				case 204:
+					return new StatusReport(form, "GUIDO");
+				case 205:
+					return new StatusReport(form, "SURGEON");
+				case 206:
+					return new StatusReport(form, "CAPCOM");
+				case 207:
+					return new StatusReport(form, "EECOM");
+				case 208:
+					return new StatusReport(form, "GNC");
+				case 209:
+					return new StatusReport(form, "TELMU");
+				case 210:
+					return new StatusReport(form, "CONTROL");
+				case 211:
+					return new StatusReport(form, "INCO");
+				case 212:
+					return new StatusReport(form, "O&P");
+				case 213:
+					return new StatusReport(form, "AFLIGHT");
+				case 214:
+					return new StatusReport(form, "FAO");
+				case 215:
+					return new StatusReport(form, "NETWORK");
+				case 220:
+					return new StatusPanel(form);
 			}
 			return null;
 		}
@@ -94,7 +127,7 @@ namespace KSP_MOCR
 			screenInputs.TrimExcess();
 
 			// Clear old Buttons
-			foreach (Button button in screenButtons) { if (button != null) { button.Dispose(); } }
+			foreach (MocrButton button in screenButtons) { if (button != null) { button.Dispose(); } }
 			screenButtons.Clear();
 			screenButtons.TrimExcess();
 
@@ -122,6 +155,11 @@ namespace KSP_MOCR
 			foreach (SegDisp disp in screenSegDisps) { if (disp != null) { disp.Dispose(); } }
 			screenSegDisps.Clear();
 			screenSegDisps.TrimExcess();
+			
+			// Clear Drop Downs
+			foreach (MocrDropdown drop in screenDropdowns) { if (drop != null) { drop.Dispose(); } }
+			screenDropdowns.Clear();
+			screenDropdowns.TrimExcess();
 
 			// Clear old FDAI
 			if (screenFDAI != null)

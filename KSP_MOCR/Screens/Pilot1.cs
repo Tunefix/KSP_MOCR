@@ -697,6 +697,9 @@ namespace KSP_MOCR
 
 			// Gee-Force vs. Time Graph
 			//form.screenCharts[0] = Helper.CreateChart(60, 15, 60, 15, 0, 600);
+
+			// Load PySSSMQ-DATA
+			loadPySSSMQData();
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -1059,16 +1062,73 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void pitchUp(object sender, EventArgs e){ this.setRotP += this.rotStep; if (setRotP > 360) setRotP = (setRotP - 360);}
-		private void pitchDown(object sender, EventArgs e) { this.setRotP -= this.rotStep; if (setRotP < -360) setRotP = (setRotP + 360);}
-		private void yawLeft(object sender, EventArgs e) { this.setRotY -= this.rotStep; if (setRotY < -180) setRotY += 360;}
-		private void yawRight(object sender, EventArgs e) { this.setRotY += this.rotStep; if (setRotY >= 180) setRotY -= 360;}
-		private void rollLeft(object sender, EventArgs e) { this.setRotR -= this.rotStep; if (setRotR < -180) setRotR += 360;}
-		private void rollRight(object sender, EventArgs e) { this.setRotR += this.rotStep; if (setRotR > 180) setRotR -= 360;}
+		private void loadPySSSMQData()
+		{
+			if (form.pySSSMQ.IsConnected())
+			{
+				// Pull data
+				form.pySSSMQ.Pull("N20R1");
+
+				// Wait for data to arrive
+				screenIndicators[50].setStatus(Indicator.status.GREEN);
+				int timeout = 0;
+				while(form.dataStorage.getData("N20R1") == "")
+				{
+					if (timeout > 20) // 10 seconds
+					{
+						break;
+					}
+					Thread.Sleep(500);
+					timeout++;
+				}
+				screenIndicators[50].setStatus(Indicator.status.OFF);
+
+				// Load data
+				screenFDAI.offsetR = int.Parse(form.dataStorage.getData("N20R1")) / 100f;
+				screenFDAI.offsetP = int.Parse(form.dataStorage.getData("N20R2")) / 100f;
+				screenFDAI.offsetY = int.Parse(form.dataStorage.getData("N20R3")) / 100f;
+			}
+		}
+
+		private void pitchUp(object sender, EventArgs e)
+		{
+			this.setRotP += this.rotStep; if (setRotP > 360) setRotP = (setRotP - 360);
+			form.dataStorage.setData("setRotP", this.setRotP.ToString());
+		}
+		
+		private void pitchDown(object sender, EventArgs e)
+		{
+			this.setRotP -= this.rotStep; if (setRotP < -360) setRotP = (setRotP + 360);
+			form.dataStorage.setData("setRotP", this.setRotP.ToString());
+		}
+		
+		private void yawLeft(object sender, EventArgs e)
+		{
+			this.setRotY -= this.rotStep; if (setRotY < -180) setRotY += 360;
+			form.dataStorage.setData("setRotY", this.setRotY.ToString());
+		}
+		
+		private void yawRight(object sender, EventArgs e)
+		{
+			this.setRotY += this.rotStep; if (setRotY >= 180) setRotY -= 360;
+			form.dataStorage.setData("setRotY", this.setRotY.ToString());
+		}
+		
+		private void rollLeft(object sender, EventArgs e)
+		{
+			this.setRotR -= this.rotStep; if (setRotR < -180) setRotR += 360;
+			form.dataStorage.setData("setRotR", this.setRotR.ToString());
+		}
+		
+		private void rollRight(object sender, EventArgs e)
+		{
+			this.setRotR += this.rotStep; if (setRotR > 180) setRotR -= 360;
+			form.dataStorage.setData("setRotR", this.setRotR.ToString());
+		}
 
 		private void setMode(object sender, EventArgs e, int mode)
 		{
-			switch(mode)
+			switch (mode)
 			{
 				case 0: // FREE
 					form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
@@ -1082,6 +1142,10 @@ namespace KSP_MOCR
 					lockRotR = setRotR;
 					lockRotP = setRotP;
 					lockRotY = setRotY;
+					
+					form.dataStorage.setData("lockRotR", this.lockRotR.ToString());
+					form.dataStorage.setData("lockRotP", this.lockRotP.ToString());
+					form.dataStorage.setData("lockRotY", this.lockRotY.ToString());
 
 					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 2;
@@ -1095,11 +1159,13 @@ namespace KSP_MOCR
 					this.controlMode = 4;
 					break;
 			}
+			form.dataStorage.setData("ctrlMode", this.controlMode.ToString());
 		}
-
+		
 		private void setRotRate(object sender, EventArgs e, int rate)
 		{
 			rotStep = rate;
+			form.dataStorage.setData("rotStep", this.rotStep.ToString());
 		}
 
 		private void stage(object sender, EventArgs e)
@@ -1120,22 +1186,26 @@ namespace KSP_MOCR
 		{
 			rollRate -= 0.1;
 			if(rollRate < 0) { rollRate = 0; }
+			form.dataStorage.setData("rollRate", this.rollRate.ToString());
 		}
 
 		private void rollRatePlus(object sender, EventArgs e)
 		{
 			rollRate += 0.1;
+			form.dataStorage.setData("rollRate", this.rollRate.ToString());
 		}
 
 		private void pitchRateMinus(object sender, EventArgs e)
 		{
 			pitchRate -= 0.1;
 			if (pitchRate < 0) { pitchRate = 0; }
+			form.dataStorage.setData("pitchRate", this.pitchRate.ToString());
 		}
 
 		private void pitchRatePlus(object sender, EventArgs e)
 		{
 			pitchRate += 0.1;
+			form.dataStorage.setData("pitchRate", this.pitchRate.ToString());
 		}
 
 		private void rollProgramRun(object sender, EventArgs e)
@@ -1229,6 +1299,7 @@ namespace KSP_MOCR
 		private void setFDAIMode(object sender, EventArgs e, FDAIMode mode)
 		{
 			FDAImode = mode;
+			form.dataStorage.setData("FDAImode", this.FDAImode.ToString());
 		}
 
 		private void rollProgram()

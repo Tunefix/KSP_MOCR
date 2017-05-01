@@ -326,8 +326,13 @@ namespace KSP_MOCR
 				case DataType.orbit_timeToApoapsis:
 					stream = new doubleStream(connection.AddStream(() => orbit.TimeToApoapsis));
 					break;
+					
 				case DataType.orbit_timeToPeriapsis:
 					stream = new doubleStream(connection.AddStream(() => orbit.TimeToPeriapsis));
+					break;
+					
+				case DataType.orbit_period:
+					stream = new doubleStream(connection.AddStream(() => orbit.Period));
 					break;
 
 

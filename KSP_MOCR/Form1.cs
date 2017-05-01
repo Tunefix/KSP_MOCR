@@ -23,8 +23,13 @@ namespace KSP_MOCR
 	public partial class Form1 : Form
 	{
 		public Connection connection;
-		IPAddress[] connectionAdrs;
-		String connectionName;
+		public String connectionName = "";
+		public String connectionIP = "";
+
+		public PySSSMQ_client pySSSMQ = new PySSSMQ_client();
+		public PySSSMQ_Handler pySSSMQ_handler;
+
+		public DataStorage dataStorage;
 
 		public KRPC.Client.Services.KRPC.Service krpc;
 		public KRPC.Client.Services.SpaceCenter.Service spaceCenter;
@@ -187,8 +192,16 @@ namespace KSP_MOCR
 				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x2.png");
 			}
 
-			// Setup Helper
+			// Setup Helper and OrbitFunctions
 			Helper.setForm(this);
+			OrbitFunctions.setForm(this);
+
+			// Setup DataStorage
+			dataStorage = new DataStorage(pySSSMQ);
+			
+			// Setup PySSSMQ Handler
+			pySSSMQ_handler = new PySSSMQ_Handler();
+			pySSSMQ_handler.storage = dataStorage;
 
 			// Enable key preview
 			this.KeyPreview = true;
@@ -270,13 +283,18 @@ namespace KSP_MOCR
 				{
 					IPAddress[] connectionAdrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
 					System.Net.IPAddress IP = connectionAdrs[0]; // IPv4
+					
+					// Store connection IP
+					this.connectionIP = IP.ToString();
 
-					String connectionName = activeScreen.screenInputs[1].Text;
+					connectionName = activeScreen.screenInputs[1].Text;
 
 					connection = new Connection(name: connectionName, address: IP);
 
 					krpc = connection.KRPC();
 					spaceCenter = connection.SpaceCenter();
+
+					
 
 					// Setup graphable data
 					setupChartData();
@@ -298,6 +316,17 @@ namespace KSP_MOCR
 				{
 					MessageBox.Show("IO ERROR");
 					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+				}
+
+				// Connect to pySSMQ
+				try
+				{
+					pySSSMQ.Connect(connectionIP);
+					pySSSMQ.AttachReceiveEvent(pySSSMQ_handler.receive);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.GetType() + ":" + ex.Message);
 				}
 			}
 			else

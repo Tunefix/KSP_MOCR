@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace KSP_MOCR
 {
-	partial class FDAI : Label
+	public partial class FDAI : Label
 	{
 		/**
 		 * The rotation order is: Yaw, Pitch, Roll (YXZ)

@@ -921,10 +921,15 @@ namespace KSP_MOCR
 					screenFDAI.offsetR = data[0] / 100f;
 					screenFDAI.offsetP = data[1] / 100f;
 					screenFDAI.offsetY = data[2] / 100f;
+					
+					form.dataStorage.setData("N20R1", data[0].ToString());
+					form.dataStorage.setData("N20R2", data[1].ToString());
+					form.dataStorage.setData("N20R3", data[2].ToString());
 					break;
 
 				case 29: // Launch Azimuth
 					launchAzimuth = data[0] / 100f;
+					form.dataStorage.setData("N29R1", data[0].ToString());
 					break;
 			}
 
