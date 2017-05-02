@@ -28,7 +28,7 @@ namespace KSP_MOCR
 			{status.RED, Color.FromArgb(255, 128, 32, 32)},
 			{status.BLUE, Color.FromArgb(255, 32, 32, 128)},
 			{status.AMBER, Color.FromArgb(255, 128, 100, 32)},
-			{status.WHITE, Color.FromArgb(200, 255, 255, 253)}
+			{status.WHITE, Color.FromArgb(255, 255, 255, 253)}
 		};
 		
 		readonly Dictionary<status, Color> BColorLit = new Dictionary<status, Color>()
@@ -38,7 +38,7 @@ namespace KSP_MOCR
 			{status.RED, Color.FromArgb(255, 255, 32, 32)},
 			{status.BLUE, Color.FromArgb(255, 32, 32, 128)},
 			{status.AMBER, Color.FromArgb(255, 255, 200, 32)},
-			{status.WHITE, Color.FromArgb(200, 255, 255, 253)}
+			{status.WHITE, Color.FromArgb(255, 255, 255, 253)}
 		};
 		
 		public enum status { OFF, GREEN, RED, BLUE, AMBER, WHITE }

@@ -106,7 +106,6 @@ namespace KSP_MOCR
 				screenLabels[31].Text = "NEXT APO: " + Helper.timeString(nextAp, 4);
 
 				// BURN-RESULTANT ORBIT
-				
 				double TIG = -1;
 				try
 				{
@@ -117,9 +116,9 @@ namespace KSP_MOCR
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					//MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
-				screenLabels[20].Text = "BUT: " + Helper.timeString(TIG, 5);
+				
 				double TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(TIG);
 				my = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.GravitationalParameter;
 
@@ -176,7 +175,7 @@ namespace KSP_MOCR
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					//MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 
 				

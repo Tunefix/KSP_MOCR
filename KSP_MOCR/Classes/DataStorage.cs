@@ -23,7 +23,7 @@ namespace KSP_MOCR
 		// Used when PySSSMQ-client receives data
 		public void storeData(String key, String value)
 		{
-			Console.WriteLine("Storing Data: " + key + ", " + value);
+			//Console.WriteLine("Storing Data: " + key + ", " + value);
 			if (storage.ContainsKey(key))
 			{
 				storage[key] = value;
@@ -36,10 +36,10 @@ namespace KSP_MOCR
 
 		public String getData(String key)
 		{
-			Console.WriteLine("Getting Data: " + key);
+			//Console.WriteLine("Getting Data: " + key);
 			if (storage.ContainsKey(key))
 			{
-				Console.WriteLine("Returning Data: " + storage[key]);
+				//Console.WriteLine("Returning Data: " + storage[key]);
 				return storage[key];
 			}
 			else

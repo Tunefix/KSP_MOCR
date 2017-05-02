@@ -129,13 +129,14 @@ namespace KSP_MOCR
 									+ "║     2 - BOOSTER\n"
 									+ "║     3 - RESOURCES\n"
 									+ "║     4 - FLIGHT DYNAMICS\n"
-									+ "║     9 - FONT TEST/ALIGNMENT\n"
+									+ "║     9 - FONT/ALIGNMENT TEST\n"
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║    51 - ALT/VEL GRAPH\n"
+									+ "║    52 - ATTITUDE GRAPHS (R,P,Y)\n"
 									+ "║   100 - PILOT\n"
 									+ "║\n"
-									+ "║\n"
-									+ "║\n"
+									+ "║   201-215 - STATUS REPORT (Requires PySSSMQ connection)\n"
+									+ "║   220 - STATUS PANEL (Requires PySSSMQ connection)\n"
 									+ "║\n"
 									+ "║\n";
 			screenLabels[4].TextAlign = ContentAlignment.TopLeft;

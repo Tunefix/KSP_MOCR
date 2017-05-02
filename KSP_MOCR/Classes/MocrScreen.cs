@@ -57,6 +57,8 @@ namespace KSP_MOCR
 					return new Terrain(form);
 				case 51:
 					return new AltVel(form);
+				case 52:
+					return new Attitude(form);
 				case 100:
 					return new Pilot1(form);
 				case 201:

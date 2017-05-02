@@ -35,6 +35,15 @@ namespace KSP_MOCR
 
 			chartData.Add("dynPresTime", new Dictionary<int, double?>());
 			for (int i = 0; i < 600; i++) chartData["dynPresTime"].Add(i, null);
+			
+			chartData.Add("rollTime", new Dictionary<int, double?>());
+			for (int i = 0; i < 600; i++) chartData["rollTime"].Add(i, null);
+			
+			chartData.Add("pitchTime", new Dictionary<int, double?>());
+			for (int i = 0; i < 600; i++) chartData["pitchTime"].Add(i, null);
+			
+			chartData.Add("yawTime", new Dictionary<int, double?>());
+			for (int i = 0; i < 600; i++) chartData["yawTime"].Add(i, null);
 
 			chartData.Add("altitudeSpeed", new Dictionary<int, double?>());
 			for (int i = 0; i< 3000; i++) chartData["altitudeSpeed"].Add(i, null);
@@ -52,6 +61,9 @@ namespace KSP_MOCR
 				double elevation = graphStreams.GetData(DataType.flight_elevation);
 				float gee = graphStreams.GetData(DataType.flight_gForce);
 				float dynPress = graphStreams.GetData(DataType.flight_dynamicPressure);
+				float roll = graphStreams.GetData(DataType.flight_inertial_roll);
+				float pitch = graphStreams.GetData(DataType.flight_inertial_pitch);
+				float yaw = graphStreams.GetData(DataType.flight_inertial_yaw);
 
 
 				if (MET > 600)
@@ -64,6 +76,9 @@ namespace KSP_MOCR
 						chartData["geeTime"][i - 1] = chartData["geeTime"][i];
 						chartData["terrainTime"][i - 1] = chartData["terrainTime"][i];
 						chartData["dynPresTime"][i - 1] = chartData["dynPresTime"][i];
+						chartData["rollTime"][i - 1] = chartData["rollTime"][i];
+						chartData["pitchTime"][i - 1] = chartData["pitchTime"][i];
+						chartData["yawTime"][i - 1] = chartData["yawTime"][i];
 					}
 					chartData["altitudeTime"][599] = altitude;
 					chartData["apoapsisTime"][599] = apoapsis;
@@ -71,6 +86,9 @@ namespace KSP_MOCR
 					chartData["geeTime"][599] = gee;
 					chartData["terrainTime"][599] = elevation;
 					chartData["dynPresTime"][599] = dynPress;
+					chartData["rollTime"][599] = roll;
+					chartData["pitchTime"][599] = pitch;
+					chartData["yawTime"][599] = yaw;
 				}
 				else
 				{
@@ -80,6 +98,9 @@ namespace KSP_MOCR
 					chartData["geeTime"][(int)MET] = gee;
 					chartData["terrainTime"][(int)MET] = elevation;
 					chartData["dynPresTime"][(int)MET] = dynPress;
+					chartData["rollTime"][(int)MET] = roll;
+					chartData["pitchTime"][(int)MET] = pitch;
+					chartData["yawTime"][(int)MET] = yaw;
 				}
 
 				if (speed < 3000)

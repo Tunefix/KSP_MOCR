@@ -207,6 +207,7 @@
     <Compile Include="Screens\StatusPanel.cs" />
     <Compile Include="Classes\MocrDropdown.cs" />
     <Compile Include="Classes\OrbitFunctions.cs" />
+    <Compile Include="Screens\Attitude.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
