@@ -85,3 +85,5 @@ The DSKY in the pilot-screen has the following VERBs and NOUNs implemented:
 ```
 VERB 16 NOUN 44 ENTR
 ```
+## FIDO Screen for calculating manouvers
+![alt tag](http://i.imgur.com/U8lwVSS.png)
