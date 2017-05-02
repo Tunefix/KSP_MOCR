@@ -38,8 +38,12 @@ namespace KSP_MOCR
 		Dictionary<int, double?> distances = new Dictionary<int, double?>();
 		Dictionary<int, double?> distancesB = new Dictionary<int, double?>();
 		Dictionary<int, double?> distancesC = new Dictionary<int, double?>();
+		Dictionary<int, double?> zedB = new Dictionary<int, double?>();
+		Dictionary<int, double?> zedC = new Dictionary<int, double?>();
 		List<Tuple<double?, double?>> posB = new List<Tuple<double?, double?>>();
 		List<Tuple<double?, double?>> posC = new List<Tuple<double?, double?>>();
+		Tuple<double, double> minDistVesselPos;
+		Tuple<double, double> minDistSatPos;
 		double minDistB;
 		double minDistMETB;
 		Tuple<double, double, double> velocityVector;
@@ -240,12 +244,18 @@ namespace KSP_MOCR
 				// ITERATE THROUGH ORBITS AND PATCHES
 				String orbitsData = "";
 				Orbit orbit = form.connection.SpaceCenter().ActiveVessel.Orbit;
-				do
+				for (int i = 0; i < 4; i++)
 				{
-					orbitsData += getOrbitsData(orbit);
+					orbitsData += getOrbitsData(orbit) + "\n\n";
+					if (orbit.NextOrbit == null)
+					{
+						break;
+					}
+					else
+					{
+						orbit = orbit.NextOrbit;
+					}
 				}
-				while (orbit.NextOrbit != null);
-				
 				screenLabels[32].Text = orbitsData;
 
 				// TARGET DATA
@@ -303,13 +313,19 @@ namespace KSP_MOCR
 				
 				data = new List<Dictionary<int, double?>>();
 				types = new List<Plot.Type>();
-				data.Add(distances);
-				types.Add(Plot.Type.LINE);
 				data.Add(distancesB);
 				types.Add(Plot.Type.LINE);
 				data.Add(distancesC);
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, false);
+				
+				data = new List<Dictionary<int, double?>>();
+				types = new List<Plot.Type>();
+				data.Add(zedB);
+				types.Add(Plot.Type.LINE);
+				data.Add(zedC);
+				types.Add(Plot.Type.LINE);
+				screenCharts[1].setData(data, types, false);
 			}	
 		}
 
@@ -341,7 +357,7 @@ namespace KSP_MOCR
 			screenLabels[9] = Helper.CreateLabel(25, 8, 25, 1, "│ RADIAL IN / RADIAL OUT:");
 			screenLabels[10] = Helper.CreateLabel(25, 9, 25, 1, "│    NORMAL / ANTINORMAL:");
 			
-			screenLabels[11] = Helper.CreateLabel(25, 5, 1, 1, "│");
+			screenLabels[11] = Helper.CreateLabel(25, 5, 11, 1, "│ ItCount: ");
 			screenLabels[12] = Helper.CreateLabel(59, 3, 1, 1, "│");
 			screenLabels[13] = Helper.CreateLabel(59, 4, 1, 1, "│");
 			screenLabels[14] = Helper.CreateLabel(59, 5, 1, 1, "│");
@@ -429,10 +445,16 @@ namespace KSP_MOCR
 			
 			screenButtons[8] = Helper.CreateButton(26, 3, 10, 1, "ITERATE 5");
 			screenButtons[8].Font = form.buttonFont;
+			screenButtons[8].buttonStyle = MocrButton.style.THIN_BORDER_LIGHT;
 			screenButtons[8].Click += (sender, e) => iterateDistances(sender, e, 5);
 			screenButtons[9] = Helper.CreateButton(26, 4, 10, 1, "ITERATE 1");
 			screenButtons[9].Font = form.buttonFont;
+			screenButtons[9].buttonStyle = MocrButton.style.THIN_BORDER_LIGHT;
 			screenButtons[9].Click += (sender, e) => iterateDistances(sender, e, 1);
+			
+			screenInputs[6] = Helper.CreateInput(36, 5, 10, 1); // Iteration Count
+			screenInputs[6].TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			screenInputs[6].Text = "30000";
 
 			IList<CelestialBody> sats = body.Satellites;
 			foreach (CelestialBody sat in sats)
@@ -441,22 +463,29 @@ namespace KSP_MOCR
 			}
 
 			// OrbitGraph
-			screenOrbit = Helper.CreateOrbit(62, 3, 58, 27);
+			screenOrbit = Helper.CreateOrbit(62, 3, 58, 23);
 			IList<CelestialBody> bodySatellites = body.Satellites;
 			screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
 			
 			// Closest approach chart
-			screenCharts[0] = Helper.CreatePlot(0, 26, 62, 14, 0);
+			screenCharts[0] = Helper.CreatePlot(0, 26, 62, 14);
+			screenCharts[0].setSeriesColor(0, Color.FromArgb(255, 0, 0, 255));
+			screenCharts[0].setSeriesColor(1, Color.FromArgb(255, 0, 255, 0));
+			
+			// Plane chart (Z-diff from target)
+			screenCharts[1] = Helper.CreatePlot(62, 26, 58, 14, 0, -1, -200000,200000);
+			screenCharts[1].setSeriesColor(0, Color.FromArgb(255, 0, 0, 255));
+			screenCharts[1].setSeriesColor(1, Color.FromArgb(255, 0, 255, 0));
 		}
 
 		private String getOrbitsData(Orbit orbit)
 		{
-			String output = "\n=== ORBIT ===";
+			String output = "=== ORBIT ===";
 			output += "\nBody: " + orbit.Body.Name;
 			output += "\n Apo: " + Math.Round(orbit.ApoapsisAltitude).ToString();
 			output += "\n Per: " + Math.Round(orbit.PeriapsisAltitude).ToString();
 			output += "\n Inc: " + Helper.toFixed(orbit.Inclination,3);
-			output += "\n\nTTSC: " + Helper.timeString(orbit.TimeToSOIChange,3);
+			output += "\nTTSC: " + Helper.timeString(orbit.TimeToSOIChange,3);
 
 			return output;
 		}
@@ -469,12 +498,17 @@ namespace KSP_MOCR
 		private void iterateDistances(Object sender, EventArgs e, int timestep)
 		{
 			Console.WriteLine("ITERATING " + timestep);
+
+			MocrButton button = (MocrButton)sender;
+			button.setLightColor(MocrButton.color.RED);
+			button.setLitState(true);
+
+			//Thread.Sleep(100);
+			
 			// CALCULATE DISTANCES FOR THE BURN ORBIT
 			distances = new Dictionary<int, double?>();
 			distancesB = new Dictionary<int, double?>();
 			distancesC = new Dictionary<int, double?>();
-			double minDist = -1;
-			double minDistMET = 0;
 			
 			minDistB = -1;
 			minDistMETB = 0;
@@ -482,6 +516,8 @@ namespace KSP_MOCR
 			Tuple<double, double, double> speedB = velocityVector;
 			posB.Clear();
 			posC.Clear();
+			zedB.Clear();
+			zedC.Clear();
 			
 			if (screenDropdowns[0].SelectedItem != null)
 			{
@@ -490,19 +526,37 @@ namespace KSP_MOCR
 				double satSpereOfInfluence = sat.SphereOfInfluence;
 				double satMy = sat.GravitationalParameter;
 				Orbit satOrbit = sat.Orbit;
+				double satSMA = satOrbit.SemiMajorAxis;
+				double satEcc = satOrbit.Eccentricity;
 
 				bool insideSatSphere = false;
 
+				double deltaX;
+				double deltaY;
+				double deltaZ;
+				double dist;
+
 				int i = 0;
 				int t = timestep;
-				for (int ut = (int)Math.Round(UT); ut < (int)Math.Ceiling(UT + (period * 15)); ut += t)
+				int c = 30000;
+
+				if (screenInputs[6].Text != null)
 				{
-					double satSMA = satOrbit.SemiMajorAxis;
+					try
+					{
+						c = int.Parse(screenInputs[6].Text);
+					}
+					catch (Exception) { }
+				}
+
+				for (int ut = (int)Math.Round(UT); ut < (int)Math.Ceiling(UT + c); ut += t)
+				{
+					
 					double satTAAUT = satOrbit.TrueAnomalyAtUT(ut);
-					double satEcc = satOrbit.Eccentricity;
 					Tuple<double, double, double> satPositionVectorInPlane = getPositionVector(satSMA, satTAAUT, satEcc);
 					Tuple<double, double, double> satPositionVector = transform(satPositionVectorInPlane, referencePlane);
 					
+					/*
 					double TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(ut);
 					Tuple<double, double, double> positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
 					Tuple<double, double, double> positionVector = transform(positionVectorInPlane, referencePlane);
@@ -519,6 +573,7 @@ namespace KSP_MOCR
 						minDist = dist - satRadius;
 						minDistMET = (ut - (UT - MET));
 					}
+					*/
 
 					double currentRadius;
 					double currentGravity;
@@ -560,7 +615,8 @@ namespace KSP_MOCR
 						dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
 						
 						distancesC.Add(i, dist - satRadius);
-						posC.Add(new Tuple<double?, double?>(posX + satPositionVector.Item1, -posY + satPositionVector.Item2));
+						posC.Add(new Tuple<double?, double?>(posX + satPositionVector.Item1, -posY + -satPositionVector.Item2));
+						zedC.Add(i, deltaZ);
 					}
 					else
 					{
@@ -572,8 +628,27 @@ namespace KSP_MOCR
 					
 						distancesB.Add(i, dist - satRadius);
 						posB.Add(new Tuple<double?, double?>(posX, -posY));
+						zedB.Add(i, deltaZ);
 					}
 
+
+					if (dist < minDistB || minDistB == -1)
+					{
+						minDistB = dist - satRadius;
+						minDistMETB = (ut - (UT - MET));
+						if (insideSatSphere)
+						{
+							minDistVesselPos = new Tuple<double, double>(posX + satPositionVector.Item1, -posY + -satPositionVector.Item2);
+						}
+						else
+						{
+							minDistVesselPos = new Tuple<double, double>(posX, -posY);
+							
+						}
+						minDistSatPos = new Tuple<double, double>(satPositionVector.Item1, -satPositionVector.Item2);
+					}
+					
+					
 					if (!insideSatSphere && dist < satSpereOfInfluence)
 					{
 						positionB = OrbitFunctions.vectorSubtrackt(positionB, satPositionVector);
@@ -584,18 +659,16 @@ namespace KSP_MOCR
 						positionB = OrbitFunctions.vectorAdd(positionB, satPositionVector);
 						insideSatSphere = false;
 					}
-					
-					
 
-					if (dist < minDistB || minDistB == -1)
-					{
-						minDistB = dist - satRadius;
-						minDistMETB = (ut - (UT - MET));
-					}
-
-					i++;
+					i += t;
 				}
 			}
+
+			screenOrbit.point1 = minDistVesselPos;
+			screenOrbit.point2 = minDistSatPos;
+			
+			button.setLightColor(MocrButton.color.BLANK);
+			button.setLitState(false);
 		}
 
 		private Tuple<double, double, double> rotateVectorAroundZ(Tuple<double, double, double> v, double alpha)

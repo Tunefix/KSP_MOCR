@@ -46,6 +46,7 @@ namespace KSP_MOCR
 
 		readonly List<Color> chartLineColors = new List<Color>();
 
+
 		public Plot()
 		{
 			chartLineColors.Add(Color.FromArgb(255, 204, 51, 0));

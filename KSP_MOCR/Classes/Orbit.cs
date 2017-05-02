@@ -59,6 +59,9 @@ namespace KSP_MOCR
 		readonly Font font;
 
 		public List<Tuple<List<Tuple<double?, double?>>, Color>> positionalData { get; set; }
+		
+		public Tuple<double, double> point1;
+		public Tuple<double, double> point2;
 
 		public OrbitGraph(Font f)
 		{
@@ -313,15 +316,32 @@ namespace KSP_MOCR
 		private void plotPositionalData(Graphics g, Tuple<List<Tuple<double?, double?>>, Color> points)
 		{
 			Brush brush = new SolidBrush(points.Item2);
+			Brush brush2 = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
 			GraphicsState state = g.Save();
 			g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
 
 			foreach (Tuple<double?, double?> point in points.Item1)
 			{
-				float x = (float)((point.Item1 * scaler) - 2);
-				float y = (float)((point.Item2 * scaler) - 2);
-				g.FillEllipse(brush, new RectangleF(x, y, 4, 4));
+				float x = (float)((point.Item1 * scaler) - 1.5);
+				float y = (float)((point.Item2 * scaler) - 1.5);
+				g.FillEllipse(brush, new RectangleF(x, y, 3, 3));
 			}
+
+			// DRAW point1 and point2
+			if (point1 != null)
+			{
+				float x = (float)((point1.Item1 * scaler) - 2);
+				float y = (float)((point1.Item2 * scaler) - 2);
+				g.FillEllipse(brush2, new RectangleF(x, y, 4, 4));
+			}
+			
+			if (point2 != null)
+			{
+				float x = (float)((point2.Item1 * scaler) - 2);
+				float y = (float)((point2.Item2 * scaler) - 2);
+				g.FillEllipse(brush2, new RectangleF(x, y, 4, 4));
+			}
+			
 			
 			// Restore orientation
 			g.Restore(state);

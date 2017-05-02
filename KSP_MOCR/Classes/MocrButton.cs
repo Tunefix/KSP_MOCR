@@ -7,7 +7,7 @@ namespace KSP_MOCR
 {
 	public class MocrButton : Control
 	{
-		public enum style {LIGHT, PUSH}
+		public enum style {LIGHT, THIN_BORDER_LIGHT, PUSH}
 		public style buttonStyle { get; set; }
 
 		private bool pressed = false;
@@ -20,8 +20,12 @@ namespace KSP_MOCR
 		readonly Pen ControlOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 4f);
 		readonly Pen ControlInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 2f);
 		readonly Pen ControlBorderShadowPen = new Pen(Color.FromArgb(55, 0, 0, 0), 1f);
+		
+		readonly Pen ThinOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 1f);
+		readonly Pen ThinInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 1f);
 
-		readonly Brush textBrush = new SolidBrush(Color.FromArgb(200, 255, 255, 255));
+		readonly Brush textBrushPush = new SolidBrush(Color.FromArgb(200, 255, 255, 255));
+		readonly Brush textBrushLight = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
 
 		readonly Brush backgroundColorBlankDim = new SolidBrush(Color.FromArgb(255, 200, 200, 200));
 		readonly Brush backgroundColorBlankLit = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
@@ -76,12 +80,14 @@ namespace KSP_MOCR
 		{
 			this.pressed = state;
 			this.Invalidate();
+			this.Update();
 		}
 		
 		public void setLitState(bool state)
 		{
 			this.lit = state;
 			this.Invalidate();
+			this.Update();
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -89,7 +95,7 @@ namespace KSP_MOCR
 			Graphics g = e.Graphics;
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-			if (buttonStyle == style.LIGHT)
+			if (buttonStyle == style.LIGHT || buttonStyle == style.THIN_BORDER_LIGHT)
 			{
 				DrawControlButton(g);
 			}
@@ -112,25 +118,42 @@ namespace KSP_MOCR
 				brush1 = dimBrush;
 			}
 
-			float innerX = 7;
-			float innerY = 7;
+			float innerX = 8;
+			float innerY = 8;
+			float outerBorderWidth = 4;
+			float innerBorderWidth = 2;
+			Pen outerBorderPen = ControlOuterBorderPen;
+			Pen innerBorderPen = ControlInnerBorderPen;
+			
+			if (buttonStyle == style.THIN_BORDER_LIGHT)
+			{
+				innerX = innerY = 5;
+				outerBorderWidth = 1;
+				innerBorderWidth = 1;
+				outerBorderPen = ThinOuterBorderPen;
+				innerBorderPen = ThinInnerBorderPen;
+			}
+			
 			if (this.pressed)
 			{
-				innerX = 8;
-				innerY = 8;
+				innerX = innerX + 1;
+				innerY = innerY + 1;
 			}
+			
 
 			// Background color
-			g.FillRectangle(backgroundColorBlankDim, 3, 3, this.Width - 6, this.Height - 6);
-			
+			g.FillRectangle(backgroundColorBlankDim, (innerX / 2f), (innerY / 2f), this.Width - innerX, this.Height - innerY);
+
 			// Button color
-			g.FillRectangle(brush1, 8, 8, this.Width - 16, this.Height - 16);
+			if (buttonStyle == style.LIGHT)
+			{
+				g.FillRectangle(brush1, innerX, innerY, this.Width - ((innerX) * 2), this.Height - ((innerY) * 2));
+			}
+			else
+			{
+				g.FillRectangle(brush1, 1, 1, this.Width - 2, this.Height - 2);
+			}
 			
-			// Draw Text
-			StringFormat format = new StringFormat();
-			format.Alignment = StringAlignment.Center;
-			format.LineAlignment = StringAlignment.Center;
-			g.DrawString(this.Text, this.Font, textBrush, new RectangleF(innerX, innerY, this.Width - 14, this.Height - 14), format);
 			
 			
 			// LIGHT SHADE
@@ -149,17 +172,23 @@ namespace KSP_MOCR
 				g.FillRectangle(maskBrush, mask);
 			}
 			
-			// Border
-			g.DrawRectangle(ControlOuterBorderPen, 3, 3, this.Width - 6, this.Height - 6);
+			// Draw Text
+			StringFormat format = new StringFormat();
+			format.Alignment = StringAlignment.Center;
+			format.LineAlignment = StringAlignment.Center;
+			g.DrawString(this.Text, this.Font, textBrushLight, new RectangleF(1, 1, this.Width - 2, this.Height - 2), format);
+
+			// Inner Border
+			if (buttonStyle == style.LIGHT)
+			{
+				g.DrawRectangle(innerBorderPen, innerX, innerY, this.Width - (innerX * 2), this.Height - (innerY * 2));
+			}
 			
 			// Border Shadow
-			g.DrawRectangle(ControlBorderShadowPen, 5, 5, this.Width - 10, this.Height - 10);
-			
-			// Inner Border
-			g.DrawRectangle(ControlInnerBorderPen, innerX, innerY, this.Width - 14, this.Height - 14);
-			
-			
-			
+			g.DrawRectangle(ControlBorderShadowPen, outerBorderWidth + 1f, outerBorderWidth + 1f, this.Width - ((outerBorderWidth + 1f) * 2), this.Height - ((outerBorderWidth + 1f) * 2));
+
+			// Border
+			g.DrawRectangle(outerBorderPen, outerBorderWidth / 2f, outerBorderWidth / 2f, this.Width - outerBorderWidth, this.Height - outerBorderWidth);
 		}
 
 		private void DrawSpacecraftButton(Graphics g)
@@ -213,7 +242,7 @@ namespace KSP_MOCR
 			float x = 2;
 			float y = 2;
 			if (this.pressed) { x = 3; y = 3; }
-			g.DrawString(this.Text, this.Font, textBrush, new RectangleF(x, y, this.Width - 4, this.Height - 4), format);
+			g.DrawString(this.Text, this.Font, textBrushPush, new RectangleF(x, y, this.Width - 4, this.Height - 4), format);
 		}
 		
 		protected override void OnMouseDown(MouseEventArgs e)
