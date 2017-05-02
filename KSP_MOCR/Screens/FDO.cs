@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using KRPC.Client.Services.KRPC;
 using KRPC.Client.Services.SpaceCenter;
 using KRPC.Client.Services.Drawing;
+using System.Drawing;
 
 namespace KSP_MOCR
 {
@@ -33,8 +34,18 @@ namespace KSP_MOCR
 		double period;
 		
 		NumberFormatInfo format = new NumberFormatInfo();
-			
-
+		
+		Dictionary<int, double?> distances = new Dictionary<int, double?>();
+		Dictionary<int, double?> distancesB = new Dictionary<int, double?>();
+		Dictionary<int, double?> distancesC = new Dictionary<int, double?>();
+		List<Tuple<double?, double?>> posB = new List<Tuple<double?, double?>>();
+		List<Tuple<double?, double?>> posC = new List<Tuple<double?, double?>>();
+		double minDistB;
+		double minDistMETB;
+		Tuple<double, double, double> velocityVector;
+		Tuple<double, double, double> positionVector;
+		Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>> referencePlane;
+		float my;
 
 		public FDO(Form1 form)
 		{
@@ -45,7 +56,7 @@ namespace KSP_MOCR
 			this.width = 120;
 			this.height = 40;
 			
-			this.updateRate = 5000;
+			this.updateRate = 500;
 
 			body = form.connection.SpaceCenter().ActiveVessel.Orbit.Body;
 			bodyRadius = body.EquatorialRadius;
@@ -106,12 +117,12 @@ namespace KSP_MOCR
 				}
 				screenLabels[20].Text = "BUT: " + Helper.timeString(TIG, 5);
 				double TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(TIG);
-				float my = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.GravitationalParameter;
+				my = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.GravitationalParameter;
 
 				// Make orbital plane vectors
 				Tuple<double, double, double> velocityVectorInPlane = getVelocityVector(sMa, TAAUT, eccentricity, my);
 				Tuple<double, double, double> positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
-				Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>> referencePlane = getGeocentricReferenceFrame(lOAN, inclination, argOP);
+				referencePlane = getGeocentricReferenceFrame(lOAN, inclination, argOP);
 
 				double alpha = Math.Acos(velocityVectorInPlane.Item1 / Math.Sqrt(Math.Pow(velocityVectorInPlane.Item1, 2) + Math.Pow(velocityVectorInPlane.Item2, 2)));
 				if (velocityVectorInPlane.Item1 > 0)
@@ -168,8 +179,8 @@ namespace KSP_MOCR
 				
 				// Tranform vectors
 				Tuple<double, double, double> burnVectorInPlane = rotateVectorAroundZ(burnVector, alpha);
-				Tuple<double, double, double> velocityVector = transform(velocityVectorInPlane, referencePlane);
-				Tuple<double, double, double> positionVector = transform(positionVectorInPlane, referencePlane);
+				velocityVector = transform(velocityVectorInPlane, referencePlane);
+				positionVector = transform(positionVectorInPlane, referencePlane);
 				Tuple<double, double, double> inertialBurnVector = transform(burnVectorInPlane, referencePlane);
 				
 				screenLabels[20].Text = "│ Total ΔV: " + totalV;
@@ -212,6 +223,14 @@ namespace KSP_MOCR
 				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
 				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly);
+
+				// Make positionalBurnData
+				List<Tuple<List<Tuple<double?, double?>>, Color>> burnPos = new List<Tuple<List<Tuple<double?, double?>>, Color>>();
+				burnPos.Add(new Tuple<List<Tuple<double?, double?>>, Color>(posB, Color.FromArgb(255, 0, 0, 255)));
+				burnPos.Add(new Tuple<List<Tuple<double?, double?>>, Color>(posC, Color.FromArgb(255, 0, 255, 0)));
+	
+				screenOrbit.positionalData = burnPos;
+				
 				screenOrbit.Invalidate();
 				
 				// ZOOM
@@ -275,82 +294,6 @@ namespace KSP_MOCR
 																			+ Helper.prtlen(Math.Round(deltaZ).ToString(), 8) + "  │";
 				screenLabels[49].Text = "│CURRENT TOTAL DISTANCE:  " + Helper.prtlen(Math.Round(total).ToString(), 8) + "  │";
 				
-				// CALCULATE BURN ORBIT DATA
-
-				// CALCULATE DISTANCES FOR THE NEXT ORBIT
-				Dictionary<int, double?> distances = new Dictionary<int, double?>();
-				double minDist = -1;
-				double minDistMET = 0;
-				Dictionary<int, double?> distancesB = new Dictionary<int, double?>();
-				double minDistB = -1;
-				double minDistMETB = 0;
-				Tuple<double, double, double> positionB = positionVector;
-				Tuple<double, double, double> speedB = burnVector;
-				if (screenDropdowns[0].SelectedItem != null)
-				{
-					sat = (CelestialBody)screenDropdowns[0].SelectedItem;
-					satOrbit = sat.Orbit;
-
-					int i = 0;
-					for (int ut = (int)Math.Round(UT); ut < (int)Math.Ceiling(UT + (period * 10)); ut += 60)
-					{
-						double satSMA = satOrbit.SemiMajorAxis;
-						double satTAAUT = satOrbit.TrueAnomalyAtUT(ut);
-						double satEcc = satOrbit.Eccentricity;
-						Tuple<double, double, double> satPositionVectorInPlane = getPositionVector(satSMA, satTAAUT, satEcc);
-						Tuple<double, double, double> satPositionVector = transform(satPositionVectorInPlane, referencePlane);
-						
-						TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(ut);
-						positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
-						positionVector = transform(positionVectorInPlane, referencePlane);
-						
-						deltaX = positionVector.Item1 - satPositionVector.Item1;
-						deltaY = positionVector.Item2 - satPositionVector.Item2;
-						deltaZ = positionVector.Item3 - satPositionVector.Item3;
-
-						double dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
-						distances.Add(i, dist);
-
-						if (dist < minDist || minDist == -1)
-						{
-							minDist = dist;
-							minDistMET = (ut - (UT - MET));
-						}
-
-						double currentGravity = my / OrbitFunctions.vectorMagnitude(positionB);
-						Tuple<double, double, double> gravVector = new Tuple<double, double, double>(-positionB.Item1, -positionB.Item2, -positionB.Item3);
-						double gravX = (gravVector.Item1 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
-						double gravY = (gravVector.Item2 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
-						double gravZ = (gravVector.Item3 * currentGravity) / OrbitFunctions.vectorMagnitude(gravVector);
-						gravVector = new Tuple<double, double, double>(gravX, gravY, gravZ);
-
-						double posX = positionB.Item1 + speedB.Item1;
-						double posY = positionB.Item2 + speedB.Item2;
-						double posZ = positionB.Item3 + speedB.Item3;
-
-						double speedX = speedB.Item1 + gravVector.Item1;
-						double speedY = speedB.Item2 + gravVector.Item2;
-						double speedZ = speedB.Item3 + gravVector.Item3;
-
-						positionB = new Tuple<double, double, double>(posX, posY, posZ);
-						speedB = new Tuple<double, double, double>(speedX, speedY, speedZ);
-						
-						deltaX = positionB.Item1 - satPositionVector.Item1;
-						deltaY = positionB.Item2 - satPositionVector.Item2;
-						deltaZ = positionB.Item3 - satPositionVector.Item3;
-
-						dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
-						distancesB.Add(i, dist);
-
-						if (dist < minDistB || minDistB == -1)
-						{
-							minDistB = dist;
-							minDistMETB = (ut - (UT - MET));
-						}
-
-						i++;
-					}
-				}
 				
 				screenLabels[52].Text = "┘ MET:  " + Helper.timeString(minDistMETB,3) + "  DIST:  " + Helper.prtlen(Math.Round(minDistB).ToString(), 8) + "  │";
 				
@@ -363,6 +306,8 @@ namespace KSP_MOCR
 				data.Add(distances);
 				types.Add(Plot.Type.LINE);
 				data.Add(distancesB);
+				types.Add(Plot.Type.LINE);
+				data.Add(distancesC);
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, false);
 			}	
@@ -387,8 +332,10 @@ namespace KSP_MOCR
 			
 			// BURN DATA LABLES
 			screenLabels[4] = Helper.CreateLabel(0, 2, 120, 1, "── CURRENT ORBITS DATA ──┬─────────── BURN DATA ───────────┬────────────────────");
-			screenLabels[5] = Helper.CreateLabel(25, 3, 32, 1, "│                HRS   MIN   SEC");
-			screenLabels[6] = Helper.CreateLabel(25, 4, 15, 1, "│          TIG:");
+			screenLabels[5] = Helper.CreateLabel(25, 3, 1, 1, "│");
+			screenLabels[25] = Helper.CreateLabel(42, 3, 15, 1, "HRS   MIN   SEC");
+			screenLabels[6] = Helper.CreateLabel(25, 4, 1, 1, "│");
+			screenLabels[26] = Helper.CreateLabel(36, 4, 4, 1, "TIG:");
 			screenLabels[7] = Helper.CreateLabel(25, 6, 32, 1, "│    [+]          [-]     ΔV M/S");
 			screenLabels[8] = Helper.CreateLabel(25, 7, 25, 1, "│  PROGRADE / RETROGRADE:");
 			screenLabels[9] = Helper.CreateLabel(25, 8, 25, 1, "│ RADIAL IN / RADIAL OUT:");
@@ -479,6 +426,13 @@ namespace KSP_MOCR
 			// Target dropdown
 			screenDropdowns[0] = Helper.CreateDropdown(41, 15, 20, 1);
 			screenDropdowns[0].DisplayMember = "Name";
+			
+			screenButtons[8] = Helper.CreateButton(26, 3, 10, 1, "ITERATE 5");
+			screenButtons[8].Font = form.buttonFont;
+			screenButtons[8].Click += (sender, e) => iterateDistances(sender, e, 5);
+			screenButtons[9] = Helper.CreateButton(26, 4, 10, 1, "ITERATE 1");
+			screenButtons[9].Font = form.buttonFont;
+			screenButtons[9].Click += (sender, e) => iterateDistances(sender, e, 1);
 
 			IList<CelestialBody> sats = body.Satellites;
 			foreach (CelestialBody sat in sats)
@@ -510,6 +464,138 @@ namespace KSP_MOCR
 		private void changeZoom(Object sender, EventArgs e, float change)
 		{
 			screenOrbit.setZoom(screenOrbit.getZoom() + change);
+		}
+
+		private void iterateDistances(Object sender, EventArgs e, int timestep)
+		{
+			Console.WriteLine("ITERATING " + timestep);
+			// CALCULATE DISTANCES FOR THE BURN ORBIT
+			distances = new Dictionary<int, double?>();
+			distancesB = new Dictionary<int, double?>();
+			distancesC = new Dictionary<int, double?>();
+			double minDist = -1;
+			double minDistMET = 0;
+			
+			minDistB = -1;
+			minDistMETB = 0;
+			Tuple<double, double, double> positionB = positionVector;
+			Tuple<double, double, double> speedB = velocityVector;
+			posB.Clear();
+			posC.Clear();
+			
+			if (screenDropdowns[0].SelectedItem != null)
+			{
+				CelestialBody sat = (CelestialBody)screenDropdowns[0].SelectedItem;
+				double satRadius = sat.EquatorialRadius;
+				double satSpereOfInfluence = sat.SphereOfInfluence;
+				double satMy = sat.GravitationalParameter;
+				Orbit satOrbit = sat.Orbit;
+
+				bool insideSatSphere = false;
+
+				int i = 0;
+				int t = timestep;
+				for (int ut = (int)Math.Round(UT); ut < (int)Math.Ceiling(UT + (period * 15)); ut += t)
+				{
+					double satSMA = satOrbit.SemiMajorAxis;
+					double satTAAUT = satOrbit.TrueAnomalyAtUT(ut);
+					double satEcc = satOrbit.Eccentricity;
+					Tuple<double, double, double> satPositionVectorInPlane = getPositionVector(satSMA, satTAAUT, satEcc);
+					Tuple<double, double, double> satPositionVector = transform(satPositionVectorInPlane, referencePlane);
+					
+					double TAAUT = form.connection.SpaceCenter().ActiveVessel.Orbit.TrueAnomalyAtUT(ut);
+					Tuple<double, double, double> positionVectorInPlane = getPositionVector(sMa, TAAUT, eccentricity);
+					Tuple<double, double, double> positionVector = transform(positionVectorInPlane, referencePlane);
+					
+					double deltaX = positionVector.Item1 - satPositionVector.Item1;
+					double deltaY = positionVector.Item2 - satPositionVector.Item2;
+					double deltaZ = positionVector.Item3 - satPositionVector.Item3;
+
+					double dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
+					distances.Add(i, dist);
+
+					if (dist < minDist || minDist == -1)
+					{
+						minDist = dist - satRadius;
+						minDistMET = (ut - (UT - MET));
+					}
+
+					double currentRadius;
+					double currentGravity;
+					
+					if (insideSatSphere)
+					{
+						currentRadius = OrbitFunctions.vectorMagnitude(positionB);
+						currentGravity = satMy / Math.Pow(currentRadius, 2);
+					}
+					else
+					{
+						currentRadius = OrbitFunctions.vectorMagnitude(positionB);
+						currentGravity = my / Math.Pow(currentRadius, 2);
+					}
+					
+					double gravX = currentGravity * (-positionB.Item1 / currentRadius);
+					double gravY = currentGravity * (-positionB.Item2 / currentRadius);
+					double gravZ = currentGravity * (-positionB.Item3 / currentRadius);
+
+					double speedX = speedB.Item1 + (gravX * t);
+					double speedY = speedB.Item2 + (gravY * t);
+					double speedZ = speedB.Item3 + (gravZ * t);
+
+					double posX = positionB.Item1 + (speedB.Item1 * t);
+					double posY = positionB.Item2 + (speedB.Item2 * t);
+					double posZ = positionB.Item3 + (speedB.Item3 * t);
+
+					positionB = new Tuple<double, double, double>(posX, posY, posZ);
+					speedB = new Tuple<double, double, double>(speedX, speedY, speedZ);
+
+					
+
+					if (insideSatSphere)
+					{
+						deltaX = positionB.Item1;
+						deltaY = positionB.Item2;
+						deltaZ = positionB.Item3;
+	
+						dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
+						
+						distancesC.Add(i, dist - satRadius);
+						posC.Add(new Tuple<double?, double?>(posX + satPositionVector.Item1, -posY + satPositionVector.Item2));
+					}
+					else
+					{
+						deltaX = positionB.Item1 - satPositionVector.Item1;
+						deltaY = positionB.Item2 - satPositionVector.Item2;
+						deltaZ = positionB.Item3 - satPositionVector.Item3;
+	
+						dist = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2) + Math.Pow(deltaZ, 2));
+					
+						distancesB.Add(i, dist - satRadius);
+						posB.Add(new Tuple<double?, double?>(posX, -posY));
+					}
+
+					if (!insideSatSphere && dist < satSpereOfInfluence)
+					{
+						positionB = OrbitFunctions.vectorSubtrackt(positionB, satPositionVector);
+						insideSatSphere = true;
+					}
+					else if (insideSatSphere && dist > satSpereOfInfluence)
+					{
+						positionB = OrbitFunctions.vectorAdd(positionB, satPositionVector);
+						insideSatSphere = false;
+					}
+					
+					
+
+					if (dist < minDistB || minDistB == -1)
+					{
+						minDistB = dist - satRadius;
+						minDistMETB = (ut - (UT - MET));
+					}
+
+					i++;
+				}
+			}
 		}
 
 		private Tuple<double, double, double> rotateVectorAroundZ(Tuple<double, double, double> v, double alpha)

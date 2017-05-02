@@ -401,7 +401,7 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			return (int)Math.Floor((double)tMin);
+			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 
 		private int findMaxY(Dictionary<int, double?> serie)
@@ -448,7 +448,7 @@ namespace KSP_MOCR
 					}
 				}
 			}
-			return (int)Math.Floor((double)tMin);
+			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 	}
 }

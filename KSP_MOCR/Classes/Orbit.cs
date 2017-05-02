@@ -58,6 +58,8 @@ namespace KSP_MOCR
 
 		readonly Font font;
 
+		public List<Tuple<List<Tuple<double?, double?>>, Color>> positionalData { get; set; }
+
 		public OrbitGraph(Font f)
 		{
 			this.DoubleBuffered = true;
@@ -297,7 +299,32 @@ namespace KSP_MOCR
 				g.Restore(state);
 
 				drawBurnOrbit(g, scaler);
+
+
+				// Draw Positional data (if exists)
+				if (positionalData != null)
+				{
+					foreach(Tuple<List<Tuple<double?, double?>>, Color> points in positionalData)
+					plotPositionalData(g, points);
+				}
 			}
+		}
+
+		private void plotPositionalData(Graphics g, Tuple<List<Tuple<double?, double?>>, Color> points)
+		{
+			Brush brush = new SolidBrush(points.Item2);
+			GraphicsState state = g.Save();
+			g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
+
+			foreach (Tuple<double?, double?> point in points.Item1)
+			{
+				float x = (float)((point.Item1 * scaler) - 2);
+				float y = (float)((point.Item2 * scaler) - 2);
+				g.FillEllipse(brush, new RectangleF(x, y, 4, 4));
+			}
+			
+			// Restore orientation
+			g.Restore(state);
 		}
 
 		private void drawOrbit(Graphics g,
