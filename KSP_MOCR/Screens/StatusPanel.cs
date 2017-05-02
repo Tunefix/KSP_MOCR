@@ -16,6 +16,9 @@ namespace KSP_MOCR
 		{
 			for (int i = 0; i < 1; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 20; i++) screenIndicators.Add(null); // Initialize Buttons
+			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
+			
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
 			screenLabels[0] = Helper.CreateLabel(0, 0, 40, 1, Helper.prtlen("CONTROLLER STATUS", 40, Helper.Align.CENTER));
 
@@ -39,11 +42,40 @@ namespace KSP_MOCR
 			
 			screenIndicators[6] = Helper.CreateIndicator(20, 4, 10, 3, "EECOM");
 			screenIndicators[6].indStyle = Indicator.style.BORDER;
+			
+			screenIndicators[7] = Helper.CreateIndicator(30, 4, 10, 3, "GNC");
+			screenIndicators[7].indStyle = Indicator.style.BORDER;
+
+			form.dataStorage.Pull();
 		}
 		
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			
+			setIndicatorColor(screenIndicators[0], "BOOSTERS");
+		}
+
+		private void setIndicatorColor(Indicator ind, String key)
+		{
+			String colorData = form.dataStorage.getData(key);
+			Console.WriteLine(colorData);
+			switch (colorData)
+			{
+				case "RED":
+					ind.setStatus(Indicator.status.RED, true);
+					break;
+					
+				case "AMBER":
+					ind.setStatus(Indicator.status.AMBER, true);
+					break;
+					
+				case "GREEN":
+					ind.setStatus(Indicator.status.GREEN, true);
+					break;
+					
+				case "BLANK":
+					ind.setStatus(Indicator.status.OFF, false);
+					break;
+			}
 		}
 	}
 }

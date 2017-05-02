@@ -31,9 +31,20 @@ namespace KSP_MOCR
 			{status.WHITE, Color.FromArgb(200, 255, 255, 253)}
 		};
 		
+		readonly Dictionary<status, Color> BColorLit = new Dictionary<status, Color>()
+		{
+			{status.OFF, Color.FromArgb(255, 255, 255, 255)},
+			{status.GREEN, Color.FromArgb(255, 32, 255, 32)},
+			{status.RED, Color.FromArgb(255, 255, 32, 32)},
+			{status.BLUE, Color.FromArgb(255, 32, 32, 128)},
+			{status.AMBER, Color.FromArgb(255, 255, 200, 32)},
+			{status.WHITE, Color.FromArgb(200, 255, 255, 253)}
+		};
+		
 		public enum status { OFF, GREEN, RED, BLUE, AMBER, WHITE }
 		public enum style { SIMPLE, BORDER }
 		public style indStyle { get; set; }
+		private bool lit = false;
 		
 		private Brush backBrush;
 		private Brush foreBrush;
@@ -48,11 +59,19 @@ namespace KSP_MOCR
 			this.DoubleBuffered = true;
 			this.indStyle = style.SIMPLE;
 		}
-		
-		public void setStatus(status s)
+
+		public void setStatus(status s){setStatus(s, false);}
+		public void setStatus(status s, bool lit)
 		{
 			this.ForeColor = FColor[s];
-			this.BackColor = BColor[s];
+			if (lit)
+			{
+				this.BackColor = BColorLit[s];
+			}
+			else
+			{
+				this.BackColor = BColor[s];
+			}
 			this.backBrush = new SolidBrush(BackColor);
 			this.foreBrush = new SolidBrush(ForeColor);
 			this.Invalidate();

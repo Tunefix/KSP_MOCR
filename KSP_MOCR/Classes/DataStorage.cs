@@ -47,5 +47,11 @@ namespace KSP_MOCR
 				return "";
 			}
 		}
+
+		// Fetch all data
+		public void Pull()
+		{
+			client.Pull("&");
+		}
 	}
 }

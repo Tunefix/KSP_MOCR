@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+
 namespace KSP_MOCR
 {
 	public class StatusReport : MocrScreen
@@ -36,10 +38,46 @@ namespace KSP_MOCR
 			screenButtons[2].buttonStyle = MocrButton.style.LIGHT;
 			screenButtons[2].setLightColor(MocrButton.color.GREEN);
 			screenButtons[2].Click += (sender, e) => clickButton(sender, e, screenButtons[2]);
+
+			form.dataStorage.Pull();
+			Thread.Sleep(1000);
+			setButtonColor(positionCode + "S");
 		}
 		
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+			
+		}
+		
+		private void setButtonColor(String key)
+		{
+			String colorData = form.dataStorage.getData(key);
+			switch (colorData)
+			{
+				case "RED":
+					screenButtons[0].setLitState(true);
+					screenButtons[1].setLitState(false);
+					screenButtons[2].setLitState(false);
+					break;
+					
+				case "AMBER":
+					screenButtons[0].setLitState(false);
+					screenButtons[1].setLitState(true);
+					screenButtons[2].setLitState(false);
+					break;
+					
+				case "GREEN":
+					screenButtons[0].setLitState(false);
+					screenButtons[1].setLitState(false);
+					screenButtons[2].setLitState(true);
+					break;
+					
+				case "BLANK":
+					screenButtons[0].setLitState(false);
+					screenButtons[1].setLitState(false);
+					screenButtons[2].setLitState(false);
+					break;
+			}
 		}
 
 		private void clickButton(object sender, EventArgs e, MocrButton button)
@@ -50,10 +88,15 @@ namespace KSP_MOCR
 			screenButtons[0].setLitState(false);
 			screenButtons[1].setLitState(false);
 			screenButtons[2].setLitState(false);
-			
+
 			if (!lit)
 			{
 				button.setLitState(true);
+				form.dataStorage.setData(positionCode + "S", button.buttonColor.ToString());
+			}
+			else
+			{
+				form.dataStorage.setData(positionCode + "S", MocrButton.color.BLANK.ToString());
 			}
 		}
 	}

@@ -266,7 +266,7 @@ namespace KSP_MOCR
 			int remainTime = activeScreen.updateRate - (int)updateDuration.TotalMilliseconds;
 
 			if (remainTime < 100) { remainTime = 100; }
-			//Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString());
+			Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString());
 
 			screenTimer.Interval = remainTime;
 			screenTimer.Start();

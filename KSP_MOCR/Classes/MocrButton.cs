@@ -36,7 +36,7 @@ namespace KSP_MOCR
 		Brush dimBrush;
 
 		public enum color { BLANK, RED, AMBER, GREEN }
-		private color buttonColor;
+		public color buttonColor { get; private set; }
 		
 		public MocrButton()
 		{
