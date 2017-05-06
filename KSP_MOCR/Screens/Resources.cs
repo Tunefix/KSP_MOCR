@@ -32,6 +32,11 @@ namespace KSP_MOCR
 				float curTotFuel = screenStreams.GetData(DataType.resource_total_amount_liquidFuel);
 				float maxStgFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
 				float curStgFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
+				
+				float maxTotOx = screenStreams.GetData(DataType.resource_total_max_oxidizer);
+				float curTotOx = screenStreams.GetData(DataType.resource_total_amount_oxidizer);
+				float maxStgOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
+				float curStgOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
 
 				float maxTotMono = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
 				float curTotMono = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
@@ -53,6 +58,14 @@ namespace KSP_MOCR
 				String cSF = Helper.prtlen(Math.Round(curStgFuel).ToString(), 7);
 				String pSF = Helper.prtlen(Math.Floor((curStgFuel / maxStgFuel) * 100).ToString(), 4) + "% ";
 				String rF = "0";
+				
+				String mTO = Helper.prtlen(Math.Round(maxTotFuel).ToString(), 7);
+				String cTO = Helper.prtlen(Math.Round(curTotFuel).ToString(), 7);
+				String pTO = Helper.prtlen(Math.Floor((curTotFuel / maxTotFuel) * 100).ToString(), 4) + "% ";
+				String mSO = Helper.prtlen(Math.Round(maxStgFuel).ToString(), 7);
+				String cSO = Helper.prtlen(Math.Round(curStgFuel).ToString(), 7);
+				String pSO = Helper.prtlen(Math.Floor((curStgFuel / maxStgFuel) * 100).ToString(), 4) + "% ";
+				String rO = "0";
 
 				String mTM = Helper.prtlen(Helper.toFixed(maxTotMono,2), 7);
 				String cTM = Helper.prtlen(Helper.toFixed(curTotMono,2), 7);
@@ -73,7 +86,7 @@ namespace KSP_MOCR
 
 
 				screenLabels[6].Text = "       FUEL  ║" + mSF + "│" + cSF + "│" + pSF + "║" + mTF + "│" + cTF + "│" + pTF + "║" + rF;
-				screenLabels[7].Text = "   OXIDIZER  ║XXXXXXX│XXXXXXX│ 100% ║XXXXXXX│XXXXXXX│ 100% ║±XXX.XX";
+				screenLabels[7].Text = "   OXIDIZER  ║" + mSO + "│" + cSO + "│" + pSO + "║" + mTO + "│" + cTO + "│" + pTO + "║" + rO;
 				screenLabels[9].Text = "   MONOPROP  ║" + mSM + "│" + cSM + "│" + pSM + "║" + mTM + "│" + cTM + "│" + pTM + "║" + rM;
 				screenLabels[11].Text = "ELECTRICITY  ║" + mSE + "│" + cSE + "│" + pSE + "║" + mTE + "│" + cTE + "│" + pTE + "║" + rE;
 

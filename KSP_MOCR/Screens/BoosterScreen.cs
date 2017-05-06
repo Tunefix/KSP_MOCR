@@ -15,7 +15,6 @@ namespace KSP_MOCR
 {
 	class BoosterScreen : MocrScreen
 	{
-		KRPC.Client.Services.SpaceCenter.Vessel vessel;
 		KRPC.Client.Services.SpaceCenter.Flight flight;
 		//KRPC.Client.Services.SpaceCenter.Orbit orbit;
 		KRPC.Client.Services.SpaceCenter.Control control;
@@ -24,10 +23,17 @@ namespace KSP_MOCR
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
 		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Control> control_stream;
 
+		int currentStage;
+		Vessel vessel;
+		
+		double g = 8.80556;
+
 		public BoosterScreen(Form1 form)
 		{
 			this.form = form;
 			this.chartData = form.chartData;
+			
+			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 120;
 			this.height = 30;
@@ -37,7 +43,7 @@ namespace KSP_MOCR
 		{
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 12; i++) screenIndicators.Add(null); // Initialize Indicators
-			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
+			for (int i = 0; i < 2; i++) screenInputs.Add(null); // Initialize Inputs
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
@@ -130,6 +136,20 @@ namespace KSP_MOCR
 			screenIndicators[10] = Helper.CreateIndicator(97, 5, 10, 1, "MONO LOW");
 			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
+			// DELTA V BUDGET
+			screenLabels[80] = Helper.CreateLabel(0, 26, 23, 1, "── DELTA V AVAILABLE ──");
+			screenLabels[81] = Helper.CreateLabel(0, 27, 23, 1, "  STAGE: xxxxx.x m/s");
+			screenLabels[82] = Helper.CreateLabel(0, 28, 23, 1, "  TOTAL: xxxxx.x m/s");
+			
+			screenLabels[83] = Helper.CreateLabel(23, 26, 15, 1, "");
+			
+			screenLabels[85] = Helper.CreateLabel(23, 28, 15, 1, "");
+			
+			screenLabels[86] = Helper.CreateLabel(0, 23, 12, 1, "REQUIRED ΔV:");
+			screenLabels[84] = Helper.CreateLabel(0, 24, 22, 1, "  xxxxx.x m/s");
+			
+			screenInputs[1] = Helper.CreateInput(13, 23, 10, 1, HorizontalAlignment.Right);
+			screenInputs[1].Text = "0";
 
 			for (int i = 0; i < 1; i++) screenCharts.Add(null); // Initialize Charts
 
@@ -155,7 +175,8 @@ namespace KSP_MOCR
 				vessel = vessel_stream.Get(); // 1 RPC
 				flight = flight_stream.Get(); // 1 RPC
 				control = control_stream.Get(); // 1 RPC
-				//orbit = vessel.Orbit;
+
+				currentStage = screenStreams.GetData(DataType.control_currentStage);
 
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
@@ -166,11 +187,7 @@ namespace KSP_MOCR
 				 **/
 
 				//  Get parts in current stage
-
-
-				int stage = control.CurrentStage; // 1 RPC
-
-				screenLabels[50].Text = "Stage: " + control.CurrentStage.ToString(); // 0 RPC
+				screenLabels[50].Text = "Stage: " + currentStage.ToString(); // 0 RPC
 
 				bool foundEngine = false;
 				double multiplier = 91;
@@ -181,7 +198,7 @@ namespace KSP_MOCR
 
 				int n = 0;
 
-				for (int i = stage; i >= 0; i--)
+				for (int i = currentStage; i >= 0; i--)
 				{
 					IList<Part> parts = vessel.Parts.InStage(i);
 					foreach (Part part in parts)
@@ -338,6 +355,12 @@ namespace KSP_MOCR
 				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
 				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(Indicator.status.RED); } else { screenIndicators[8].setStatus(Indicator.status.OFF); } // LOW Low
 
+
+				// Delta V
+				// TOTO: Maybe buttonifize this, so the calculations are not done every refresh.
+				updateDeltaVStats();
+				
+
 				// Graphs
 				data = new List<Dictionary<int, double?>>();
 				types = new List<Plot.Type>();
@@ -345,6 +368,123 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, true);
 			}
+		}
+
+		private void updateDeltaVStats()
+		{
+			int currentStage = vessel.Control.CurrentStage;
+			
+			Parts Parts = vessel.Parts;
+			double[] stageWetMass = new double[currentStage + 1];
+			double[] stageDryMass = new double[currentStage + 1];
+			double[] stageISP = new double[currentStage + 1];
+			double[] stageDV = new double[currentStage + 1];
+			double[] stageThrust = new double[currentStage + 1];
+			
+			// Iterate all (remaining) stages
+			for (int i = currentStage; i >= 0; i--)
+			{
+				IList<Part> stageParts = Parts.InDecoupleStage(i);
+				double wetMass = 0;
+				double dryMass = 0;
+				List<double> engineThrust = new List<double>();
+				List<double> engineISP = new List<double>();
+
+				// Iterate all parts
+				foreach (Part part in stageParts)
+				{
+					wetMass += part.Mass;
+					dryMass += part.DryMass;
+
+					Engine engine = part.Engine;
+					if (engine != null)
+					{
+						engineThrust.Add(engine.MaxThrust);
+						engineISP.Add(engine.VacuumSpecificImpulse);
+					}
+				}
+
+				stageWetMass[i] = wetMass;
+				stageDryMass[i] = dryMass;
+
+				// Sum the engines
+				double totalThrust = 0;
+				double totalDivisor = 0;
+
+				for (int j = 0; j < engineThrust.Count; j++)
+				{
+					totalThrust += engineThrust[j];
+					totalDivisor += engineThrust[j] / engineISP[j];
+				}
+				stageThrust[i] = totalThrust;
+				stageISP[i] = totalThrust / totalDivisor;
+			}
+
+			// Go through and calulate stage Delta-V
+			String stageDeltas = "";
+			bool curStage = false;
+			for (int i = stageISP.Length - 1; i >= 0; i--)
+			{
+				double totalDryMass = stageDryMass[i];
+				double totalWetMass = stageWetMass[i];
+				
+				for (int j = i - 1; j >= 0; j--)
+				{
+					totalDryMass += stageWetMass[j];
+					totalWetMass += stageWetMass[j];
+				}
+				stageDV[i] = Math.Log(totalWetMass / totalDryMass) * stageISP[i] * g;
+
+				if (curStage == false && !double.IsNaN(stageDV[i]))
+				{
+					stageDeltas += Helper.prtlen(Helper.toFixed(stageDV[i], 2), 8);
+					curStage = true;
+				}
+			}
+
+			screenLabels[81].Text = "  STAGE: " + stageDeltas;
+
+			// SUM TOTAL
+			double totalDV = 0;
+			foreach (double dv in stageDV)
+			{
+				if (!double.IsNaN(dv)) totalDV += dv; 
+			}
+			screenLabels[82].Text = "  TOTAL: " + Helper.prtlen(Helper.toFixed(totalDV, 2), 8);
+
+			// CALCULATE BURN TIME
+			double sDv = 0;
+			double sTh = 0;
+			for (int i = stageDV.Length - 1; i >= 0; i--)
+			{
+				if (!double.IsNaN(stageDV[i]))
+				{
+					sDv = stageDV[i];
+					sTh = stageThrust[i];
+					break;
+				}
+			}
+
+			double deltaV;
+			try
+			{
+				deltaV = double.Parse(screenInputs[1].Text);
+			}
+			catch (Exception)
+			{
+				deltaV = 0;
+			}
+			double burnSecs = burnTime(deltaV, sDv, sTh);
+			screenLabels[84].Text = "  BURN TIME: " + Helper.timeString(burnSecs, false);
+		}
+
+		private double burnTime(double dV, double ISP, double thrust)
+		{
+			double massInit = vessel.Mass;
+			double massFine = massInit * Math.Exp(-dV / (ISP * g));
+			double massProp = massInit - massFine;
+			double massDot = thrust / (ISP * g);
+			return massProp / massDot;
 		}
 	}
 }

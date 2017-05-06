@@ -127,6 +127,7 @@ namespace KSP_MOCR
 		double periapsis = 0;
 		Tuple<double, double, double> vesselSurfDirection;
 		Tuple<double, double, double> vesselInerDirection;
+		Tuple<double, double, double, double> vesselInerRotation;
 
 		ReferenceFrame surfaceRefsmmat;
 		ReferenceFrame inertialRefsmmat;
@@ -787,12 +788,14 @@ namespace KSP_MOCR
 				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
 				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
 				vesselInerDirection = screenStreams.GetData(DataType.flight_inertial_direction);
-				//vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
+				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
 				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
 				
 				vesselSurfDirection = screenStreams.GetData(DataType.flight_direction);
 				//vesselSurfRotation = screenStreams.GetData(DataType.flight_rotation);
 
+				setInerRotFromQuaternion(vesselInerRotation);
+				
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
 				// THROTTLE
@@ -1004,9 +1007,9 @@ namespace KSP_MOCR
 				if (FDAImode == FDAIMode.INER)
 				{
 					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
-					targetVector = new Tuple<double, double, double>(X, Z, Y);
-					vector1 = X;
-					vector2 = Z;
+					targetVector = new Tuple<double, double, double>(Z, X, Y);
+					vector1 = Z;
+					vector2 = X;
 					vector3 = Y;
 				}
 				else
@@ -1409,6 +1412,83 @@ namespace KSP_MOCR
 			if (name != "") outName = "(" + name + ")";
 			Console.WriteLine("Block " + block++ + outName + ": " + (int)dur.TotalMilliseconds);
 			start = DateTime.Now;
+		}
+		
+		private void setInerRotFromQuaternion(Tuple<double, double, double, double> q)
+		{
+			// 1:X, 2:Y, 3:Z, 4:W
+			double x = q.Item1;
+			double y = q.Item2;
+			double z = q.Item3;
+			double w = q.Item4;
+
+			double a = 0;
+			double b = 0;
+			double c = 0;
+			double d = 0;
+			double e = 0;
+
+			String order = "XZY";//XYZ
+
+			switch (order)
+			{
+
+				case "ZYX":
+					a = 2 * (x * y + w * z);
+					b = w * w + x * x - y * y - z * z;
+					c = -2 * (x * z - w * y);
+					d = 2 * (y * z + w * x);
+					e = w * w - x * x - y * y + z * z;
+					break;
+				case "ZXY":
+					a = -2 * (x * y - w * z);
+					b = w * w - x * x + y * y - z * z;
+					c = 2 * (y * z + w * x);
+					d = -2 * (x * z - w * y);
+					e = w * w - x * x - y * y + z * z;
+					break;
+				case "XYZ":
+					a = -2 * (y * z - w * x);
+					b = w * w - x * x - y * y + z * z;
+					c = 2 * (x * z + w * y);
+					d = -2 * (x * y - w * z);
+					e = w * w + x * x - y * y - z * z;
+					break;
+				case "XZY":
+					a = 2 * (y * z + w * x);
+					b = w * w - x * x + y * y - z * z;
+					c = -2 * (x * y - w * z);
+					d = 2 * (x * z + w * y);
+					e = w * w + x * x - y * y - z * z;
+					break;
+				case "YXZ":
+					a = 2 * (x * z + w * y);
+					b = w * w - x * x - y * y + z * z;
+					c = -2 * (y * z - w * x);
+					d = 2 * (x * y + w * z);
+					e = w * w - x * x + y * y - z * z;
+					break;
+			}
+			
+			inerRoll = (float)Helper.rad2deg(Math.Atan2(d, e)); // Z
+			inerPitch = (float)Helper.rad2deg(Math.Asin(c)); // Y
+			inerYaw = (float)Helper.rad2deg(Math.Atan2(a, b)); // X
+
+			/*
+			yaw = Helper.rad2deg(Math.Atan2(d, e)); // X
+			pitch = Helper.rad2deg(Math.Asin(c)); // Y
+			roll = Helper.rad2deg(Math.Atan2(a, b)); // Z
+			/*
+			threeaxisrot( 2*(q.x*q.y + q.w*q.z),
+                     q.w*q.w + q.x*q.x - q.y*q.y - q.z*q.z,
+                    -2*(q.x*q.z - q.w*q.y),
+                     2*(q.y*q.z + q.w*q.x),
+                     q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z,
+                     res);
+			res[0] = atan2( r31, r32 );
+  			res[1] = asin ( r21 );
+  			res[2] = atan2( r11, r12 );
+			*/
 		}
 		
 	}

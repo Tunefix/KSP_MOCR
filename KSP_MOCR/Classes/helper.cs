@@ -422,8 +422,10 @@ namespace KSP_MOCR
 		}
 
 
-		static public String timeString(double t) { return timeString(t, 2); }
-		static public String timeString(double t, int h_len)
+		static public String timeString(double t) { return timeString(t, true, 2); }
+		static public String timeString(double t, int h_len) { return timeString(t, true, h_len); }
+		static public String timeString(double t, bool show_hrs) { return timeString(t, show_hrs, 2); }
+		static public String timeString(double t, bool show_hrs, int h_len)
 		{
 			String output = "";
 			double hrs;
@@ -448,7 +450,22 @@ namespace KSP_MOCR
 			sec_s = sec.ToString();
 			while (sec_s.Length < 2) { sec_s = "0" + sec_s; }
 
-			output = hrs_s + ":" + min_s + ":" + sec_s;
+			if (show_hrs)
+			{
+				output = hrs_s + ":" + min_s + ":" + sec_s;
+			}
+			else
+			{
+				min = min + (hrs * 60);
+				min_s = min.ToString();
+				while (min_s.Length < 2) { min_s = "0" + min_s; }
+
+				ts = ts - sec;
+				ts = Math.Round(ts * 100f);
+				sec_s = sec_s + "." + ts.ToString();
+				
+				output = min_s + ":" + sec_s;
+			}
 
 			return output;
 		}
