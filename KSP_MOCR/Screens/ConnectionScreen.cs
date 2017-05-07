@@ -129,6 +129,7 @@ namespace KSP_MOCR
 									+ "║     2 - BOOSTER\n"
 									+ "║     3 - RESOURCES\n"
 									+ "║     4 - FLIGHT DYNAMICS\n"
+									+ "║     8 - MAP VIEW\n"
 									+ "║     9 - FONT/ALIGNMENT TEST\n"
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║    51 - ALT/VEL GRAPH\n"

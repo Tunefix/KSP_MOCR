@@ -21,7 +21,7 @@ namespace KSP_MOCR
 		public VesselType vesselType;
 		public CelestialBody body;
 
-		readonly Pen CoordinatePen = new Pen(Color.FromArgb(200, 78, 128, 118), 2f);
+		readonly Pen CoordinatePen = new Pen(Color.FromArgb(100, 78, 128, 118), 2f);
 		readonly Pen trackHistoryPen = new Pen(Color.FromArgb(200, 255, 255, 255), 2f);
 		readonly Brush craftBrush = new SolidBrush(Color.FromArgb(230, 255, 255, 255));
 
