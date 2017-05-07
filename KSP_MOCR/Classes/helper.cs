@@ -336,6 +336,21 @@ namespace KSP_MOCR
 			return label;
 		}
 		
+		static public Map CreateMap(double x, double y, int w, int h)
+		{
+			int width = (int)Math.Ceiling((w * form.pxPrChar));
+			int height = (int)Math.Ceiling(h * form.pxPrLine);
+			int top = (int)(y * form.pxPrLine) + form.padding_top;
+			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			Map label = new Map();
+			label.Location = new Point(left, top);
+			label.Size = new Size(width, height);
+
+			form.Controls.Add(label);
+
+			return label;
+		}
 		
 		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed, String name)
 		{

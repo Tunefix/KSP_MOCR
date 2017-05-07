@@ -22,6 +22,7 @@ namespace KSP_MOCR
 		public List<SegDisp> screenSegDisps = new List<SegDisp>();
 		public List<MocrDropdown> screenDropdowns = new List<MocrDropdown>();
 		public List<Plot> screenCharts = new List<Plot>();
+		public List<Map> screenMaps = new List<Map>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
 
@@ -50,6 +51,8 @@ namespace KSP_MOCR
 					return new ResourcesScreen(form);
 				case 4:
 					return new FDO(form);
+				case 8:
+					return new MapScreen(form);
 				case 9:
 					Console.WriteLine("MAKING TEST");
 					return new TestScreen(form);
@@ -162,6 +165,11 @@ namespace KSP_MOCR
 			foreach (MocrDropdown drop in screenDropdowns) { if (drop != null) { drop.Dispose(); } }
 			screenDropdowns.Clear();
 			screenDropdowns.TrimExcess();
+			
+			// Clear Maps
+			foreach (Map map in screenMaps) { if (map != null) { map.Dispose(); } }
+			screenMaps.Clear();
+			screenMaps.TrimExcess();
 
 			// Clear old FDAI
 			if (screenFDAI != null)

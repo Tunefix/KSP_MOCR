@@ -23,7 +23,9 @@ namespace KSP_MOCR
 		Resources resources_stage;
 		ReferenceFrame inertialRefFrame;
 		ReferenceFrame surfaceRefFrame;
+		ReferenceFrame mapRefFrame;
 		Flight inertFlight;
+		Flight mapFlight;
 
 		public StreamCollection(Connection con)
 		{
@@ -77,14 +79,29 @@ namespace KSP_MOCR
 			resources = connection.SpaceCenter().ActiveVessel.Resources;
 			resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
 			inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
+			mapRefFrame = orbit.Body.ReferenceFrame;
 			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
 			surfaceRefFrame = vessel.SurfaceReferenceFrame;
 			flight = connection.SpaceCenter().ActiveVessel.Flight(surfaceRefFrame);
+			mapFlight = connection.SpaceCenter().ActiveVessel.Flight(mapRefFrame);
 
 			Kstream stream;
 
 			switch (type)
 			{
+				///// BODY DATA /////
+				case DataType.body_radius:
+					stream = new floatStream(connection.AddStream(() => orbit.Body.EquatorialRadius));
+					break;
+					
+				case DataType.body_gravityParameter:
+					stream = new floatStream(connection.AddStream(() => orbit.Body.GravitationalParameter));
+					break;
+					
+				case DataType.body_rotSpeed:
+					stream = new floatStream(connection.AddStream(() => orbit.Body.RotationalSpeed));
+					break;
+					
 				///// CONTROL DATA /////
 
 				case DataType.control_SAS:
@@ -191,6 +208,14 @@ namespace KSP_MOCR
 
 				case DataType.flight_longitude:
 					stream = new doubleStream(connection.AddStream(() => flight.Longitude));
+					break;
+
+				case DataType.flight_map_latitude:
+					stream = new doubleStream(connection.AddStream(() => mapFlight.Latitude));
+					break;
+
+				case DataType.flight_map_longitude:
+					stream = new doubleStream(connection.AddStream(() => mapFlight.Longitude));
 					break;
 
 				case DataType.flight_velocity:
@@ -413,9 +438,18 @@ namespace KSP_MOCR
 
 
 				///// VESSEL DATA /////
-				
 				case DataType.vessel_MET:
 					stream = new doubleStream(connection.AddStream(() => vessel.MET));
+					break;
+				case DataType.vessel_type:
+					stream = new vesselTypeStream(connection.AddStream(() => vessel.Type));
+					break;
+					
+				case DataType.vessel_position:
+					stream = new tuple3Stream(connection.AddStream(() => vessel.Position(vessel.Orbit.Body.NonRotatingReferenceFrame)));
+					break;
+				case DataType.vessel_velocity:
+					stream = new tuple3Stream(connection.AddStream(() => vessel.Velocity(vessel.Orbit.Body.NonRotatingReferenceFrame)));
 					break;
 				
 				default:

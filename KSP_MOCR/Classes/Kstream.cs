@@ -142,5 +142,23 @@ namespace KSP_MOCR
 			return stream.Get();
 		}
 
-		public override void Remove() { stream.Remove(); }	}
+		public override void Remove() { stream.Remove(); }
+	}
+	
+	class vesselTypeStream : Kstream
+	{
+		KRPC.Client.Stream<VesselType> stream { get; set; }
+
+		public vesselTypeStream(KRPC.Client.Stream<VesselType> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			return stream.Get();
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
 }

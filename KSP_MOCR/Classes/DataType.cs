@@ -3,6 +3,11 @@ namespace KSP_MOCR
 {
 	public enum DataType
 	{
+		body_name,
+		body_radius,
+		body_gravityParameter,
+		body_rotSpeed,
+		
 		control_SAS,
 		control_SASmode,
 		control_speedMode,
@@ -50,6 +55,8 @@ namespace KSP_MOCR
 		flight_elevation,
 		flight_latitude,
 		flight_longitude,
+		flight_map_latitude,
+		flight_map_longitude,
 		flight_velocity,
 		flight_speed,
 		flight_horizontalSpeed,
@@ -139,7 +146,7 @@ namespace KSP_MOCR
 		spacecenter_universial_time,
 
 		vessel_name,
-		vesel_type,
+		vessel_type,
 		vessel_situation,
 		vessel_recoverable,
 		vessel_MET,

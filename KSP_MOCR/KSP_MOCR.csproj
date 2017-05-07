@@ -208,6 +208,11 @@
     <Compile Include="Classes\MocrDropdown.cs" />
     <Compile Include="Classes\OrbitFunctions.cs" />
     <Compile Include="Screens\Attitude.cs" />
+    <Compile Include="Screens\Mapscreen.cs" />
+    <Compile Include="Classes\Map.cs" />
+    <None Include="Resources\KerbinMap.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
