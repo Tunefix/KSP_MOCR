@@ -23,6 +23,7 @@
  
 import socket
 import sys
+from random import randint
 from thread import *
  
 HOST = ''   # Symbolic name meaning all available interfaces
@@ -77,14 +78,18 @@ class PySSSMQ_server:
 
 class PySSSMQ_client_connection:
     
-    conn = None
-    addr = None
     client_list = None
 
     def __init__(self, conn, addr, client_list):
         self.conn = conn
         self.addr = addr
         self.client_list = client_list
+        self.name = randint(000000000000,999999999999)
+
+    def __eq__(self, other):
+        if self.name == other.name:
+            return true
+        return false
 
     def run(self):
         #Sending message to connected client
@@ -104,8 +109,9 @@ class PySSSMQ_client_connection:
             reply = 'Data from ' + self.addr[0] + ': ' + data 
             if (not data) or (data.strip() == 'exit'): 
                 print 'Exit'
+                self.client_list.remove_client(self)
                 break
-        
+
             while True:
                 dataobj = self.parse_data(data)
                 if dataobj is False:
