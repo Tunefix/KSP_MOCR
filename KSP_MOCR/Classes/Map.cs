@@ -38,7 +38,7 @@ namespace KSP_MOCR
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
 			// Get the backgound a.k.a the map
-			loadMap(body);
+			loadMap();
 			g.DrawImage(map, 0, 0, this.Width, this.Height);
 
 			// DRAW COORDINATE SYSTEM
@@ -61,7 +61,7 @@ namespace KSP_MOCR
 			drawGroundTrack(g);
 
 			// DRAW SPACECRAFT
-			float relativeLongitude = (float)((this.Width / 360) * (longitude + 180));
+			float relativeLongitude = (float)((this.Width / 360f) * (longitude + 180));
 			float relativeLatitude = (float)(this.Height - ((this.Height / 180f) * (latitude + 90)));
 			PointF[] craftPoly = getVesselPath(vesselType, 10f, relativeLongitude, relativeLatitude);
 			g.FillPolygon(craftBrush, craftPoly);
@@ -70,7 +70,7 @@ namespace KSP_MOCR
 			this.Invalidate();
 		}
 
-		private void loadMap(CelestialBody body)
+		private void loadMap()
 		{
 			if (map != null)
 			{
@@ -139,7 +139,7 @@ namespace KSP_MOCR
 		{
 			List<PointF> points = new List<PointF>();
 
-			float offsetX = x;// - (size / 2f);
+			float offsetX = x - (size / 2f);
 			float offsetY = y - (size / 2f);
 
 			switch (type)

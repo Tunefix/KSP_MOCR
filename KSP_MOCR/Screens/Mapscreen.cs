@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
@@ -19,6 +20,8 @@ namespace KSP_MOCR
 			this.chartData = form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
+			this.form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+
 			this.width = 120;
 			this.height = 30;
 			
@@ -29,6 +32,25 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1200; i++)
 			{
 				trackHistory.Add(i, null);
+			}
+		}
+		
+		public override void keyUp(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F11)
+			{
+				if (this.form.WindowState == FormWindowState.Maximized)
+				{
+					this.form.TopMost = false;
+					this.form.FormBorderStyle = FormBorderStyle.Sizable;
+					this.form.WindowState = FormWindowState.Normal;
+				}
+				else
+				{
+					this.form.TopMost = true;
+					this.form.FormBorderStyle = FormBorderStyle.None;
+					this.form.WindowState = FormWindowState.Maximized;
+				}
 			}
 		}
 		
@@ -47,7 +69,7 @@ namespace KSP_MOCR
 			MET = screenStreams.GetData(DataType.vessel_MET);
 			longitude = screenStreams.GetData(DataType.flight_map_longitude);
 			latitude = screenStreams.GetData(DataType.flight_map_latitude);
-			
+
 			if ((int)(Math.Round(MET)) % 20 == 0)
 			{
 				for (int i = 1; i < trackHistory.Count; i++)
@@ -56,9 +78,26 @@ namespace KSP_MOCR
 				}
 				trackHistory[trackHistory.Count - 1] = new PointF((float)longitude, (float)latitude);
 			}
-		
-			screenMaps[0].Width = form.ClientSize.Width;
-			screenMaps[0].Height = form.ClientSize.Height;
+
+			int width;
+			int height;
+			int offsetX = 0;
+			int offsetY = 0;
+			if (form.ClientSize.Width > 2 * form.ClientSize.Height)
+			{
+				width = form.ClientSize.Height * 2;
+				height = form.ClientSize.Height;
+				offsetX = (int)Math.Round((form.ClientSize.Width - width) / 2f);
+			}
+			else
+			{
+				width = form.ClientSize.Width;
+				height = (int)Math.Floor(form.ClientSize.Width / 2f);
+				offsetY = (int)Math.Round((form.ClientSize.Height - height) / 2f);
+			}
+			screenMaps[0].Width = width;
+			screenMaps[0].Height = height;
+			screenMaps[0].Location = new Point(offsetX, offsetY);
 			screenMaps[0].body = screenStreams.GetData(DataType.orbit_celestialBody);
 			screenMaps[0].vesselType = screenStreams.GetData(DataType.vessel_type);
 			screenMaps[0].longitude = longitude;

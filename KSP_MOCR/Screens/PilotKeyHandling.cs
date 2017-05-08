@@ -16,7 +16,7 @@ namespace KSP_MOCR
 {
 	partial class Pilot1
 	{
-	public override void keyDown(object sender, KeyEventArgs e)
+		public override void keyDown(object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("KD: " + e.KeyCode.ToString());
 			switch (e.KeyCode)
