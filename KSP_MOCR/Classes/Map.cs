@@ -21,7 +21,7 @@ namespace KSP_MOCR
 		public VesselType vesselType;
 		public CelestialBody body;
 
-		readonly Pen CoordinatePen = new Pen(Color.FromArgb(100, 78, 128, 118), 2f);
+		readonly Pen CoordinatePen = new Pen(Color.FromArgb(32, 78, 128, 118), 1.5f);
 		readonly Pen trackHistoryPen = new Pen(Color.FromArgb(200, 255, 255, 255), 2f);
 		readonly Brush craftBrush = new SolidBrush(Color.FromArgb(230, 255, 255, 255));
 
@@ -38,7 +38,7 @@ namespace KSP_MOCR
 			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
 			// Get the backgound a.k.a the map
-			map = loadMap(body);
+			loadMap(body);
 			g.DrawImage(map, 0, 0, this.Width, this.Height);
 
 			// DRAW COORDINATE SYSTEM
@@ -70,9 +70,13 @@ namespace KSP_MOCR
 			this.Invalidate();
 		}
 
-		private Bitmap loadMap(CelestialBody body)
+		private void loadMap(CelestialBody body)
 		{
-			Bitmap map;
+			if (map != null)
+			{
+				map.Dispose();
+			}
+			
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/KerbinMap.png");
@@ -81,7 +85,6 @@ namespace KSP_MOCR
 			{
 				map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\KerbinMap.png");
 			}
-			return map;
 		}
 
 		private void drawTrackHistory(Graphics g)
@@ -136,7 +139,7 @@ namespace KSP_MOCR
 		{
 			List<PointF> points = new List<PointF>();
 
-			float offsetX = x - (size / 2f);
+			float offsetX = x;// - (size / 2f);
 			float offsetY = y - (size / 2f);
 
 			switch (type)
@@ -152,7 +155,6 @@ namespace KSP_MOCR
 					points.Add(new PointF((0.8f * size) + offsetX, 0 + offsetY));
 					points.Add(new PointF((1 * size) + offsetX, (1 * size) + offsetY));
 					points.Add(new PointF((0 * size) + offsetX, (1 * size) + offsetY));
-					//points.Add(new PointF(0 + offsetX, 0 + offsetY));
 					break;
 			}
 			
