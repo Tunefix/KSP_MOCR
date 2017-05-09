@@ -63,8 +63,6 @@ namespace KSP_MOCR
 
 		public List<Color> chartLineColors = new List<Color>();
 
-		public List<List<Bitmap>> indicatorImages = new List<List<Bitmap>>();
-
 		public Bitmap indicatorImage;
 		public Bitmap engineOff;
 		public Bitmap engineOn;
@@ -119,16 +117,6 @@ namespace KSP_MOCR
 		{
 			Console.WriteLine("FORM LOADING");
 
-			// Init indicator images
-			for (int i = 0; i < 11; i++)
-			{
-				indicatorImages.Add(new List<Bitmap>());
-				for (int n = 0; n < 5; n++)
-				{
-					indicatorImages[i].Add(null);
-				}
-			}
-
 			// Set up fonts and graphics
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
@@ -146,16 +134,6 @@ namespace KSP_MOCR
 
 				// Load Images
 				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator.png");
-				indicatorImages[9][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator9x1.png");
-				indicatorImages[8][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator8x1.png");
-				indicatorImages[7][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator7x1.png");
-				indicatorImages[6][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator6x1.png");
-				indicatorImages[5][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator5x1.png");
-				indicatorImages[4][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator4x1.png");
-				indicatorImages[3][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator3x1.png");
-				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x1.png");
-				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator1x1.png");
-				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator2x2.png");
 			}
 			else
 			{
@@ -180,16 +158,6 @@ namespace KSP_MOCR
 				// Load Images
 				//Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
 				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
-				indicatorImages[9][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator9x1.png");
-				indicatorImages[8][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator8x1.png");
-				indicatorImages[7][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator7x1.png");
-				indicatorImages[6][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator6x1.png");
-				indicatorImages[5][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator5x1.png");
-				indicatorImages[4][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator4x1.png");
-				indicatorImages[3][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator3x1.png");
-				indicatorImages[2][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x1.png");
-				indicatorImages[1][1] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator1x1.png");
-				indicatorImages[2][2] = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator2x2.png");
 			}
 
 			// Setup Helper and OrbitFunctions

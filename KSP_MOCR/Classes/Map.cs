@@ -39,7 +39,7 @@ namespace KSP_MOCR
 
 			// Get the backgound a.k.a the map
 			loadMap();
-			g.DrawImage(map, 0, 0, this.Width, this.Height);
+			if(map != null) g.DrawImage(map, 0, 0, this.Width, this.Height);
 
 			// DRAW COORDINATE SYSTEM
 			double stepSize = this.Width / 360f;
@@ -76,14 +76,27 @@ namespace KSP_MOCR
 			{
 				map.Dispose();
 			}
-			
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+
+			if (body != null)
 			{
-				map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/KerbinMap.png");
-			}
-			else
-			{
-				map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\KerbinMap.png");
+				String bodyName = body.Name;
+				if (bodyName == "") bodyName = "Kerbin";
+
+				try
+				{
+					if (Environment.OSVersion.Platform == PlatformID.Unix)
+					{
+						map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/" + bodyName + "Map.png");
+					}
+					else
+					{
+						map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\" + bodyName + "Map.png");
+					}
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
+				}
 			}
 		}
 
