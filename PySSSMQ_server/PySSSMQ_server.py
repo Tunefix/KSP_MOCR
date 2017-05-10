@@ -217,6 +217,8 @@ def file_get_contents(filename):
 
 def check_pid(pid):
     try:
+        if os.name == 'nt':
+            return True # Work around for Windows
         os.kill(pid, 0)
     except OSError:
         return False
@@ -250,7 +252,6 @@ if __name__ == '__main__':
     f = open(pidfile, 'w')
     f.write(str(os.getpid()))
     f.close()
-    print os.getpid()
 
     try:
         s.run()
