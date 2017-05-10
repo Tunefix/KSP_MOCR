@@ -23,6 +23,8 @@
  
 import socket
 import sys
+import os
+import signal
 from random import randint
 from thread import *
  
@@ -209,13 +211,54 @@ class PySSSMQ_data:
     def set(self, name, value):
         self.data[name] = value
 
+def file_get_contents(filename):
+    with open(filename) as f:
+        return f.read()
+
+def check_pid(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
 if __name__ == '__main__':
-    
+    pidfile = os.path.dirname(os.path.realpath(__file__)) + '/.pidfile'
+    isrunning = False
+    # Check if server is allready running
+    if os.path.isfile(pidfile):
+        pid = int(file_get_contents(pidfile))
+        isrunning = check_pid(pid)
+
+        if(len(sys.argv) > 1 and sys.argv[1] == 'stop'):
+            print("Trying to kill process...")
+            os.remove(pidfile)
+            os.kill(pid, signal.SIGINT)
+            sys.exit(0)
+        elif isrunning:
+            print("Process is already running. Exiting...")
+            sys.exit(0)
+    elif(len(sys.argv) > 1 and sys.argv[1] == 'stop'):
+        print("Process not found... Exiting.")
+        sys.exit(0)
+
+
+
     s = PySSSMQ_server()
     
+    f = open(pidfile, 'w')
+    f.write(str(os.getpid()))
+    f.close()
+    print os.getpid()
+
     try:
         s.run()
         s.close()
     except KeyboardInterrupt:
         s.close()
         print "Good bye"
+        try:
+            os.remove(pidfile)
+        except:
+            pass

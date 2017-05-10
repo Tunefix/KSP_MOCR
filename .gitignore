@@ -8,3 +8,6 @@ Releases/*
 
 # Ignore userprefs
 KSP_MOCR.userprefs
+
+# Ignore temp files
+PySSSMQ_server/.pidfile
