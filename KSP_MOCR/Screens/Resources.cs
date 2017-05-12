@@ -6,10 +6,10 @@ namespace KSP_MOCR
 {
 	class ResourcesScreen : MocrScreen
 	{
-		public ResourcesScreen(Form1 form)
+		public ResourcesScreen(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 
 			screenStreams = new StreamCollection(form.connection);
 
@@ -25,7 +25,7 @@ namespace KSP_MOCR
 			// Re-usable data variable for graph data
 			//List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				double MET = screenStreams.GetData(DataType.vessel_MET);
 				float maxTotFuel = screenStreams.GetData(DataType.resource_total_max_liquidFuel);

@@ -58,11 +58,11 @@ namespace KSP_MOCR
 
 	static class Helper
 	{
-		static Form1 form;
+		static Screen form;
 
 		public enum Align { LEFT, RIGHT, CENTER };
 
-		static public void setForm(Form1 form)
+		static public void setForm(Screen form)
 		{
 			Helper.form = form;
 		}

@@ -146,10 +146,10 @@ namespace KSP_MOCR
 		TimeSpan dur;
 		int block = 1;
 
-		public Pilot1(Form1 form)
+		public Pilot1(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
 			this.updateRate = 500;
@@ -723,7 +723,7 @@ namespace KSP_MOCR
 				screenIndicators[23].setStatus(Indicator.status.AMBER);
 			}
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 
 				// GET DATA
@@ -1006,7 +1006,7 @@ namespace KSP_MOCR
 				Tuple<double, double, double> targetVector = new Tuple<double, double, double>(1,0,0);
 				if (FDAImode == FDAIMode.INER)
 				{
-					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
+					form.form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = inertialRefsmmat;
 					targetVector = new Tuple<double, double, double>(Z, X, Y);
 					vector1 = Z;
 					vector2 = X;
@@ -1014,7 +1014,7 @@ namespace KSP_MOCR
 				}
 				else
 				{
-					form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = surfaceRefsmmat;
+					form.form.spaceCenter.ActiveVessel.AutoPilot.ReferenceFrame = surfaceRefsmmat;
 					targetVector = new Tuple<double, double, double>(Z, X, Y);
 					vector1 = Z;
 					vector2 = X;
@@ -1024,19 +1024,19 @@ namespace KSP_MOCR
 				// SET TARGET FOR AUTOPILOT IF MODE IS AUTO
 				if (controlMode == 1 || controlMode == 2)
 				{
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetDirection = targetVector;
+					form.form.spaceCenter.ActiveVessel.AutoPilot.TargetDirection = targetVector;
 
 					if (tPitch == 90)
 					{
-						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = 0f;
+						form.form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = 0f;
 					}
 					else if (tPitch > 90 || tPitch < -90)
 					{
-						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll + 180;
+						form.form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll + 180;
 					}
 					else
 					{
-						form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll;
+						form.form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tRoll;
 					}
 					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tPitch;
 					//form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)tYaw;
@@ -1067,10 +1067,10 @@ namespace KSP_MOCR
 
 		private void loadPySSSMQData()
 		{
-			if (form.pySSSMQ.IsConnected())
+			if (form.form.pySSSMQ.IsConnected())
 			{
 				// Pull data
-				form.pySSSMQ.Pull("N20R1");
+				form.form.pySSSMQ.Pull("N20R1");
 
 				// Wait for data to arrive
 				screenIndicators[50].setStatus(Indicator.status.GREEN);
@@ -1134,11 +1134,11 @@ namespace KSP_MOCR
 			switch (mode)
 			{
 				case 0: // FREE
-					form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
+					form.form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
 					this.controlMode = 0;
 					break;
 				case 1: // AUTOPILOT
-					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+					form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 1;
 					break;
 				case 2: // LOCK
@@ -1150,15 +1150,15 @@ namespace KSP_MOCR
 					form.dataStorage.setData("lockRotP", this.lockRotP.ToString());
 					form.dataStorage.setData("lockRotY", this.lockRotY.ToString());
 
-					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+					form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 2;
 					break;
 				case 3: // Roll Program
-					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+					form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 3;
 					break;
 				case 4: // Pitch Program
-					form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+					form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 					this.controlMode = 4;
 					break;
 			}
@@ -1173,16 +1173,16 @@ namespace KSP_MOCR
 
 		private void stage(object sender, EventArgs e)
 		{
-			form.spaceCenter.ActiveVessel.Control.ActivateNextStage();
+			form.form.spaceCenter.ActiveVessel.Control.ActivateNextStage();
 		}
 
 		private void toggleActionGroup(object sender, EventArgs e, uint group)
 		{
 			// Get action group status
-			bool active = form.spaceCenter.ActiveVessel.Control.GetActionGroup(group);
+			bool active = form.form.spaceCenter.ActiveVessel.Control.GetActionGroup(group);
 
-			if (active) { form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, false); }
-			else { form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, true); }
+			if (active) { form.form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, false); }
+			else { form.form.spaceCenter.ActiveVessel.Control.SetActionGroup(group, true); }
 		}
 
 		private void rollRateMinus(object sender, EventArgs e)
@@ -1229,11 +1229,11 @@ namespace KSP_MOCR
 
 		private void changeThrottle(object sender, EventArgs e, double change)
 		{
-			double cThr = form.spaceCenter.ActiveVessel.Control.Throttle;
+			double cThr = form.form.spaceCenter.ActiveVessel.Control.Throttle;
 			double nThr = cThr + change;
 			if(nThr > 100){ nThr = 100; }
 			if (nThr < 0) { nThr = 0; }
-			form.spaceCenter.ActiveVessel.Control.Throttle = (float)nThr;
+			form.form.spaceCenter.ActiveVessel.Control.Throttle = (float)nThr;
 		}
 
 		private void setSAS(object sender, EventArgs e, int mode)
@@ -1243,51 +1243,51 @@ namespace KSP_MOCR
 				switch (mode)
 				{
 					case 0:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.StabilityAssist;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.StabilityAssist;
 						break;
 					case 1:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Prograde;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Prograde;
 						break;
 					case 2:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Retrograde;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Retrograde;
 						break;
 					case 3:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Normal;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Normal;
 						break;
 					case 4:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiNormal;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiNormal;
 						break;
 					case 5:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Radial;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Radial;
 						break;
 					case 6:
-						form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiRadial;
+						form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.AntiRadial;
 						break;
 					case 7:
-						if (form.spaceCenter.ActiveVessel.Control.Nodes.Count > 0)
+						if (form.form.spaceCenter.ActiveVessel.Control.Nodes.Count > 0)
 						{
-							form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Maneuver;
+							form.form.spaceCenter.ActiveVessel.Control.SASMode = SASMode.Maneuver;
 						}
 						break;
 					case 10:
-						if (form.spaceCenter.ActiveVessel.Control.RCS)
+						if (form.form.spaceCenter.ActiveVessel.Control.RCS)
 						{
-							form.spaceCenter.ActiveVessel.Control.RCS = false;
+							form.form.spaceCenter.ActiveVessel.Control.RCS = false;
 						}
 						else
 						{
-							form.spaceCenter.ActiveVessel.Control.RCS = true;
+							form.form.spaceCenter.ActiveVessel.Control.RCS = true;
 						}
 						break;
 					case 11:
-						if (form.spaceCenter.ActiveVessel.Control.SAS)
+						if (form.form.spaceCenter.ActiveVessel.Control.SAS)
 						{
-							form.spaceCenter.ActiveVessel.Control.SAS = false;
+							form.form.spaceCenter.ActiveVessel.Control.SAS = false;
 						}
 						else
 						{
-							form.spaceCenter.ActiveVessel.Control.SAS = true;
-							form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
+							form.form.spaceCenter.ActiveVessel.Control.SAS = true;
+							form.form.spaceCenter.ActiveVessel.AutoPilot.Disengage();
 							controlMode = 0;
 						}
 						break;
@@ -1322,7 +1322,7 @@ namespace KSP_MOCR
 				rate = rollRate * -1;
 			}
 
-			form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+			form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 			Stopwatch loopTime = new Stopwatch();
 			int sleepTime;
 
@@ -1332,14 +1332,14 @@ namespace KSP_MOCR
 				loopTime.Restart();
 				curRoll = Math.Round(curRoll + (rate / 10), 2);
 
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)curRoll;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)(setRotP - screenFDAI.offsetP);
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading= (float)(setRotY - screenFDAI.offsetY);
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)curRoll;
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)(setRotP - screenFDAI.offsetP);
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading= (float)(setRotY - screenFDAI.offsetY);
 
 				if (Math.Round(curRoll) == dstRoll)
 				{
 					curRoll = Math.Round(curRoll);
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curRoll;
+					form.form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curRoll;
 					done = true;
 				}
 
@@ -1370,7 +1370,7 @@ namespace KSP_MOCR
 				rate = pitchRate * -1;
 			}
 
-			form.spaceCenter.ActiveVessel.AutoPilot.Engage();
+			form.form.spaceCenter.ActiveVessel.AutoPilot.Engage();
 
 			Stopwatch loopTime = new Stopwatch();
 			int sleepTime;
@@ -1382,14 +1382,14 @@ namespace KSP_MOCR
 				//Console.WriteLine("ROLLING " + dstPitch.ToString() + ":" + curPitch.ToString() + ":" + rate.ToString());
 				curPitch = Math.Round(curPitch + (rate / 10), 2);
 
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)(setRotR - screenFDAI.offsetR);
-				form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = (float)(setRotY - screenFDAI.offsetY);
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetRoll = (float)(setRotR - screenFDAI.offsetR);
+				form.form.spaceCenter.ActiveVessel.AutoPilot.TargetHeading = (float)(setRotY - screenFDAI.offsetY);
 
 				if(Math.Round(curPitch) == dstPitch)
 				{
 					curPitch = Math.Round(curPitch);
-					form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
+					form.form.spaceCenter.ActiveVessel.AutoPilot.TargetPitch = (float)curPitch;
 					done = true;
 				}
 

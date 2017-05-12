@@ -14,9 +14,10 @@ namespace KSP_MOCR
 	{
 		KRPC.Schema.KRPC.Status status;
 
-		public ConnectionScreen(Form1 form)
+		public ConnectionScreen(Screen form)
 		{
 			this.form = form;
+			this.screenStreams = form.streamCollection;
 
 			this.width = 120;
 			this.height = 30;
@@ -24,20 +25,20 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			if(form.connected && form.connection == null)
+			if(form.form.connected && form.connection == null)
 			{
 				screenButtons[0].Text = "Disconnect";
-				screenButtons[0].Click -= form.ConnectToServer;
-				screenButtons[0].Click += form.DisconnectFromServer;
+				screenButtons[0].Click -= form.form.ConnectToServer;
+				screenButtons[0].Click += form.form.DisconnectFromServer;
 			}
 
-			if (form.connected && form.connection != null)
+			if (form.form.connected && form.connection != null)
 			{
-				status = form.krpc.GetStatus();
+				status = form.form.krpc.GetStatus();
 
 				screenLabels[0].Text = "CONNECTED TO kRPC";
 
-				if (form.pySSSMQ.IsConnected())
+				if (form.form.pySSSMQ.IsConnected())
 				{
 					screenLabels[1].Text = "CONNECTED TO PySSSMQ";
 				}
@@ -91,9 +92,9 @@ namespace KSP_MOCR
 
 			screenLabels[2] = Helper.CreateLabel(1, 1, 20, 1, "Server IP:"); // Input Label
 			screenInputs[0] = Helper.CreateInput(1, 2, 20, 1); // Server IP
-			if (form.connectionIP != "")
+			if (form.form.connectionIP != "")
 			{
-				screenInputs[0].Text = form.connectionIP;
+				screenInputs[0].Text = form.form.connectionIP;
 			}
 			else
 			{
@@ -103,9 +104,9 @@ namespace KSP_MOCR
 
 			screenLabels[3] = Helper.CreateLabel(23, 1, 20, 1, "Your ID:"); // Input Label
 			screenInputs[1] = Helper.CreateInput(23, 2, 20, 1); // Name
-			if (form.connectionName != "")
+			if (form.form.connectionName != "")
 			{
-				screenInputs[1].Text = form.connectionName;
+				screenInputs[1].Text = form.form.connectionName;
 			}
 			else
 			{
@@ -115,7 +116,7 @@ namespace KSP_MOCR
 
 			screenButtons[0] = Helper.CreateButton(45, 2, 14); // Connect-button
 			screenButtons[0].Text = "Connect";
-			screenButtons[0].Click += form.ConnectToServer;
+			screenButtons[0].Click += form.form.ConnectToServer;
 
 			screenLabels[4] = Helper.CreateLabel(60, 0, 60, 20); // Help text
 			screenLabels[4].Text = "╥─── HELP ───\n"
@@ -151,7 +152,7 @@ namespace KSP_MOCR
 		{
 			if (e.KeyData == Keys.Enter || e.KeyData == Keys.Return)
 			{
-				form.ConnectToServer(sender, e);
+				form.form.ConnectToServer(sender, e);
 			}
 		}
 	}

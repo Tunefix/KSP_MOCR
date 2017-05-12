@@ -51,10 +51,10 @@ namespace KSP_MOCR
 		Tuple<Tuple<double, double, double>, Tuple<double, double, double>, Tuple<double, double, double>> referencePlane;
 		float my;
 
-		public FDO(Form1 form)
+		public FDO(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 120;
@@ -76,7 +76,7 @@ namespace KSP_MOCR
 			// Always update Local Time
 			screenLabels[1].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 			
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				period = screenStreams.GetData(DataType.orbit_period);
 				apopapsis = screenStreams.GetData(DataType.orbit_apoapsis);

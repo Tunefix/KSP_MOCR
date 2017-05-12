@@ -76,6 +76,23 @@ namespace KSP_MOCR
 
 		public override void Remove() { stream.Remove(); }
 	}
+	
+	class stringStream : Kstream
+	{
+		KRPC.Client.Stream<string> stream { get; set; }
+
+		public stringStream(KRPC.Client.Stream<string> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			return stream.Get();
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
 
 	class tuple3Stream : Kstream
 	{

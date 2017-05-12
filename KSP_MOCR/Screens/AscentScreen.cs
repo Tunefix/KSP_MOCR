@@ -15,26 +15,51 @@ namespace KSP_MOCR
 {
 	class AscentScreen : MocrScreen
 	{
-		KRPC.Client.Services.SpaceCenter.Vessel vessel;
-		KRPC.Client.Services.SpaceCenter.Flight flight;
-		KRPC.Client.Services.SpaceCenter.Orbit orbit;
-
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Flight> flight_stream;
-		KRPC.Client.Stream<KRPC.Client.Services.SpaceCenter.Orbit> orbit_stream;
 
 		// Stream Data //
 		float inertRoll = 0;
 		float inertPitch = 0;
 		float inertYaw = 0;
+		double MET = 0;
+		double MeanAltitude = 0;
+		double SurfaceAltitude = 0;
+		double ApoapsisAltitude = 0;
+		double PeriapsisAltitude = 0;
+		double TimeToApoapsis = 0;
+		double TimeToPeriapsis = 0;
+		double Inclination = 0;
+		double Eccentricity = 0;
+		double OrbSpeed = 0;
+		double Speed = 0;
+		double EquatorialRadius = 0;
+		double GravitationalParameter = 0;
+		float Roll = 0;
+		float Pitch = 0;
+		float Yaw = 0;
+		String BodyName = "";
+		double lat = 0;
+		double lon = 0;
+		double AtmosphereDensity = 0;
+		double StaticPressure = 0;
+		double DynamicPressure = 0;
+		float LiquidFuelMax = 0;
+		float LiquidFuelAmount = 0;
+		float OxidizerMax = 0;
+		float OxidizerAmount = 0;
+		float MonoPropellantMax = 0;
+		float MonoPropellantAmount = 0;
+		float ElectricChargeMax = 0;
+		float ElectricChargeAmount = 0;
+		bool SAS, RCS, Gear, Brakes, Lights, Abort;
+		float GForce;
 		Tuple<double, double, double> inertDirection;
 
 
-		public AscentScreen(Form1 form)
+		public AscentScreen(Screen form)
 		{
 			this.form = form;
+			this.screenStreams = form.streamCollection;
 			this.chartData = form.chartData;
-
-			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 120;
 			this.height = 30;
@@ -160,103 +185,111 @@ namespace KSP_MOCR
 			List<Plot.Type> types = new List<Plot.Type>();
 
 		
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				vessel = form.spaceCenter.ActiveVessel;
-
-				if (flight_stream == null)
-				{
-					var refframe = vessel.SurfaceReferenceFrame;
-
-					try
-					{
-						this.flight_stream = this.form.connection.AddStream(() => vessel.Flight(refframe));
-					}
-					catch (Exception) { }
-				}
-
-				if (orbit_stream == null)
-				{
-					var refframe = vessel.SurfaceReferenceFrame;
-
-					try
-					{
-						this.orbit_stream = this.form.connection.AddStream(() => vessel.Orbit);
-					}
-					catch (Exception) { }
-				}
-
-				flight = flight_stream.Get();
-				orbit = orbit_stream.Get();
-
 				inertDirection = screenStreams.GetData(DataType.flight_inertial_direction);
-
-
 				inertRoll = screenStreams.GetData(DataType.flight_inertial_roll);
 				inertPitch = (float)Helper.rad2deg(Math.Asin(inertDirection.Item2));
 				inertYaw = (float)Helper.rad2deg(Math.Atan(inertDirection.Item3 / inertDirection.Item1));
+				MET = screenStreams.GetData(DataType.vessel_MET);
+				MeanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
+				SurfaceAltitude = screenStreams.GetData(DataType.flight_surfaceAltitude);
+				ApoapsisAltitude = screenStreams.GetData(DataType.orbit_apoapsisAltitude);
+				PeriapsisAltitude = screenStreams.GetData(DataType.orbit_periapsisAltitude);
+				TimeToApoapsis = screenStreams.GetData(DataType.orbit_timeToApoapsis);
+				TimeToPeriapsis = screenStreams.GetData(DataType.orbit_timeToPeriapsis);
+				Inclination = screenStreams.GetData(DataType.orbit_inclination);
+				Eccentricity = screenStreams.GetData(DataType.orbit_eccentricity);
+				OrbSpeed = screenStreams.GetData(DataType.orbit_speed);
+				Speed = screenStreams.GetData(DataType.flight_speed);
+				EquatorialRadius = screenStreams.GetData(DataType.body_radius);
+				GravitationalParameter = screenStreams.GetData(DataType.body_gravityParameter);
+				Roll = screenStreams.GetData(DataType.flight_roll);
+				Pitch = screenStreams.GetData(DataType.flight_pitch);
+				Yaw = screenStreams.GetData(DataType.flight_heading);
+				BodyName = screenStreams.GetData(DataType.body_name);
+				lat = screenStreams.GetData(DataType.flight_latitude);
+				lon = screenStreams.GetData(DataType.flight_longitude);
+				AtmosphereDensity = screenStreams.GetData(DataType.flight_atmosphereDensity);
+				StaticPressure = screenStreams.GetData(DataType.flight_staticPressure);
+				DynamicPressure = screenStreams.GetData(DataType.flight_dynamicPressure);
+				LiquidFuelMax = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
+				LiquidFuelAmount = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
+				OxidizerMax = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
+				OxidizerAmount = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
+				MonoPropellantMax = screenStreams.GetData(DataType.resource_stage_max_monoPropellant);
+				MonoPropellantAmount = screenStreams.GetData(DataType.resource_stage_amount_monoPropellant);
+				ElectricChargeMax = screenStreams.GetData(DataType.resource_stage_max_electricCharge);
+				ElectricChargeAmount = screenStreams.GetData(DataType.resource_stage_amount_electricCharge);
+				SAS = screenStreams.GetData(DataType.control_SAS);
+				RCS = screenStreams.GetData(DataType.control_RCS);
+				Gear = screenStreams.GetData(DataType.control_gear);
+				Brakes = screenStreams.GetData(DataType.control_brakes);
+				Lights = screenStreams.GetData(DataType.control_lights);
+				Abort = screenStreams.GetData(DataType.control_abort);
+				GForce = screenStreams.GetData(DataType.flight_gForce);
 
 				screenLabels[0].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
-				screenLabels[1].Text = "MET: " + Helper.timeString(vessel.MET, 3);
+				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
 				// Orbit info
-				screenLabels[30].Text = "      Alt: " + Helper.prtlen(Math.Round(flight.MeanAltitude).ToString(), 9, Helper.Align.RIGHT); // Altitude
-				screenLabels[31].Text = " Apoapsis: " + Helper.prtlen(Math.Round(orbit.ApoapsisAltitude).ToString(), 9, Helper.Align.RIGHT); // Apoapsis
-				screenLabels[32].Text = "Periapsis: " + Helper.prtlen(Math.Round(orbit.PeriapsisAltitude).ToString(), 9, Helper.Align.RIGHT); // Periapasis
-				screenLabels[33].Text = "      TtA: " + Helper.prtlen(Helper.timeString(orbit.TimeToApoapsis), 9, Helper.Align.RIGHT); // Time to Apoapsis
-				screenLabels[34].Text = "      TtP: " + Helper.prtlen(Helper.timeString(orbit.TimeToPeriapsis), 9, Helper.Align.RIGHT); // Time to Periapsis
-				screenLabels[35].Text = "      Inc: " + Helper.prtlen(Helper.toFixed(orbit.Inclination, 3), 9, Helper.Align.RIGHT); // Inclination
-				screenLabels[36].Text = "      Ecc: " + Helper.prtlen(Helper.toFixed(orbit.Eccentricity, 3), 9, Helper.Align.RIGHT); // Eccentricity
-				screenLabels[37].Text = " Orb. Vel: " + Helper.prtlen(Helper.toFixed(orbit.Speed, 1), 9, Helper.Align.RIGHT); // Orbit Velocity
-				screenLabels[38].Text = " Sur. Vel: " + Helper.prtlen(Helper.toFixed(vessel.Flight(vessel.Orbit.Body.ReferenceFrame).Speed, 1), 9, Helper.Align.RIGHT); // Surface Velocity
+				screenLabels[30].Text = "      Alt: " + Helper.prtlen(Math.Round(MeanAltitude).ToString(), 9, Helper.Align.RIGHT); // Altitude
+				screenLabels[31].Text = " Apoapsis: " + Helper.prtlen(Math.Round(ApoapsisAltitude).ToString(), 9, Helper.Align.RIGHT); // Apoapsis
+				screenLabels[32].Text = "Periapsis: " + Helper.prtlen(Math.Round(PeriapsisAltitude).ToString(), 9, Helper.Align.RIGHT); // Periapasis
+				screenLabels[33].Text = "      TtA: " + Helper.prtlen(Helper.timeString(TimeToApoapsis), 9, Helper.Align.RIGHT); // Time to Apoapsis
+				screenLabels[34].Text = "      TtP: " + Helper.prtlen(Helper.timeString(TimeToPeriapsis), 9, Helper.Align.RIGHT); // Time to Periapsis
+				screenLabels[35].Text = "      Inc: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(Inclination), 3), 9, Helper.Align.RIGHT); // Inclination
+				screenLabels[36].Text = "      Ecc: " + Helper.prtlen(Helper.toFixed(Eccentricity, 3), 9, Helper.Align.RIGHT); // Eccentricity
+				screenLabels[37].Text = " Orb. Vel: " + Helper.prtlen(Helper.toFixed(OrbSpeed, 1), 9, Helper.Align.RIGHT); // Orbit Velocity
+				screenLabels[38].Text = " Sur. Vel: " + Helper.prtlen(Helper.toFixed(Speed, 1), 9, Helper.Align.RIGHT); // Surface Velocity
 
 				// Orbit Targets and Deltas
 				double tgtA = 0, tgtP = 0;
 				if (double.TryParse(screenInputs[0].Text, out tgtA) && double.TryParse(screenInputs[1].Text, out tgtP))
 				{
-					double sMa = (tgtA + tgtP + (orbit.Body.EquatorialRadius * 2)) / 2;
-					double tgtEcc = (sMa - (tgtP + orbit.Body.EquatorialRadius)) / sMa;
+					double sMa = (tgtA + tgtP + (EquatorialRadius * 2)) / 2;
+					double tgtEcc = (sMa - (tgtP + EquatorialRadius)) / sMa;
 					screenLabels[60].Text = Helper.prtlen(Helper.toFixed(tgtEcc, 3), 8, Helper.Align.RIGHT); // Target Eccentricity
-					screenLabels[67].Text = Helper.prtlen(Helper.toFixed(orbit.Eccentricity - tgtEcc, 3), 8, Helper.Align.RIGHT); // Delta Eccentricity
+					screenLabels[67].Text = Helper.prtlen(Helper.toFixed(Eccentricity - tgtEcc, 3), 8, Helper.Align.RIGHT); // Delta Eccentricity
 				}
 
 				if (double.TryParse(screenInputs[0].Text, out tgtA))
-				{ screenLabels[65].Text = Helper.prtlen(Math.Round(tgtA - orbit.ApoapsisAltitude).ToString(), 8, Helper.Align.RIGHT); } // Delta Apoapsis
+				{ screenLabels[65].Text = Helper.prtlen(Math.Round(tgtA - ApoapsisAltitude).ToString(), 8, Helper.Align.RIGHT); } // Delta Apoapsis
 				if (double.TryParse(screenInputs[1].Text, out tgtP))
-				{ screenLabels[66].Text = Helper.prtlen(Math.Round(tgtP - orbit.PeriapsisAltitude).ToString(), 8, Helper.Align.RIGHT); } // Delta Periapsis
+				{ screenLabels[66].Text = Helper.prtlen(Math.Round(tgtP - PeriapsisAltitude).ToString(), 8, Helper.Align.RIGHT); } // Delta Periapsis
 
-				double u = orbit.Body.GravitationalParameter;
-				double a = orbit.Body.EquatorialRadius + tgtA;
-				double r = orbit.Body.EquatorialRadius + tgtA;
+				double u = GravitationalParameter;
+				double a = EquatorialRadius + tgtA;
+				double r = EquatorialRadius + tgtA;
 				double v = Math.Sqrt(u * ((2 / r) - (1 / a)));
 				screenLabels[61].Text = Helper.prtlen(Helper.toFixed(v, 1), 8, Helper.Align.RIGHT); // Target Obital Velocity at Apoapsis
 
 
 				// POSITION INFO
-				screenLabels[46].Text = "R: " + Helper.prtlen(Helper.toFixed(flight.Roll, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertRoll, 2), 7, Helper.Align.RIGHT);
-				screenLabels[47].Text = "P: " + Helper.prtlen(Helper.toFixed(flight.Pitch, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertPitch, 2), 7, Helper.Align.RIGHT);
-				screenLabels[48].Text = "Y: " + Helper.prtlen(Helper.toFixed(flight.Heading, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertYaw, 2), 7, Helper.Align.RIGHT);
+				screenLabels[46].Text = "R: " + Helper.prtlen(Helper.toFixed(Roll, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertRoll, 2), 7, Helper.Align.RIGHT);
+				screenLabels[47].Text = "P: " + Helper.prtlen(Helper.toFixed(Pitch, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertPitch, 2), 7, Helper.Align.RIGHT);
+				screenLabels[48].Text = "Y: " + Helper.prtlen(Helper.toFixed(Yaw, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertYaw, 2), 7, Helper.Align.RIGHT);
 
-				screenLabels[40].Text = "  Body: " + Helper.prtlen(orbit.Body.Name, 9, Helper.Align.RIGHT);
-				screenLabels[41].Text = "   Lat: " + Helper.prtlen(Helper.toFixed(flight.Latitude, 5), 9, Helper.Align.RIGHT);
-				screenLabels[42].Text = "   Lon: " + Helper.prtlen(Helper.toFixed(flight.Longitude, 5), 9, Helper.Align.RIGHT);
+				screenLabels[40].Text = "  Body: " + Helper.prtlen(BodyName, 9, Helper.Align.RIGHT);
+				screenLabels[41].Text = "   Lat: " + Helper.prtlen(Helper.toFixed(lat, 5), 9, Helper.Align.RIGHT);
+				screenLabels[42].Text = "   Lon: " + Helper.prtlen(Helper.toFixed(lon, 5), 9, Helper.Align.RIGHT);
 
-				screenLabels[43].Text = " Atm.Den: " + Helper.prtlen(Helper.toFixed(flight.AtmosphereDensity, 1), 9, Helper.Align.RIGHT) + "  Radar Alt: " + Helper.prtlen(Math.Round(flight.SurfaceAltitude).ToString(), 7, Helper.Align.RIGHT);
-				screenLabels[44].Text = " Atm.Pre: " + Helper.prtlen(Math.Round(flight.StaticPressure).ToString(), 9, Helper.Align.RIGHT);
-				screenLabels[45].Text = " Dyn.Pre: " + Helper.prtlen(Math.Round(flight.DynamicPressure).ToString(), 9, Helper.Align.RIGHT);
+				screenLabels[43].Text = " Atm.Den: " + Helper.prtlen(Helper.toFixed(AtmosphereDensity, 1), 9, Helper.Align.RIGHT) + "  Radar Alt: " + Helper.prtlen(Math.Round(SurfaceAltitude).ToString(), 7, Helper.Align.RIGHT);
+				screenLabels[44].Text = " Atm.Pre: " + Helper.prtlen(Math.Round(StaticPressure).ToString(), 9, Helper.Align.RIGHT);
+				screenLabels[45].Text = " Dyn.Pre: " + Helper.prtlen(Math.Round(DynamicPressure).ToString(), 9, Helper.Align.RIGHT) + "    G-Force: " + Helper.prtlen(Helper.toFixed(GForce, 2), 7, Helper.Align.RIGHT);
 
 				// Supplies
-				double mF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
-				double cF = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
+				double mF = LiquidFuelMax;
+				double cF = LiquidFuelAmount;
 
-				double mO = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("Oxidizer");
-				double cO = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
+				double mO = OxidizerMax;
+				double cO = OxidizerAmount;
 
-				double mM = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("MonoPropellant");
-				double cM = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("MonoPropellant");
+				double mM = MonoPropellantMax;
+				double cM = MonoPropellantAmount;
 
-				double mE = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("ElectricCharge");
-				double cE = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("ElectricCharge");
+				double mE = ElectricChargeMax;
+				double cE = ElectricChargeAmount;
 
 				screenLabels[50].Text = "         LF     LO     MP     EC";
 				screenLabels[51].Text = "STAGE:"
@@ -270,17 +303,17 @@ namespace KSP_MOCR
 										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
 
-				mF = vessel.Resources.Max("LiquidFuel");
-				cF = vessel.Resources.Amount("LiquidFuel");
+				mF = screenStreams.GetData(DataType.resource_total_max_liquidFuel);
+				cF = screenStreams.GetData(DataType.resource_total_amount_liquidFuel);
 
-				mO = vessel.Resources.Max("Oxidizer");
-				cO = vessel.Resources.Amount("Oxidizer");
+				mO = screenStreams.GetData(DataType.resource_total_max_oxidizer);
+				cO = screenStreams.GetData(DataType.resource_total_amount_oxidizer);
 
-				mM = vessel.Resources.Max("MonoPropellant");
-				cM = vessel.Resources.Amount("MonoPropellant");
+				mM = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
+				cM = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
 
-				mE = vessel.Resources.Max("ElectricCharge");
-				cE = vessel.Resources.Amount("ElectricCharge");
+				mE = screenStreams.GetData(DataType.resource_total_max_electricCharge);
+				cE = screenStreams.GetData(DataType.resource_total_amount_electricCharge);
 
 				screenLabels[54].Text = "  TOT:"
 										+ Helper.prtlen(Math.Round(cF).ToString(), 7, Helper.Align.RIGHT)
@@ -292,32 +325,34 @@ namespace KSP_MOCR
 										+ Helper.prtlen(Math.Round((cO / mO) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cM / mM) * 100).ToString(), 7, Helper.Align.RIGHT)
 										+ Helper.prtlen(Math.Round((cE / mE) * 100).ToString(), 7, Helper.Align.RIGHT);
+										
+										
 
 				// Status
-				if (vessel.Control.SAS) { screenIndicators[0].setStatus(Indicator.status.GREEN); } else { screenIndicators[0].setStatus(Indicator.status.OFF); } // SAS
-				if (vessel.Control.RCS) { screenIndicators[1].setStatus(Indicator.status.GREEN); } else { screenIndicators[1].setStatus(Indicator.status.OFF); } // RCS
-				if (vessel.Control.Gear) { screenIndicators[2].setStatus(Indicator.status.GREEN); } else { screenIndicators[2].setStatus(Indicator.status.OFF); } // GEAR
-				if (vessel.Control.Brakes) { screenIndicators[3].setStatus(Indicator.status.RED); } else { screenIndicators[3].setStatus(Indicator.status.OFF); } // Break
-				if (vessel.Control.Lights) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); } // Lights
-				if (vessel.Control.Abort) { screenIndicators[5].setStatus(Indicator.status.RED); } else { screenIndicators[5].setStatus(Indicator.status.OFF); } // Abort
+				if (SAS) { screenIndicators[0].setStatus(Indicator.status.GREEN); } else { screenIndicators[0].setStatus(Indicator.status.OFF); } // SAS
+				if (RCS) { screenIndicators[1].setStatus(Indicator.status.GREEN); } else { screenIndicators[1].setStatus(Indicator.status.OFF); } // RCS
+				if (Gear) { screenIndicators[2].setStatus(Indicator.status.GREEN); } else { screenIndicators[2].setStatus(Indicator.status.OFF); } // GEAR
+				if (Brakes) { screenIndicators[3].setStatus(Indicator.status.RED); } else { screenIndicators[3].setStatus(Indicator.status.OFF); } // Break
+				if (Lights) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); } // Lights
+				if (Abort) { screenIndicators[5].setStatus(Indicator.status.RED); } else { screenIndicators[5].setStatus(Indicator.status.OFF); } // Abort
 
-				if (flight.GForce > 4) { screenIndicators[7].setStatus(Indicator.status.AMBER); } else { screenIndicators[7].setStatus(Indicator.status.OFF); } // G High
+				if (GForce > 4) { screenIndicators[7].setStatus(Indicator.status.AMBER); } else { screenIndicators[7].setStatus(Indicator.status.OFF); } // G High
 
-				float maxR = vessel.Resources.Max("ElectricCharge");
-				float curR = vessel.Resources.Amount("ElectricCharge");
+				double maxR = mE;
+				double curR = cE;
 				if (curR / maxR > 0.95) { screenIndicators[6].setStatus(Indicator.status.GREEN); } else { screenIndicators[6].setStatus(Indicator.status.OFF); } // Power High
 				if (curR / maxR < 0.1) { screenIndicators[9].setStatus(Indicator.status.RED); } else { screenIndicators[9].setStatus(Indicator.status.OFF); } // Power Low
 
-				maxR = vessel.Resources.Max("MonoPropellant");
-				curR = vessel.Resources.Amount("MonoPropellant");
+				maxR = mM;
+				curR = cM;
 				if (curR / maxR < 0.1) { screenIndicators[10].setStatus(Indicator.status.RED); } else { screenIndicators[10].setStatus(Indicator.status.OFF); } // Monopropellant Low
 
-				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("LiquidFuel");
-				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("LiquidFuel");
+				maxR = mF;
+				curR = cF;
 				if (curR / maxR < 0.1) { screenIndicators[11].setStatus(Indicator.status.RED); } else { screenIndicators[11].setStatus(Indicator.status.OFF); } // Fuel Low
 
-				maxR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Max("Oxidizer");
-				curR = vessel.ResourcesInDecoupleStage(vessel.Control.CurrentStage, false).Amount("Oxidizer");
+				maxR = mO;
+				curR = cO;
 				if (curR / maxR < 0.1) { screenIndicators[8].setStatus(Indicator.status.RED); } else { screenIndicators[8].setStatus(Indicator.status.OFF); } // LOW Low
 
 

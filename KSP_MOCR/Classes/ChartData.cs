@@ -14,9 +14,9 @@ namespace KSP_MOCR
 
 		private StreamCollection graphStreams;
 
-		public void setupChartData()
+		public void setupChartData(StreamCollection streamCollection)
 		{
-			graphStreams = new StreamCollection(connection);
+			graphStreams = streamCollection;
 
 			chartData.Add("altitudeTime", new Dictionary<int, double?>());
 			for (int i = 0; i < 600; i++) chartData["altitudeTime"].Add(i, null);

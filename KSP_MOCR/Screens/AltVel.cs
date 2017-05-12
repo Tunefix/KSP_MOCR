@@ -7,10 +7,10 @@ namespace KSP_MOCR
 {
 	class AltVel : MocrScreen
 	{
-		public AltVel(Form1 form)
+		public AltVel(Screen form)
 		{
             this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 
 			this.width = 120;
 			this.height = 30;
@@ -26,7 +26,7 @@ namespace KSP_MOCR
 			double fps2ms = 0.3048 * 0.2743;
 			double nm2m = 1852;
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				Dictionary<int, double?> target = new Dictionary<int, double?>();
 				target.Add((int)(1341 * fps2ms), 0 * nm2m);

@@ -14,10 +14,10 @@ namespace KSP_MOCR
 		double longitude;
 		double latitude;
 		
-		public MapScreen(Form1 form)
+		public MapScreen(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
 			this.form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;

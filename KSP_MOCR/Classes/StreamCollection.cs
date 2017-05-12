@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using KRPC.Client;
 using KRPC.Client.Services;
+using KRPC.Client.Services.KRPC;
 using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
@@ -12,9 +15,10 @@ namespace KSP_MOCR
 		private Dictionary<DataType, Kstream> streams = new Dictionary<DataType, Kstream>();
 
 		private int stage;
+		private bool isRemoving;
 
 		// Some much used variables
-		Service spaceCenter;
+		KRPC.Client.Services.SpaceCenter.Service spaceCenter;
 		Flight flight;
 		Vessel vessel;
 		Control control;
@@ -35,6 +39,7 @@ namespace KSP_MOCR
 		public dynamic GetData(DataType type){return GetData(type, false);}
 		public dynamic GetData(DataType type, bool force_reStream)
 		{
+			while (isRemoving) { Thread.Sleep(100);}
 			if (!streams.ContainsKey(type) || force_reStream)
 			{
 				// If forced, clear out old stream
@@ -57,9 +62,15 @@ namespace KSP_MOCR
 
 		public void CloseStreams()
 		{
-			foreach (KeyValuePair<DataType, Kstream> stream in streams)
+			lock(streams)
 			{
-				stream.Value.Remove();
+				isRemoving = true;
+				foreach (KeyValuePair<DataType, Kstream> stream in streams)
+				{
+					stream.Value.Remove();
+				}
+				streams.Clear();
+				isRemoving = false;
 			}
 		}
 
@@ -100,6 +111,10 @@ namespace KSP_MOCR
 					
 				case DataType.body_rotSpeed:
 					stream = new floatStream(connection.AddStream(() => orbit.Body.RotationalSpeed));
+					break;
+					
+				case DataType.body_name:
+					stream = new stringStream(connection.AddStream(() => orbit.Body.Name));
 					break;
 					
 				///// CONTROL DATA /////

@@ -17,7 +17,10 @@ namespace KSP_MOCR
 		public void setData(String key, String value)
 		{
 			storeData(key, value);
-			client.Send(key, value);
+			if (client.IsConnected())
+			{
+				client.Send(key, value);
+			}
 		}
 		
 		// Used when PySSSMQ-client receives data

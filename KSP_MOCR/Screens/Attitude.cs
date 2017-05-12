@@ -6,10 +6,10 @@ namespace KSP_MOCR
 {
 	public class Attitude : MocrScreen
 	{
-		public Attitude(Form1 form)
+		public Attitude(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 			screenStreams = new StreamCollection(form.connection);
 
 			this.width = 60;

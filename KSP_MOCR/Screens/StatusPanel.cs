@@ -4,7 +4,7 @@ namespace KSP_MOCR
 	public class StatusPanel : MocrScreen
 	{
 		
-		public StatusPanel(Form1 form)
+		public StatusPanel(Screen form)
 		{
 			this.form = form;
 

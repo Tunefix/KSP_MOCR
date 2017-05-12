@@ -12,10 +12,10 @@ namespace KSP_MOCR
 	class Terrain : MocrScreen
 	{
 
-		public Terrain(Form1 form)
+		public Terrain(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 
 			this.width = 120;
 			this.height = 30;
@@ -28,7 +28,7 @@ namespace KSP_MOCR
 			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				data = new List<Dictionary<int, double?>>();
 				types = new List<Plot.Type>();

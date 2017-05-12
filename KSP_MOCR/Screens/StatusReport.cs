@@ -7,7 +7,7 @@ namespace KSP_MOCR
 	{
 		private String positionCode;
 		
-		public StatusReport(Form1 form, String positionCode)
+		public StatusReport(Screen form, String positionCode)
 		{
 			this.positionCode = positionCode;
 			

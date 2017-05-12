@@ -14,7 +14,7 @@ namespace KSP_MOCR
 	class TestScreen : MocrScreen
 	{
 
-		public TestScreen(Form1 form)
+		public TestScreen(Screen form)
 		{
 			screenStreams = new StreamCollection(form.connection);
 			this.form = form;
@@ -25,7 +25,7 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight) // krpc.CurrentGameScene is 1 RPC
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight) // krpc.CurrentGameScene is 1 RPC
 			{
 				// GET DATA
 				double meanAltitude = screenStreams.GetData(DataType.flight_meanAltitude); // 0 RPC

@@ -28,10 +28,10 @@ namespace KSP_MOCR
 		
 		double g = 8.80556;
 
-		public BoosterScreen(Form1 form)
+		public BoosterScreen(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 			
 			screenStreams = new StreamCollection(form.connection);
 
@@ -164,11 +164,11 @@ namespace KSP_MOCR
 			List<Plot.Type> types = new List<Plot.Type>();
 
 
-			if (form.connected && form.krpc.CurrentGameScene == GameScene.Flight)
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel);
-				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Flight(form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
-				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => form.spaceCenter.ActiveVessel.Control);
+				if (this.vessel_stream == null) this.vessel_stream = form.connection.AddStream(() => form.form.spaceCenter.ActiveVessel);
+				if (this.flight_stream == null) this.flight_stream = form.connection.AddStream(() => form.form.spaceCenter.ActiveVessel.Flight(form.form.spaceCenter.ActiveVessel.Orbit.Body.ReferenceFrame));
+				if (this.control_stream == null) this.control_stream = form.connection.AddStream(() => form.form.spaceCenter.ActiveVessel.Control);
 				
 
 

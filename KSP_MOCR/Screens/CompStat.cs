@@ -3,10 +3,10 @@ namespace KSP_MOCR
 {
 	class CompStat : MocrScreen
 	{
-		public CompStat(Form1 form)
+		public CompStat(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.chartData;
+			this.chartData = form.form.chartData;
 
 			this.width = 120;
 			this.height = 30;

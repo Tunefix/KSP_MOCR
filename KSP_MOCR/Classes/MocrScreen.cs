@@ -26,7 +26,7 @@ namespace KSP_MOCR
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
 
-		protected StreamCollection screenStreams;
+		public StreamCollection screenStreams;
 
 		public int width = 120; // in chars
 		public int height = 30; // in rows
@@ -35,9 +35,9 @@ namespace KSP_MOCR
 
 		public Dictionary<String, Dictionary<int, Nullable<double>>> chartData;
 
-		public Form1 form;
+		public Screen form;
 
-		public static MocrScreen Create(int id, Form1 form)
+		public static MocrScreen Create(int id, Screen form)
 		{
 			switch (id)
 			{

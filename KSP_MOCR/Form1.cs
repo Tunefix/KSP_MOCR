@@ -73,8 +73,12 @@ namespace KSP_MOCR
 		public DateTime updateStart;
 		public DateTime updateEnd;
 
+		public List<Screen> screens = new List<Screen>();
+
 		public System.Timers.Timer screenTimer;
 		public System.Timers.Timer graphTimer;
+
+		public StreamCollection streamCollection;
 
 		public Form1()
 		{
@@ -161,8 +165,8 @@ namespace KSP_MOCR
 			}
 
 			// Setup Helper and OrbitFunctions
-			Helper.setForm(this);
-			OrbitFunctions.setForm(this);
+			//Helper.setForm(this);
+			//OrbitFunctions.setForm(this);
 
 			// Setup DataStorage
 			dataStorage = new DataStorage(pySSSMQ);
@@ -177,19 +181,11 @@ namespace KSP_MOCR
 			// Setup form style
 			this.BackColor = Color.FromArgb(255, 16, 16, 16);
 			this.ForeColor = foreColor;
-			this.ClientSize = new Size((int)(pxPrChar * 120) + padding_left + padding_right, (int)(pxPrLine * 30) + padding_top + padding_bottom);
-
-			// Initiate Screen Timer
-			screenTimer = new System.Timers.Timer();
-			screenTimer.SynchronizingObject = this;
-			screenTimer.Stop();
-			screenTimer.AutoReset = false;
-			screenTimer.Interval = 1000;
-			screenTimer.Elapsed += screenTick;
+			this.ClientSize = new Size((int)(pxPrChar * 40) + padding_left + padding_right, (int)(pxPrLine * 20) + padding_top + padding_bottom);
 
 			// Initiate Graph Timer
 			graphTimer = new System.Timers.Timer();
-			screenTimer.SynchronizingObject = this;
+			graphTimer.SynchronizingObject = this;
 			graphTimer.AutoReset = false;
 			graphTimer.Interval = 1000;
 			graphTimer.Elapsed += graphTick;
@@ -197,7 +193,9 @@ namespace KSP_MOCR
 
 
 			// Load the connection screen
-			SetScreen(0);
+			//SetScreen(0);
+			makeScreen(0);
+			activeScreen = screens[0].activeScreen;
 		}
 
 		public void graphTick(object sender, EventArgs e)
@@ -215,29 +213,6 @@ namespace KSP_MOCR
 
 			graphTimer.Interval = remainTime;
 			graphTimer.Start();
-		}
-
-		public void screenTick(object sender, EventArgs e)
-		{
-			//Console.WriteLine("Starting ScreenTick");
-			updateStart = DateTime.Now;
-
-			if (activeScreen != null)
-			{
-				activeScreen.updateElements(sender, e);
-				this.Invalidate();
-			}
-
-			updateEnd = DateTime.Now;
-
-			TimeSpan updateDuration = updateEnd - updateStart;
-			int remainTime = activeScreen.updateRate - (int)updateDuration.TotalMilliseconds;
-
-			if (remainTime < 100) { remainTime = 100; }
-			Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString());
-
-			screenTimer.Interval = remainTime;
-			screenTimer.Start();
 		}
 
 		public void ConnectToServer(object sender, EventArgs e)
@@ -262,10 +237,10 @@ namespace KSP_MOCR
 					krpc = connection.KRPC();
 					spaceCenter = connection.SpaceCenter();
 
-					
+					streamCollection = new StreamCollection(connection);
 
 					// Setup graphable data
-					setupChartData();
+					setupChartData(streamCollection);
 
 					activeScreen.screenLabels[0].Text = "Connected";
 					connected = true;
@@ -314,54 +289,23 @@ namespace KSP_MOCR
 			Application.Exit();
 		}
 
-		private void SetScreen(int id)
+		private void makeScreen(int id)
 		{
-			// Stop screen update
-			screenTimer.Stop();
+			screens.Add(new Screen(this, screens.Count, connection, streamCollection, dataStorage));
+			screens[screens.Count - 1].Show();
+			screens[screens.Count - 1].SetScreen(id);
+		}
 
-			// Dispose of old elements
-			if (activeScreen != null) { activeScreen.destroy();}
-
-			// Destroy old screen
-			activeScreen = null;
-
-            // Get Screen
-			activeScreen = MocrScreen.Create(id, this);
-
-			// If Screen exists: Make Elementes and resize
-			if (activeScreen != null)
-			{
-				activeScreen.resizeForm();
-				activeScreen.makeElements();
-
-				// Set focus to input 0
-				activeScreen.screenInputs[0].Focus();
-
-				// Start the update process
-				screenTimer.Start();
-			}
-			else
-			{
-				MessageBox.Show("Screen " + id.ToString() + " not found","INFORMATION",MessageBoxButtons.OK,MessageBoxIcon.Information);
-				SetScreen(0);
-			}
+		public void closeScreen(int id)
+		{
+			screens[id].Close();
+			screens.TrimExcess();
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			//Console.WriteLine("CK: " + keyData.ToString());
-			switch (keyData)
-			{
-				case Keys.F1:
-					SetScreen(1); // Ascent Screen
-					return true;
-				case Keys.F12:
-					SetScreen(12); // Test Screen
-					return true;
-				case Keys.Escape:
-					SetScreen(0); // Connection Screen
-					return true;
-			}
+			
 
 			// Call the base class
 			return base.ProcessCmdKey(ref msg, keyData);
@@ -370,6 +314,13 @@ namespace KSP_MOCR
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			// Close screens
+			foreach (Screen scr in screens)
+			{
+				scr.Close();
+			}
+			
+			streamCollection = null;
 			if (graphTimer != null && graphTimer.Enabled) { graphTimer.Stop(); }
 			if (screenTimer != null && screenTimer.Enabled) { screenTimer.Stop(); }
 			if (connection != null) { connection.Dispose(); }
@@ -417,7 +368,8 @@ namespace KSP_MOCR
 				{
 					Console.WriteLine("CALLING: " + screenCallup);
 					int screenID = int.Parse(screenCallup);
-					SetScreen(screenID);
+					//SetScreen(screenID);
+					makeScreen(screenID);
 				}
 				catch(Exception ex)
 				{
