@@ -1,3 +1,4 @@
+![alt tag](http://i.imgur.com/rWDvl5n.png)
 # KSP_MOCR
 A standalone program that connects to a kRPC-server, running on , and displays spacecraft/flight/orbital data
 
