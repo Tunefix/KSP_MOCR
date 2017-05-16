@@ -182,6 +182,9 @@
     </None>
     <None Include="Resources\MunMap.png" />
     <Compile Include="Classes\Screen.cs" />
+    <None Include="Resources\logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

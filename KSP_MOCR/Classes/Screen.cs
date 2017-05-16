@@ -62,6 +62,11 @@ namespace KSP_MOCR
 			this.BackColor = form.BackColor;
 
 			this.FormClosing += ScreenClosing;
+
+			this.KeyPreview = true;
+
+			this.KeyDown += this.form.Form1_KeyDown;
+			this.KeyUp += this.form.Form1_KeyUp;
 			
 			// Initiate Screen Timer
 			screenTimer = new System.Timers.Timer();
@@ -106,8 +111,8 @@ namespace KSP_MOCR
 			// Destroy old screen
 			activeScreen = null;
 
-            // Get Screen
-            Helper.setForm(this);
+			// Get Screen
+			Helper.setForm(this);
 			activeScreen = MocrScreen.Create(id, this);
 
 			// If Screen exists: Make Elementes and resize

@@ -66,6 +66,7 @@ namespace KSP_MOCR
 		public Bitmap indicatorImage;
 		public Bitmap engineOff;
 		public Bitmap engineOn;
+		public Bitmap logo;
 
 		enum Align { LEFT, RIGHT, CENTER };
 		enum Resource { ElectricCharge, MonoPropellant, LiquidFuel, Oxidizer, Ore };
@@ -79,6 +80,11 @@ namespace KSP_MOCR
 		public System.Timers.Timer graphTimer;
 
 		public StreamCollection streamCollection;
+
+		TextBox ipAddr;
+		TextBox name;
+		CustomLabel pySSSMQStatus;
+		CustomLabel kRPCStatus;
 
 		public Form1()
 		{
@@ -138,6 +144,7 @@ namespace KSP_MOCR
 
 				// Load Images
 				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator.png");
+				logo = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/logo.png");
 			}
 			else
 			{
@@ -162,11 +169,8 @@ namespace KSP_MOCR
 				// Load Images
 				//Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
 				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
+				logo = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\logo.png");
 			}
-
-			// Setup Helper and OrbitFunctions
-			//Helper.setForm(this);
-			//OrbitFunctions.setForm(this);
 
 			// Setup DataStorage
 			dataStorage = new DataStorage(pySSSMQ);
@@ -181,7 +185,7 @@ namespace KSP_MOCR
 			// Setup form style
 			this.BackColor = Color.FromArgb(255, 16, 16, 16);
 			this.ForeColor = foreColor;
-			this.ClientSize = new Size((int)(pxPrChar * 40) + padding_left + padding_right, (int)(pxPrLine * 20) + padding_top + padding_bottom);
+			this.ClientSize = new Size((int)(pxPrChar * 44) + padding_left + padding_right, (int)(pxPrLine * 20) + padding_top + padding_bottom);
 
 			// Initiate Graph Timer
 			graphTimer = new System.Timers.Timer();
@@ -194,8 +198,156 @@ namespace KSP_MOCR
 
 			// Load the connection screen
 			//SetScreen(0);
-			makeScreen(0);
-			activeScreen = screens[0].activeScreen;
+			//makeScreen(0);
+			//activeScreen = screens[0].activeScreen;
+
+			// Fill form with connection-stuff
+			fillForm();
+		}
+
+		private void fillForm()
+		{
+			// LOGO
+			PictureBox emblem = new PictureBox();
+			emblem.Image = logo;
+			emblem.Location = new Point(padding_left, padding_top);
+			emblem.Size = getSize(21, 9);
+			emblem.SizeMode = PictureBoxSizeMode.CenterImage;
+			this.Controls.Add(emblem);
+			
+			// ADDRESS AND NAME FIELDS
+			CustomLabel ipAddrLbl = new CustomLabel();
+			ipAddrLbl.setCharWidth(pxPrChar);
+			ipAddrLbl.setlineHeight(pxPrLine);
+			ipAddrLbl.setcharOffset(charOffset);
+			ipAddrLbl.setlineOffset(lineOffset);
+			ipAddrLbl.Font = font;
+			ipAddrLbl.AutoSize = false;
+			ipAddrLbl.TextAlign = ContentAlignment.TopCenter;
+			ipAddrLbl.Location = getPoint(22, 1);
+			ipAddrLbl.Size = getSize(20, 1);
+			ipAddrLbl.Text = "Server IP:";
+			ipAddrLbl.Padding = new Padding(0);
+			ipAddrLbl.Margin = new Padding(0);
+			ipAddrLbl.FlatStyle = FlatStyle.Flat;
+			ipAddrLbl.BorderStyle = BorderStyle.None;
+			ipAddrLbl.ForeColor = foreColor;
+			this.Controls.Add(ipAddrLbl);
+			
+			CustomLabel nameLbl = new CustomLabel();
+			nameLbl.setCharWidth(pxPrChar);
+			nameLbl.setlineHeight(pxPrLine);
+			nameLbl.setcharOffset(charOffset);
+			nameLbl.setlineOffset(lineOffset);
+			nameLbl.Font = font;
+			nameLbl.AutoSize = false;
+			nameLbl.TextAlign = ContentAlignment.TopCenter;
+			nameLbl.Location = getPoint(22, 4);
+			nameLbl.Size = getSize(20, 1);
+			nameLbl.Text = "Your ID:";
+			nameLbl.Padding = new Padding(0);
+			nameLbl.Margin = new Padding(0);
+			nameLbl.FlatStyle = FlatStyle.Flat;
+			nameLbl.BorderStyle = BorderStyle.None;
+			nameLbl.ForeColor = foreColor;
+			this.Controls.Add(nameLbl);
+			
+			ipAddr = new TextBox();
+			ipAddr.Location = getPoint(22, 2);
+			ipAddr.Size = getSize(20, 1);
+			ipAddr.Font = font;
+			ipAddr.ForeColor = foreColor;
+			ipAddr.BorderStyle = BorderStyle.None;
+			ipAddr.BackColor = Color.FromArgb(255, 32, 32, 32);
+			ipAddr.AutoSize = false;
+			ipAddr.Text = "127.0.0.1";
+			ipAddr.KeyDown += checkForEnter;
+			this.Controls.Add(ipAddr);
+			
+			name = new TextBox();
+			name.Location = getPoint(22, 5);
+			name.Size = getSize(20, 1);
+			name.Font = font;
+			name.ForeColor = foreColor;
+			name.BorderStyle = BorderStyle.None;
+			name.BackColor = Color.FromArgb(255, 32, 32, 32);
+			name.AutoSize = false;
+			name.Text = "Flight Director";
+			name.KeyDown += checkForEnter;
+			this.Controls.Add(name);
+			
+			// CONNECT BUTTON
+			MocrButton button = new MocrButton();
+			button.Location = getPoint(22, 7);
+			button.Size = getSize(20, 1);
+			button.Cursor = Cursors.Hand;
+			button.Font = font;
+			button.Text = "Connect";
+			button.Padding = new Padding(0);
+			button.Click += ConnectToServer;
+			this.Controls.Add(button);
+			
+			// CONNECTION STATUS
+			kRPCStatus = new CustomLabel();
+			kRPCStatus.setCharWidth(pxPrChar);
+			kRPCStatus.setlineHeight(pxPrLine);
+			kRPCStatus.setcharOffset(charOffset);
+			kRPCStatus.setlineOffset(lineOffset);
+			kRPCStatus.Font = font;
+			kRPCStatus.AutoSize = false;
+			kRPCStatus.TextAlign = ContentAlignment.TopCenter;
+			kRPCStatus.Location = getPoint(1, 9);
+			kRPCStatus.Size = getSize(42, 1);
+			kRPCStatus.Text = "   kRPC: NOT CONNECTED";
+			kRPCStatus.Padding = new Padding(0);
+			kRPCStatus.Margin = new Padding(0);
+			kRPCStatus.FlatStyle = FlatStyle.Flat;
+			kRPCStatus.BorderStyle = BorderStyle.None;
+			kRPCStatus.ForeColor = foreColor;
+			this.Controls.Add(kRPCStatus);
+			
+			pySSSMQStatus = new CustomLabel();
+			pySSSMQStatus.setCharWidth(pxPrChar);
+			pySSSMQStatus.setlineHeight(pxPrLine);
+			pySSSMQStatus.setcharOffset(charOffset);
+			pySSSMQStatus.setlineOffset(lineOffset);
+			pySSSMQStatus.Font = font;
+			pySSSMQStatus.AutoSize = false;
+			pySSSMQStatus.TextAlign = ContentAlignment.TopCenter;
+			pySSSMQStatus.Location = getPoint(1, 10);
+			pySSSMQStatus.Size = getSize(42, 1);
+			pySSSMQStatus.Text = "PySSSMQ: NOT CONNECTED";
+			pySSSMQStatus.Padding = new Padding(0);
+			pySSSMQStatus.Margin = new Padding(0);
+			pySSSMQStatus.FlatStyle = FlatStyle.Flat;
+			pySSSMQStatus.BorderStyle = BorderStyle.None;
+			pySSSMQStatus.ForeColor = foreColor;
+			this.Controls.Add(pySSSMQStatus);
+			
+		}
+		
+		private void checkForEnter(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Enter || e.KeyData == Keys.Return)
+			{
+				ConnectToServer(sender, e);
+			}
+		}
+
+		private Point getPoint(int x, int y)
+		{
+			int top  = (int)(Math.Ceiling(y * pxPrLine) + padding_top);
+			int left = (int)(Math.Ceiling(x * pxPrChar) + padding_left);
+
+			return new Point(left, top);
+		}
+
+		private Size getSize(int x, int y)
+		{
+			int width  = (int)Math.Ceiling(x * pxPrChar);
+			int height = (int)Math.Ceiling(y * pxPrLine);
+
+			return new Size(width, height);
 		}
 
 		public void graphTick(object sender, EventArgs e)
@@ -220,17 +372,18 @@ namespace KSP_MOCR
 			if (!connected)
 			{
 				Console.WriteLine("You pressed the 'Connect'-button, you clever you... :-)");
-				activeScreen.screenLabels[0].Text = "Connecting to " + activeScreen.screenInputs[0].Text;
+				pySSSMQStatus.Text = "PySSSMQ: CONNECTING";
+				kRPCStatus.Text = "   kRPC: CONNECTING";
 
 				try
 				{
-					IPAddress[] connectionAdrs = Dns.GetHostAddresses(activeScreen.screenInputs[0].Text);
+					IPAddress[] connectionAdrs = Dns.GetHostAddresses(ipAddr.Text);
 					System.Net.IPAddress IP = connectionAdrs[0]; // IPv4
 					
 					// Store connection IP
 					this.connectionIP = IP.ToString();
 
-					connectionName = activeScreen.screenInputs[1].Text;
+					connectionName = name.Text;
 
 					connection = new Connection(name: connectionName, address: IP);
 
@@ -242,23 +395,23 @@ namespace KSP_MOCR
 					// Setup graphable data
 					setupChartData(streamCollection);
 
-					activeScreen.screenLabels[0].Text = "Connected";
+					kRPCStatus.Text = "   kRPC: CONNECTED";
 					connected = true;
 				}
 				catch (System.Net.Sockets.SocketException)
 				{
 					MessageBox.Show("KRPC SERVER NOT RESPONDING");
-					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+					kRPCStatus.Text = "   kRPC: NOT CONNECTED";
 				}
 				catch (System.FormatException)
 				{
 					MessageBox.Show("NOT A VALID IP-ADDRESS");
-					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+					kRPCStatus.Text = "   kRPC: NOT CONNECTED";
 				}
 				catch (System.IO.IOException)
 				{
 					MessageBox.Show("IO ERROR");
-					activeScreen.screenLabels[0].Text = "NOT CONNECTED";
+					kRPCStatus.Text = "   kRPC: NOT CONNECTED";
 				}
 
 				// Connect to pySSMQ
@@ -266,10 +419,19 @@ namespace KSP_MOCR
 				{
 					pySSSMQ.Connect(connectionIP);
 					pySSSMQ.AttachReceiveEvent(pySSSMQ_handler.receive);
+					if (pySSSMQ.IsConnected())
+					{
+						pySSSMQStatus.Text = "PySSSMQ: CONNECTED";
+					}
+					else
+					{
+						pySSSMQStatus.Text = "PySSSMQ: NOT CONNECTED";
+					}
 				}
 				catch (Exception ex)
 				{
 					MessageBox.Show(ex.GetType() + ":" + ex.Message);
+					pySSSMQStatus.Text = "PySSSMQ: NOT CONNECTED";
 				}
 			}
 			else
@@ -326,7 +488,7 @@ namespace KSP_MOCR
 			if (connection != null) { connection.Dispose(); }
 		}
 
-		private void Form1_KeyDown(object sender, KeyEventArgs e)
+		public void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("KD: " + e.KeyCode.ToString());
 
@@ -351,7 +513,7 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void Form1_KeyUp(object sender, KeyEventArgs e)
+		public void Form1_KeyUp(object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("U: " + e.KeyValue);
 			if (e.KeyCode == Keys.ControlKey && ctrlDown)
