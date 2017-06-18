@@ -185,6 +185,7 @@
     <None Include="Resources\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Screens\SingleOrbit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

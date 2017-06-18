@@ -34,7 +34,7 @@ namespace KSP_MOCR
 		bool runOnceProg = false;
 		bool runOnceVerb = false;
 		int progStep = 0;
-		bool proPress = false;
+		//bool proPress = false;
 		bool entrPress = false;
 		bool keyRelPress = false;
 		bool enterVerb = false;

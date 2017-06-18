@@ -51,6 +51,8 @@ namespace KSP_MOCR
 					return new ResourcesScreen(form);
 				case 4:
 					return new FDO(form);
+				case 5:
+					return new SingleOrbit(form);
 				case 8:
 					return new MapScreen(form);
 				case 9:

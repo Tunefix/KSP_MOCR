@@ -61,8 +61,14 @@ public class PySSSMQ_client {
 	}
 
 	public bool IsConnected() {
-
-		return this.socket.Connected;
+		if(socket != null)
+		{
+			return this.socket.Connected;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public string LastConnectionError() {

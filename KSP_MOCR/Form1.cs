@@ -36,7 +36,6 @@ namespace KSP_MOCR
 
 		public bool connected = false;
 
-		MocrScreen activeScreen;
 		public enum OS { UNIX, WINDOWS, OTHER }
 		public OS system;
 
@@ -79,7 +78,7 @@ namespace KSP_MOCR
 		public System.Timers.Timer screenTimer;
 		public System.Timers.Timer graphTimer;
 
-		public StreamCollection streamCollection;
+		public StreamCollection streamCollection = new StreamCollection();
 
 		TextBox ipAddr;
 		TextBox name;
@@ -507,10 +506,11 @@ namespace KSP_MOCR
 			{
 				screenCallup += (x - 96).ToString();
 			}
+			/*
 			if (activeScreen != null)
 			{
 				activeScreen.keyDown(sender, e);
-			}
+			}*/
 		}
 
 		public void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -553,10 +553,12 @@ namespace KSP_MOCR
 				screenCallup = "";
 			}
 
+			/*
 			if (activeScreen != null)
 			{
 				activeScreen.keyUp(sender, e);
 			}
+			*/
 		}
 	}
 }

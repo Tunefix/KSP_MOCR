@@ -44,7 +44,7 @@ namespace KSP_MOCR
 		public enum status { OFF, GREEN, RED, BLUE, AMBER, WHITE }
 		public enum style { SIMPLE, BORDER }
 		public style indStyle { get; set; }
-		private bool lit = false;
+		//private bool lit = false;
 		
 		private Brush backBrush;
 		private Brush foreBrush;

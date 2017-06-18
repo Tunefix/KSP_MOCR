@@ -12,7 +12,7 @@ namespace KSP_MOCR
 	class FDO :MocrScreen
 	{
 		CelestialBody body;
-		CelestialBody target;
+		//CelestialBody target;
 		float bodyRadius;
 		String bodyName;
 		
@@ -114,7 +114,7 @@ namespace KSP_MOCR
 					if (screenInputs[2].Text != "") { TIG += double.Parse(screenInputs[2].Text, format); }
 					TIG += (UT - MET);
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
 					//MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
@@ -173,7 +173,7 @@ namespace KSP_MOCR
 
 					
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
 					//MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}

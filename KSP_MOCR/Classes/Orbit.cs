@@ -13,7 +13,7 @@ namespace KSP_MOCR
 		float bodyRadius;
 		String bodyName;
 		IList<CelestialBody> bodySatellites;
-		ReferenceFrame refsmmat;
+		//ReferenceFrame refsmmat;
 		double orbitApoapsis;
 		double orbitPeriapsis;
 		double currentRadius;
@@ -34,16 +34,16 @@ namespace KSP_MOCR
 		double burn_trueAnomalyAtTIG;
 		double burn_radiusAtTIG;
 		double burn_velocityAtTIG;
-		Tuple<double, double, double> burnVector;
+		//Tuple<double, double, double> burnVector;
 		Tuple<double, double, double> burnVelocityVector;
 		Tuple<double, double, double> burnPositionVecotr;
-		Tuple<double, double, double> burnAnglularMomentumVector;
-		Tuple<double, double, double> burnEccentricityVector;
-		Tuple<double, double, double> burnNVector;
-		double burn_eccentricity;
-		double burn_longitudeOfAscendingNode;
-		double burn_argumentOfPeriapsis;
-		double burn_trueAnomaly;
+		//Tuple<double, double, double> burnAnglularMomentumVector;
+		//Tuple<double, double, double> burnEccentricityVector;
+		//Tuple<double, double, double> burnNVector;
+		//double burn_eccentricity;
+		//double burn_longitudeOfAscendingNode;
+		//double burn_argumentOfPeriapsis;
+		//double burn_trueAnomaly;
 
 
 		static Color orbitColor = Color.FromArgb(200, 255, 255, 255);

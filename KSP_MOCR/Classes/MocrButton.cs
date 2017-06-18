@@ -121,7 +121,6 @@ namespace KSP_MOCR
 			float innerX = 8;
 			float innerY = 8;
 			float outerBorderWidth = 4;
-			float innerBorderWidth = 2;
 			Pen outerBorderPen = ControlOuterBorderPen;
 			Pen innerBorderPen = ControlInnerBorderPen;
 			
@@ -129,7 +128,6 @@ namespace KSP_MOCR
 			{
 				innerX = innerY = 5;
 				outerBorderWidth = 1;
-				innerBorderWidth = 1;
 				outerBorderPen = ThinOuterBorderPen;
 				innerBorderPen = ThinInnerBorderPen;
 			}

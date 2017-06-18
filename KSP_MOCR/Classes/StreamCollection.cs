@@ -16,6 +16,7 @@ namespace KSP_MOCR
 
 		private int stage;
 		private bool isRemoving;
+		private bool hasConnection = false;
 
 		// Some much used variables
 		KRPC.Client.Services.SpaceCenter.Service spaceCenter;
@@ -30,34 +31,46 @@ namespace KSP_MOCR
 		ReferenceFrame mapRefFrame;
 		Flight inertFlight;
 		Flight mapFlight;
+		
+		public StreamCollection()
+		{
+		}
 
 		public StreamCollection(Connection con)
 		{
 			connection = con;
+			hasConnection = true;
 		}
 
 		public dynamic GetData(DataType type){return GetData(type, false);}
 		public dynamic GetData(DataType type, bool force_reStream)
 		{
-			while (isRemoving) { Thread.Sleep(100);}
-			if (!streams.ContainsKey(type) || force_reStream)
+			if (hasConnection)
 			{
-				// If forced, clear out old stream
-				if (force_reStream) { streams[type].Remove(); streams.Remove(type);}
-				
-				try
+				while (isRemoving) { Thread.Sleep(100); }
+				if (!streams.ContainsKey(type) || force_reStream)
 				{
-					addStream(type);
+					// If forced, clear out old stream
+					if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
+
+					try
+					{
+						addStream(type);
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e.Message);
+						return null;
+					}
 				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e.Message);
-					return null;
-				}
+				Kstream stream = streams[type];
+				dynamic output = stream.Get();
+				return output;
 			}
-			Kstream stream = streams[type];
-			dynamic output = stream.Get();
-			return output;
+			else
+			{
+				return 0;
+			}
 		}
 
 		public void CloseStreams()
