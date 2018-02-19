@@ -535,7 +535,7 @@ namespace KSP_MOCR
 				}
 				catch(Exception ex)
 				{
-					if(ex is ArgumentNullException)
+					if(ex is System.ArgumentNullException)
 					{
 						Console.WriteLine(ex.ToString());
 					}
@@ -546,6 +546,11 @@ namespace KSP_MOCR
 					}
 
 					if (ex is OverflowException)
+					{
+						Console.WriteLine(ex.ToString());
+					}
+
+					if (ex is System.ArgumentOutOfRangeException)
 					{
 						Console.WriteLine(ex.ToString());
 					}

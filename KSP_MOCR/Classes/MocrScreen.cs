@@ -58,6 +58,8 @@ namespace KSP_MOCR
 				case 9:
 					Console.WriteLine("MAKING TEST");
 					return new TestScreen(form);
+				case 11:
+					return new StreamsScreen(form);
 				case 50:
 					return new Terrain(form);
 				case 51:

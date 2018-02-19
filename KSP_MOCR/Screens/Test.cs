@@ -16,7 +16,7 @@ namespace KSP_MOCR
 
 		public TestScreen(Screen form)
 		{
-			screenStreams = new StreamCollection(form.connection);
+			this.screenStreams = form.streamCollection;
 			this.form = form;
 
 			this.width = 120;

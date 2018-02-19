@@ -18,6 +18,8 @@ namespace KSP_MOCR
 		private bool isRemoving;
 		private bool hasConnection = false;
 
+		private System.Object streamlock = new System.Object();
+
 		// Some much used variables
 		KRPC.Client.Services.SpaceCenter.Service spaceCenter;
 		Flight flight;
@@ -47,25 +49,28 @@ namespace KSP_MOCR
 		{
 			if (hasConnection)
 			{
-				while (isRemoving) { Thread.Sleep(100); }
-				if (!streams.ContainsKey(type) || force_reStream)
+				lock (streamlock)
 				{
-					// If forced, clear out old stream
-					if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
+					while (isRemoving) { Thread.Sleep(100); }
+					if (!streams.ContainsKey(type) || force_reStream)
+					{
+						// If forced, clear out old stream
+						if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
 
-					try
-					{
-						addStream(type);
+						try
+						{
+							addStream(type);
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine(e.Message);
+							return null;
+						}
 					}
-					catch (Exception e)
-					{
-						Console.WriteLine(e.Message);
-						return null;
-					}
+					Kstream stream = streams[type];
+					dynamic output = stream.Get();
+					return output;
 				}
-				Kstream stream = streams[type];
-				dynamic output = stream.Get();
-				return output;
 			}
 			else
 			{
@@ -75,7 +80,7 @@ namespace KSP_MOCR
 
 		public void CloseStreams()
 		{
-			lock(streams)
+			lock(streamlock)
 			{
 				isRemoving = true;
 				foreach (KeyValuePair<DataType, Kstream> stream in streams)
@@ -526,6 +531,18 @@ namespace KSP_MOCR
 		{
 			getInertialRefFrame();
 			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
+		}
+
+		public string getStatus()
+		{
+			string output = "STREAMS\n";
+
+			foreach(KeyValuePair<DataType, Kstream> stream in streams)
+			{
+				output += stream.Key.ToString() + "\n";
+			}
+
+			return output;
 		}
 	}
 }
