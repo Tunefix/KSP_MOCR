@@ -490,7 +490,7 @@ namespace KSP_MOCR
 		{
 			NumberFormatInfo format = new NumberFormatInfo();
 			format.NumberGroupSeparator = "";
-			format.NumberDecimalDigits = 10;
+			format.NumberDecimalDigits = p;
 			format.NumberDecimalSeparator = ".";
 			
 			String r;
@@ -512,9 +512,9 @@ namespace KSP_MOCR
 				}
 
 				int extraSigns = 1; // The decimal sign
-				if (d2 < 0) { extraSigns++; } // The minus sign
+				//if (d2 < 0) { extraSigns++; } // The minus sign
 
-				while (r.Length < b.Length + extraSigns + p) // The +1 is for the decimal sign
+				while (r.Length < b.Length + extraSigns + p)
 				{
 					r += "0";
 				}

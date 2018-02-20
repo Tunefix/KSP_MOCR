@@ -9,13 +9,14 @@ using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
 {
-	public class StreamCollection
+	public sealed class StreamCollection
 	{
 		readonly KRPC.Client.Connection connection;
-		private Dictionary<DataType, Kstream> streams = new Dictionary<DataType, Kstream>();
+		private static Dictionary<DataType, Kstream> streams = new Dictionary<DataType, Kstream>();
+
+		private static readonly StreamCollection instance = new StreamCollection();
 
 		private int stage;
-		private bool isRemoving;
 		private bool hasConnection = false;
 
 		private System.Object streamlock = new System.Object();
@@ -33,9 +34,21 @@ namespace KSP_MOCR
 		ReferenceFrame mapRefFrame;
 		Flight inertFlight;
 		Flight mapFlight;
-		
-		public StreamCollection()
+
+		static StreamCollection()
 		{
+		}
+
+		private StreamCollection()
+		{
+		}
+
+		public static StreamCollection Instance
+		{
+			get
+			{
+				return instance;
+			}
 		}
 
 		public StreamCollection(Connection con)
@@ -51,7 +64,6 @@ namespace KSP_MOCR
 			{
 				lock (streamlock)
 				{
-					while (isRemoving) { Thread.Sleep(100); }
 					if (!streams.ContainsKey(type) || force_reStream)
 					{
 						// If forced, clear out old stream
@@ -82,13 +94,11 @@ namespace KSP_MOCR
 		{
 			lock(streamlock)
 			{
-				isRemoving = true;
 				foreach (KeyValuePair<DataType, Kstream> stream in streams)
 				{
 					stream.Value.Remove();
 				}
 				streams.Clear();
-				isRemoving = false;
 			}
 		}
 

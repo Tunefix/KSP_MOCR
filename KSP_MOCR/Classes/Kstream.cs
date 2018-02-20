@@ -72,7 +72,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -89,7 +98,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -106,7 +124,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -123,7 +150,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -140,7 +176,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -157,7 +202,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -174,7 +228,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }
@@ -191,7 +254,16 @@ namespace KSP_MOCR
 
 		public override dynamic Get()
 		{
-			return stream.Get();
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				stream.Start();
+				return stream.Get();
+			}
 		}
 
 		public override void Remove() { stream.Remove(); }

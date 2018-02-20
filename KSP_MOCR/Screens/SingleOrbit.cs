@@ -1,8 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+using KRPC.Client;
+using KRPC.Client.Services.KRPC;
+using KRPC.Client.Services.SpaceCenter;
+using System.Threading;
+using System.Diagnostics;
+
 namespace KSP_MOCR
 {
 	public class SingleOrbit : MocrScreen
 	{
+		ReferenceFrame surfaceRefsmmat;
+		ReferenceFrame inertialRefsmmat;
+		Tuple<double, double, double> vesselSurfDirection;
+		Tuple<double, double, double> vesselInerDirection;
+		Tuple<double, double, double, double> vesselInerRotation;
+		
+		float inerRoll = 0;
+		float inerPitch = 0;
+		float inerYaw = 0;
+		float surfRoll = 0;
+		float surfPitch = 0;
+		float surfYaw = 0;
+
+
 		public SingleOrbit(Screen form)
 		{
 			this.form = form;
@@ -119,8 +146,45 @@ namespace KSP_MOCR
 		
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			screenLabels[0].Text = "MET: " + Helper.timeString(screenStreams.GetData(DataType.vessel_MET), 3);
-			screenLabels[1].Text = "LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds, 2);
+			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
+			{
+
+				// GET DATA
+
+				screenLabels[0].Text = "MET: " + Helper.timeString(screenStreams.GetData(DataType.vessel_MET), 3);
+				screenLabels[1].Text = "LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds, 2);
+
+				surfaceRefsmmat = form.connection.SpaceCenter().ActiveVessel.SurfaceReferenceFrame;
+				inertialRefsmmat = form.connection.SpaceCenter().ActiveVessel.Orbit.Body.NonRotatingReferenceFrame;
+				vesselInerDirection = screenStreams.GetData(DataType.flight_inertial_direction);
+				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
+				inerRoll = screenStreams.GetData(DataType.flight_inertial_roll);
+				inerPitch = screenStreams.GetData(DataType.flight_inertial_pitch);
+				inerYaw = screenStreams.GetData(DataType.flight_inertial_yaw);
+
+				surfRoll = screenStreams.GetData(DataType.flight_roll);
+				surfPitch = screenStreams.GetData(DataType.flight_pitch);
+				surfYaw = screenStreams.GetData(DataType.flight_heading);
+
+				vesselSurfDirection = screenStreams.GetData(DataType.flight_direction);
+
+				// ROTATION
+
+				string iR = Helper.prtlen(Helper.toFixed(inerRoll, 2), 7, Helper.Align.RIGHT);
+				string iP = Helper.prtlen(Helper.toFixed(inerPitch, 2), 7, Helper.Align.RIGHT);
+				string iY = Helper.prtlen(Helper.toFixed(inerYaw, 2), 7, Helper.Align.RIGHT);
+				string sR = Helper.prtlen(Helper.toFixed(surfRoll, 2), 7, Helper.Align.RIGHT);
+				string sP = Helper.prtlen(Helper.toFixed(surfPitch, 2), 7, Helper.Align.RIGHT);
+				string sY = Helper.prtlen(Helper.toFixed(surfYaw, 2), 7, Helper.Align.RIGHT);
+
+				screenLabels[52].Text = "│ INER ATT:" + iR + " " + iP + " " + iY + "  │";
+				screenLabels[53].Text = "│    BURN : XXX.XX  XXX.XX  XXX.XX  │";
+				screenLabels[54].Text = "│    REF  : XXX.XX  XXX.XX  XXX.XX  │";
+				screenLabels[55].Text = "│    FDAI : XXX.XX  XXX.XX  XXX.XX  │";
+				screenLabels[57].Text = "│ SURF ATT:" + sR + " " + sP + " " + sY + "  │";
+				screenLabels[58].Text = "│    REF  : XXX.XX  XXX.XX  XXX.XX  │";
+				screenLabels[59].Text = "│    FDAI : XXX.XX  XXX.XX  XXX.XX  │";
+			}
 		}
 	}
 }

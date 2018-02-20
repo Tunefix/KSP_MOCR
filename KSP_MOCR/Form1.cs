@@ -78,7 +78,7 @@ namespace KSP_MOCR
 		public System.Timers.Timer screenTimer;
 		public System.Timers.Timer graphTimer;
 
-		public StreamCollection streamCollection = new StreamCollection();
+		public StreamCollection streamCollection = StreamCollection.Instance;
 
 		TextBox ipAddr;
 		TextBox name;
