@@ -537,6 +537,13 @@ namespace KSP_MOCR
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
+			// If PySSSMQ is running, end it.
+			Process[] pname = Process.GetProcessesByName("pythonw");
+			if (pname.Length > 0)
+			{
+				StopPyServer(null, null);
+			}
+
 			Application.Exit();
 		}
 
