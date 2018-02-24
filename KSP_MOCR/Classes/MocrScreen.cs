@@ -60,6 +60,8 @@ namespace KSP_MOCR
 					return new TestScreen(form);
 				case 11:
 					return new StreamsScreen(form);
+				case 12:
+					return new DataStorageScreen(form);
 				case 50:
 					return new Terrain(form);
 				case 51:

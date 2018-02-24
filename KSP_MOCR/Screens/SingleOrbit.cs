@@ -167,6 +167,7 @@ namespace KSP_MOCR
 				surfYaw = screenStreams.GetData(DataType.flight_heading);
 
 				vesselSurfDirection = screenStreams.GetData(DataType.flight_direction);
+				
 
 				// ROTATION
 

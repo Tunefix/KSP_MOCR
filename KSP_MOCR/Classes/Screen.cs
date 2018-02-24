@@ -76,7 +76,7 @@ namespace KSP_MOCR
 			screenTimer.Interval = 1000;
 			screenTimer.Elapsed += screenTick;
 		}
-		
+
 		public void screenTick(object sender, EventArgs e)
 		{
 			//Console.WriteLine("Starting ScreenTick");
@@ -93,8 +93,10 @@ namespace KSP_MOCR
 			TimeSpan updateDuration = updateEnd - updateStart;
 			int remainTime = activeScreen.updateRate - (int)updateDuration.TotalMilliseconds;
 
-			if (remainTime < 100) { remainTime = 100; }
-			Console.WriteLine("Remain Time: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString() + ", ScrID: " + this.ID);
+			if (remainTime < 50) {
+				remainTime = 50;
+				Console.WriteLine("LOW REMAIN TIME: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString() + ", ScrID: " + this.ID);
+			}
 
 			screenTimer.Interval = remainTime;
 			screenTimer.Start();

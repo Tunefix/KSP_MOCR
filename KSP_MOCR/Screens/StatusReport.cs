@@ -22,6 +22,9 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 3; i++) screenButtons.Add(null); // Initialize Buttons
 
+			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
+			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+
 			screenLabels[0] = Helper.CreateLabel(0, 0, 27, 1, Helper.prtlen(positionCode.ToUpper() + " STATUS REPORT", 27, Helper.Align.CENTER));
 
 			screenButtons[0] = Helper.CreateButton(0, 1, 9, 6, "");
@@ -46,7 +49,7 @@ namespace KSP_MOCR
 		
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			
+			setButtonColor(positionCode + "S");
 		}
 		
 		private void setButtonColor(String key)

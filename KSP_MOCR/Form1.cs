@@ -16,6 +16,10 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Net;
 using System.Threading;
+using IronPython.Hosting;
+using Microsoft.Scripting.Hosting;
+using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace KSP_MOCR
 {
@@ -28,6 +32,7 @@ namespace KSP_MOCR
 
 		public PySSSMQ_client pySSSMQ = new PySSSMQ_client();
 		public PySSSMQ_Handler pySSSMQ_handler;
+		public ScriptSource pySSSMQ_server;
 
 		public DataStorage dataStorage;
 
@@ -77,12 +82,14 @@ namespace KSP_MOCR
 
 		public System.Timers.Timer screenTimer;
 		public System.Timers.Timer graphTimer;
+		public System.Timers.Timer statusCheck;
 
 		public StreamCollection streamCollection = StreamCollection.Instance;
 
 		TextBox ipAddr;
 		TextBox name;
 		CustomLabel pySSSMQStatus;
+		CustomLabel pySSSMQStatus2;
 		CustomLabel kRPCStatus;
 
 		public Form1()
@@ -193,6 +200,14 @@ namespace KSP_MOCR
 			graphTimer.Interval = 1000;
 			graphTimer.Elapsed += graphTick;
 			graphTimer.Start();
+
+			// Initiate Status Check
+			statusCheck = new System.Timers.Timer();
+			statusCheck.SynchronizingObject = this;
+			statusCheck.AutoReset = true;
+			statusCheck.Interval = 1000;
+			statusCheck.Elapsed += statusCheckTick;
+			statusCheck.Start();
 
 
 			// Load the connection screen
@@ -322,7 +337,47 @@ namespace KSP_MOCR
 			pySSSMQStatus.BorderStyle = BorderStyle.None;
 			pySSSMQStatus.ForeColor = foreColor;
 			this.Controls.Add(pySSSMQStatus);
-			
+
+			// PySSSMQ BUTTON
+			MocrButton pybutton = new MocrButton();
+			pybutton.Location = getPoint(1, 17);
+			pybutton.Size = getSize(24, 1);
+			pybutton.Cursor = Cursors.Hand;
+			pybutton.Font = font;
+			pybutton.Text = "Start PySSSMQ-Server";
+			pybutton.Padding = new Padding(0);
+			pybutton.Click += StartPyServer;
+			this.Controls.Add(pybutton);
+
+			MocrButton pybuttonS = new MocrButton();
+			pybuttonS.Location = getPoint(1, 18);
+			pybuttonS.Size = getSize(24, 1);
+			pybuttonS.Cursor = Cursors.Hand;
+			pybuttonS.Font = font;
+			pybuttonS.Text = "Stop PySSSMQ-Server";
+			pybuttonS.Padding = new Padding(0);
+			pybuttonS.Click += StopPyServer;
+			this.Controls.Add(pybuttonS);
+
+			// PySSSMQ-server status
+			pySSSMQStatus2 = new CustomLabel();
+			pySSSMQStatus2.setCharWidth(pxPrChar);
+			pySSSMQStatus2.setlineHeight(pxPrLine);
+			pySSSMQStatus2.setcharOffset(charOffset);
+			pySSSMQStatus2.setlineOffset(lineOffset);
+			pySSSMQStatus2.Font = font;
+			pySSSMQStatus2.AutoSize = false;
+			pySSSMQStatus2.TextAlign = ContentAlignment.TopCenter;
+			pySSSMQStatus2.Location = getPoint(1, 16);
+			pySSSMQStatus2.Size = getSize(42, 5);
+			pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNUNG";
+			pySSSMQStatus2.Padding = new Padding(0);
+			pySSSMQStatus2.Margin = new Padding(0);
+			pySSSMQStatus2.FlatStyle = FlatStyle.Flat;
+			pySSSMQStatus2.BorderStyle = BorderStyle.None;
+			pySSSMQStatus2.ForeColor = foreColor;
+			this.Controls.Add(pySSSMQStatus2);
+
 		}
 		
 		private void checkForEnter(object sender, KeyEventArgs e)
@@ -347,6 +402,21 @@ namespace KSP_MOCR
 			int height = (int)Math.Ceiling(y * pxPrLine);
 
 			return new Size(width, height);
+		}
+
+		public void statusCheckTick(object sender, EventArgs e)
+		{
+			//Process[] pname = Process.GetProcesses();
+
+			Process[] pname = Process.GetProcessesByName("pythonw");
+			if (pname.Length > 0)
+			{
+				pySSSMQStatus2.Text = "PySSSMQ-Server: RUNNING";
+			}
+			else
+			{
+				pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNING";
+			}
 		}
 
 		public void graphTick(object sender, EventArgs e)
@@ -437,6 +507,26 @@ namespace KSP_MOCR
 			{
 				MessageBox.Show("Already Connected", "INFORMATION", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
+		}
+
+		public void StartPyServer(object sender, EventArgs e)
+		{
+			Process p = new Process();
+			p.StartInfo.WorkingDirectory = System.Environment.CurrentDirectory;
+			p.StartInfo.FileName = "python\\pythonw.exe";
+			p.StartInfo.Arguments = " PySSSMQ_server.py";
+			p.StartInfo.UseShellExecute = true;
+			p.Start();
+		}
+
+		public void StopPyServer(object sender, EventArgs e)
+		{
+			Process p = new Process();
+			p.StartInfo.WorkingDirectory = System.Environment.CurrentDirectory;
+			p.StartInfo.FileName = "python\\pythonw.exe";
+			p.StartInfo.Arguments = " PySSSMQ_server.py stop";
+			p.StartInfo.UseShellExecute = true;
+			p.Start();
 		}
 
 		public void DisconnectFromServer(object sender, EventArgs e)
