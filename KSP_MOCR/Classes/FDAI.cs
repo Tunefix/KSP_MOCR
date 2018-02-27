@@ -28,7 +28,7 @@ namespace KSP_MOCR
 		
 		double zeroR = 0;
 		double zeroP = 0;
-		double zeroY = -90;
+		double zeroY = 0;
 
 		Tuple<double, double, double, double> rotation;
 		readonly Tuple<double, double, double, double> baseDirection = new Tuple<double, double, double, double>(0, 1, 0, 0); // w, x, y, z
@@ -97,6 +97,11 @@ namespace KSP_MOCR
 			{
 				setRotFromQuaternion(this.rotation);
 			}
+
+			/*Console.WriteLine("FDAI R: " + Helper.prtlen(Helper.toFixed(roll, 2), 8, Helper.Align.RIGHT)
+				+ "  P: " + Helper.prtlen(Helper.toFixed(pitch, 2), 8, Helper.Align.RIGHT)
+				+ "  Y: " + Helper.prtlen(Helper.toFixed(yaw, 2), 8, Helper.Align.RIGHT)
+				);*/
 
 			paintFDAI(e, g);
 			//paintPFD(e, g);
@@ -1286,9 +1291,17 @@ namespace KSP_MOCR
 		private void setRotFromQuaternion(Tuple<double, double, double, double> q)
 		{
 			// 1:X, 2:Y, 3:Z, 4:W
-			double x = q.Item1;
-			double y = q.Item2;
-			double z = q.Item3;
+			/*
+			 * kRPC-angles are XYZW, but reference frame is different.
+			 * 
+			 *  Euler   kRPC
+			 *    X      Y
+			 *    Y      Z
+			 *    Z      X
+			 */
+			double x = q.Item2;
+			double y = q.Item3;
+			double z = q.Item1;
 			double w = q.Item4;
 
 			double a = 0;
@@ -1297,7 +1310,9 @@ namespace KSP_MOCR
 			double d = 0;
 			double e = 0;
 
-			String order = "XZY";//XYZ
+			
+
+			String order = "wiki";
 
 			switch (order)
 			{
@@ -1337,11 +1352,42 @@ namespace KSP_MOCR
 					d = 2 * (x * y + w * z);
 					e = w * w - x * x + y * y - z * z;
 					break;
+				case "wiki":
+					a = 2 * ((w * x) + (y * z));
+					b = 1 - (2 * ((x * x) + (y * y)));
+					c = 2 * ((w * y) - (z * x));
+					d = 2 * ((w * z) + (x * y));
+					e = 1 - (2 * ((y * y) + (z * z)));
+					break;
 			}
-			
+
+			// OLD STYLE
+			/*
 			roll = Helper.rad2deg(Math.Atan2(d, e)); // Z
 			pitch = Helper.rad2deg(Math.Asin(c)); // Y
 			yaw = Helper.rad2deg(Math.Atan2(a, b)); // X
+			/**/
+
+			// WIKI STYLE
+			/**/
+			roll = Helper.rad2deg(Math.Atan2(a, b)); // X
+			pitch = Helper.rad2deg(Math.Asin(c)); // Y
+			yaw = Helper.rad2deg(Math.Atan2(d, e)); // Z
+			/**/
+
+			// CHECK FOR OUT OF BOUNDS PITCH
+			if(Double.IsNaN(pitch))
+			{
+				if(c < -1)
+				{
+					pitch = -90f;
+				}
+				else
+				{
+					pitch = 90f;
+				}
+			}
+
 
 			/*
 			yaw = Helper.rad2deg(Math.Atan2(d, e)); // X

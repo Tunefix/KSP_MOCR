@@ -639,7 +639,7 @@ namespace KSP_MOCR
 
 					if (ex is FormatException)
 					{
-						// Do nothing
+						Console.WriteLine(ex.ToString());
 					}
 
 					if (ex is OverflowException)

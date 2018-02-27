@@ -3,11 +3,27 @@ namespace KSP_MOCR
 {
 	public enum DataType
 	{
+		/// <summary>
+		/// string
+		/// </summary>
 		body_name,
+		/// <summary>
+		/// float
+		/// </summary>
 		body_radius,
+		/// <summary>
+		/// float
+		/// </summary>
 		body_gravityParameter,
+		/// <summary>
+		/// float
+		/// </summary>
 		body_rotSpeed,
-		
+		/// <summary>
+		/// float
+		/// </summary>
+		body_mass,
+
 		control_SAS,
 		control_SASmode,
 		control_speedMode,
@@ -97,30 +113,96 @@ namespace KSP_MOCR
 		flight_inertial_speed,
 		flight_inertial_direction,
 		flight_inertial_rotation,
-		
 
+		/// <summary>
+		/// CelestialBody
+		/// </summary>
 		orbit_celestialBody, // CelestialBody
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_apoapsis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_periapsis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_apoapsisAltitude, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_periapsisAltitude, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_semiMajorAxis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_semiMinorAxis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_radius, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_speed, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_period, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_timeToApoapsis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_timeToPeriapsis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_eccentricity, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_inclination, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_longitudeOfAscendingNode, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_argumentOfPeriapsis, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_meanAnomalyAtEpoch, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_epoch, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_meanAnomaly, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_eccentricAnomaly, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_trueAnomaly, // double
+		/// <summary>
+		/// double
+		/// </summary>
 		orbit_orbitalSpeed, // double
+
 
 		resource_total_max_electricCharge,
 		resource_total_max_monoPropellant,

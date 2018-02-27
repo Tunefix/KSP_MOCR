@@ -144,7 +144,11 @@ namespace KSP_MOCR
 				case DataType.body_name:
 					stream = new stringStream(connection.AddStream(() => orbit.Body.Name));
 					break;
-					
+
+				case DataType.body_mass:
+					stream = new floatStream(connection.AddStream(() => orbit.Body.Mass));
+					break;
+
 				///// CONTROL DATA /////
 
 				case DataType.control_SAS:

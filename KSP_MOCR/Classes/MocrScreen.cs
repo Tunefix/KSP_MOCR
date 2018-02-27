@@ -31,14 +31,17 @@ namespace KSP_MOCR
 		public int width = 120; // in chars
 		public int height = 30; // in rows
 
+		public int screenType;
+
 		public int updateRate = 1000;
 
-		public Dictionary<String, Dictionary<int, Nullable<double>>> chartData;
+		public Dictionary<String, List<KeyValuePair<int, double?>>> chartData;
 
 		public Screen form;
 
 		public static MocrScreen Create(int id, Screen form)
 		{
+			form.Text = id.ToString();
 			switch (id)
 			{
 				case 0:
@@ -68,6 +71,10 @@ namespace KSP_MOCR
 					return new AltVel(form);
 				case 52:
 					return new Attitude(form);
+				case 53:
+					return new TApoVel(form);
+				case 54:
+					return new AltRange(form);
 				case 100:
 					return new Pilot1(form);
 				case 201:

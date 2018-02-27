@@ -29,13 +29,15 @@ namespace KSP_MOCR
 		public double charOffset;
 		public double lineOffset;
 
-		public Dictionary<String, Dictionary<int, Nullable<double>>> chartData;
+		public Dictionary<String, List<KeyValuePair<int, double?>>> chartData;
 		
 		
 		public System.Timers.Timer screenTimer;
 		public DateTime updateStart;
 		public DateTime updateEnd;
 		public MocrScreen activeScreen;
+
+		public int screenType;
 		
 		public Screen(Form1 form, int id, Connection connection, StreamCollection streamCollection, DataStorage dataStorage)
 		{
@@ -95,7 +97,11 @@ namespace KSP_MOCR
 
 			if (remainTime < 50) {
 				remainTime = 50;
-				Console.WriteLine("LOW REMAIN TIME: " + remainTime.ToString() + ", Time Spent: " + ((int)updateDuration.TotalMilliseconds).ToString() + ", ScrID: " + this.ID);
+				Console.WriteLine("LOW REMAIN TIME: "
+					+ remainTime.ToString() + ", Time Spent: "
+					+ ((int)updateDuration.TotalMilliseconds).ToString()
+					+ ", ScrTp: " + this.screenType
+					+ ", ScrID: " + this.ID);
 			}
 
 			screenTimer.Interval = remainTime;
@@ -120,7 +126,7 @@ namespace KSP_MOCR
 			// If Screen exists: Make Elementes and resize
 			if (activeScreen != null)
 			{
-				
+				screenType = id;
 				activeScreen.resizeForm();
 				activeScreen.makeElements();
 

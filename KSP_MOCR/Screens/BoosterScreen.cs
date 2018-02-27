@@ -160,7 +160,7 @@ namespace KSP_MOCR
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 			// Re-usable data variable for graph data
-			List<Dictionary<int, Nullable<double>>> data = new List<Dictionary<int, Nullable<double>>>();
+			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 
@@ -362,7 +362,7 @@ namespace KSP_MOCR
 				
 
 				// Graphs
-				data = new List<Dictionary<int, double?>>();
+				data = new List<List<KeyValuePair<int, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(Helper.limit(chartData["geeTime"],300));
 				types.Add(Plot.Type.LINE);

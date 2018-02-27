@@ -25,12 +25,12 @@ namespace KSP_MOCR
 		{
 
 			// Re-usable data variable for graph data
-			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				data = new List<Dictionary<int, double?>>();
+				data = new List<List<KeyValuePair<int, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(chartData["altitudeTime"]);
 				types.Add(Plot.Type.LINE);
@@ -50,7 +50,8 @@ namespace KSP_MOCR
 
 
 			// Altitude vs. Time Graph
-			screenCharts[0] = Helper.CreatePlot(0, 0, 120, 30, 0, 600,-100,3000);
+			screenCharts[0] = Helper.CreatePlot(0, 0, 120, 30, -1, -1, -100,3000);
+			screenCharts[0].fixedXwidth = 600;
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace KSP_MOCR
 {
@@ -13,8 +14,11 @@ namespace KSP_MOCR
 		public int maxX { get; set; }
 		public int minY { get; set; }
 		public int maxY { get; set; }
-		private bool autoX = false;
-		private bool autoY = false;
+
+		private bool autoXmin = false;
+		private bool autoXmax = false;
+		private bool autoYmin = false;
+		private bool autoYmax = false;
 
 		private int plotTop;
 		private int plotRight;
@@ -29,7 +33,7 @@ namespace KSP_MOCR
 		private double xScaler;
 		private double yScaler;
 
-		private Dictionary<int, double?>[] series;
+		private List<KeyValuePair<int, double?>>[] series;
 		private bool multiAxis = false;
 		double[] axisData;
 		Type[] seriesType;
@@ -46,12 +50,21 @@ namespace KSP_MOCR
 
 		readonly List<Color> chartLineColors = new List<Color>();
 
+		public int fixedXwidth = -1; // set fixed nubmer of items on x-axis. Pads to the left if items are less. Pads to the right if minX < 0.
+
 
 		public Plot()
 		{
 			chartLineColors.Add(Color.FromArgb(255, 204, 51, 0));
 			chartLineColors.Add(Color.FromArgb(255, 0, 51, 204));
 			chartLineColors.Add(Color.FromArgb(255, 0, 169, 51));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
+			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
 			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
 			chartLineColors.Add(Color.FromArgb(100, 251, 251, 251));
 
@@ -70,6 +83,17 @@ namespace KSP_MOCR
 
 		public void setData(List<Dictionary<int, double?>> data, List<Type> types, bool multipleYaxis)
 		{
+			List<List<KeyValuePair<int, double?>>> tmpData = new List<List<KeyValuePair<int, double?>>>();
+			
+			foreach (Dictionary<int, double?> graph in data)
+			{
+				tmpData.Add(graph.ToList());
+			}
+			setData(tmpData, types, multipleYaxis);
+		}
+
+		public void setData(List<List<KeyValuePair<int, double?>>> data, List<Type> types, bool multipleYaxis)
+		{
 			series = data.ToArray();
 			seriesType = types.ToArray();
 			multiAxis = multipleYaxis;
@@ -87,8 +111,26 @@ namespace KSP_MOCR
 				Graphics g = e.Graphics;
 				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-				if (maxX == -1 || autoX) { maxX = findMaxX(); autoX = true; }
-				if (minX == -1 || autoY) { minX = findMinX(); autoY = true; }
+				if (maxX == -1 || autoXmax == true) { maxX = findMaxX(); autoXmax = true; }
+				if (minX == -1 || autoXmin == true) { minX = findMinX(); autoXmin = true; }
+
+				// Adjust minX if fixedXwidth is set
+				if (fixedXwidth != -1)
+				{
+					int diff = maxX - minX;
+					if (diff < fixedXwidth)
+					{
+						int pad = fixedXwidth - diff;
+						minX -= pad;
+
+						if (minX < 0)
+						{
+							pad = minX * -1;
+							minX = 0;
+							maxX += pad;
+						}
+					}
+				}
 
 				plotTop = Margin.Top;
 				plotRight = Size.Width - Margin.Right;
@@ -96,8 +138,8 @@ namespace KSP_MOCR
 
 				if (!multiAxis)
 				{
-					if (maxY == -1 || autoX) { maxY = findMaxY(); autoX = true; }
-					if (minY == -1 || autoY) { minY = findMinY(); autoY = true; }
+					if (maxY == -1 || autoYmax == true) { maxY = findMaxY(); autoYmax = true; }
+					if (minY == -1 || autoYmin == true) { minY = findMinY(); autoYmin = true; }
 					plotLeft = YAxisWidth;
 					plotWidth = plotRight - plotLeft;
 					plotHeight = plotBottom - plotTop;
@@ -153,12 +195,12 @@ namespace KSP_MOCR
 
 
 				int n = 0;
-				foreach (Dictionary<int, double?> serie in series)
+				foreach (List<KeyValuePair<int, double?>> serie in series)
 				{
 					if (multiAxis)
 					{
-						if (maxY == -1 || autoX) { maxY = findMaxY(serie); autoX = true; }
-						if (minY == -1 || autoY) { minY = findMinY(serie); autoX = true; }
+						if (maxY == -1 || autoYmax == true) { maxY = findMaxY(serie); autoYmax = true; }
+						if (minY == -1 || autoYmin == true) { minY = findMinY(serie); autoYmin = true; }
 
 						// Draw THIS YAxis with Labels
 						// Determine best grid-size
@@ -194,34 +236,35 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void drawCross(Graphics g, int n, Dictionary<int, double?> serie)
+		private void drawCross(Graphics g, int n, List<KeyValuePair<int, double?>> serie)
 		{
 			/**
 			 * DRAW CROSSES
 			 */
 			linePen = new Pen(chartLineColors[n], 2.0f);
 			double? value;
-			for (int i = 0; i < serie.Count; i++)
+			double i;
+
+			foreach (KeyValuePair<int, double?> p in serie)
 			{
-				if (serie.ContainsKey(i))
+				if (p.Value != null)
 				{
-					value = serie[i];
-					if (value != null)
-					{
-						int x = (int)Math.Round((i / xScaler) + plotLeft + (minX / xScaler));
-						float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
-						line[0] = new PointF(x - 4, y - 4);
-						line[1] = new PointF(x + 4, y + 4);
-						g.DrawLines(linePen, line);
-						line[0] = new PointF(x - 4, y + 4);
-						line[1] = new PointF(x + 4, y - 4);
-						g.DrawLines(linePen, line);
-					}
+					i = p.Key;
+					value = p.Value;
+
+					int x = (int)Math.Round((i / xScaler) + plotLeft + (minX / xScaler));
+					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					line[0] = new PointF(x - 4, y - 4);
+					line[1] = new PointF(x + 4, y + 4);
+					g.DrawLines(linePen, line);
+					line[0] = new PointF(x - 4, y + 4);
+					line[1] = new PointF(x + 4, y - 4);
+					g.DrawLines(linePen, line);
 				}
 			}
 		}
 
-		private void drawLine(Graphics g, int n, Dictionary<int, double?> serie)
+		private void drawLine(Graphics g, int n, List<KeyValuePair<int, double?>> serie)
 		{
 			/*
 			 * DRAW THE LINE
@@ -230,32 +273,40 @@ namespace KSP_MOCR
 			bool started = false;
 
 			double? value;
-			for (int i = 0; i < this.maxX; i++)
-			{
-				if (serie.ContainsKey(i))
-				{
-					value = serie[i];
+			double i;
 
-					if (value != null && !started && yScaler != 0)
-					{
-						started = true;
-						int x = (int)Math.Round((i / xScaler) + plotLeft + (minX / xScaler));
-						float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
-						line[0] = new PointF(x, y);
-					}
-					else if (value != null && started && yScaler != 0)
-					{
-						int x = (int)Math.Round((i / xScaler) + plotLeft + (minX / xScaler));
-						float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
-						line[1] = new PointF(x, y);
-						g.DrawLines(linePen, line);
-						line[0] = line[1];
-					}
+			foreach (KeyValuePair<int, double?> p in serie)
+			{
+				i = p.Key;
+				value = p.Value;
+
+				if (value != null && !started && yScaler != 0 && xScaler != 0)
+				{
+					started = true;
+					int x = (int)Math.Round((i / xScaler) + plotLeft - (minX / xScaler));
+					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					line[0] = new PointF(x, y);
+				}
+				else if (value != null && started && yScaler != 0 && xScaler != 0)
+				{
+					int x = (int)Math.Round((i / xScaler) + plotLeft - (minX / xScaler));
+					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					line[1] = new PointF(x, y);
+					g.DrawLines(linePen, line);
+					line[0] = line[1];
 				}
 			}
 		}
 
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="a"></param>
+		/// <returns>double[4]
+		/// [0] - GridStep
+		/// [1] - GridStepPx
+		/// [2] - GridLines
+		/// [3] - xSclaer</returns>
 		private double[] getAxisData(String a)
 		{
 			double[] ret = new double[4];
@@ -296,24 +347,28 @@ namespace KSP_MOCR
 			return ret;
 		}
 
-		private int findMaxX()
+		public int findMaxX()
 		{
 			int? tMax = null;
-			lock(series)
+			if (series == null) { return 0; }
+			lock (series)
 			{
-				foreach (Dictionary<int, double?> serie in series)
+				foreach (List<KeyValuePair<int, double?>> serie in series)
 				{
 					lock(serie)
 					{
 						foreach (KeyValuePair<int, double?> point in serie)
 						{
-							if (tMax == null)
+							if (point.Value != null)
 							{
-								tMax = point.Key;
-							}
-							else if (point.Key > tMax)
-							{
-								tMax = point.Key;
+								if (tMax == null)
+								{
+									tMax = point.Key;
+								}
+								else if (point.Key > tMax)
+								{
+									tMax = point.Key;
+								}
 							}
 						}
 					}
@@ -322,24 +377,28 @@ namespace KSP_MOCR
 			return tMax == null ? 1: (int)tMax;
 		}
 
-		private int findMinX()
+		public int findMinX()
 		{
 			int? tMin = null;
+			if(series == null) { return 0; }
 			lock(series)
 			{
-				foreach (Dictionary<int, double?> serie in series)
+				foreach (List<KeyValuePair<int, double?>> serie in series)
 				{
 					lock(serie)
 					{
 						foreach (KeyValuePair<int, double?> point in serie)
 						{
-							if (tMin == null)
+							if (point.Value != null)
 							{
-								tMin = point.Key;
-							}
-							else if (point.Key < tMin)
-							{
-								tMin = point.Key;
+								if (tMin == null)
+								{
+									tMin = point.Key;
+								}
+								else if (point.Key < tMin)
+								{
+									tMin = point.Key;
+								}
 							}
 						}
 					}
@@ -353,19 +412,22 @@ namespace KSP_MOCR
 			double? tMax = null;
 			lock(series)
 			{
-				foreach (Dictionary<int, double?> serie in series)
+				foreach (List<KeyValuePair<int, double?>> serie in series)
 				{
 					lock(serie)
 					{
 						foreach (KeyValuePair<int, double?> point in serie)
 						{
-							if (tMax == null)
+							if (point.Value != null)
 							{
-								tMax = point.Value;
-							}
-							else if (point.Value > tMax)
-							{
-								tMax = point.Value;
+								if (tMax == null)
+								{
+									tMax = point.Value;
+								}
+								else if (point.Value > tMax)
+								{
+									tMax = point.Value;
+								}
 							}
 						}
 					}
@@ -384,19 +446,22 @@ namespace KSP_MOCR
 			double? tMin = null;
 			lock(series)
 			{
-				foreach (Dictionary<int, double?> serie in series)
+				foreach (List<KeyValuePair<int, double?>> serie in series)
 				{
 					lock(serie)
 					{
 						foreach (KeyValuePair<int, double?> point in serie)
 						{
-							if (tMin == null)
+							if (point.Value != null)
 							{
-								tMin = point.Value;
-							}
-							else if (point.Value < tMin)
-							{
-								tMin = point.Value;
+								if (tMin == null)
+								{
+									tMin = point.Value;
+								}
+								else if (point.Value < tMin)
+								{
+									tMin = point.Value;
+								}
 							}
 						}
 					}
@@ -405,23 +470,27 @@ namespace KSP_MOCR
 			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 
-		private int findMaxY(Dictionary<int, double?> serie)
+		private int findMaxY(List<KeyValuePair<int, double?>> serie)
 		{
 			double? tMax = null;
 			lock(serie)
 			{
 				foreach (KeyValuePair<int, double?> point in serie)
 				{
-					if (tMax == null)
+					if (point.Value != null)
 					{
-						tMax = point.Value;
-					}
-					else if (point.Value > tMax)
-					{
-						tMax = point.Value;
+						if (tMax == null)
+						{
+							tMax = point.Value;
+						}
+						else if (point.Value > tMax)
+						{
+							tMax = point.Value;
+						}
 					}
 				}
 			}
+			
 			if (tMax != null)
 			{
 				return (int)Math.Ceiling((double)tMax);
@@ -432,20 +501,69 @@ namespace KSP_MOCR
 			}
 		}
 
-		private int findMinY(Dictionary<int, double?> serie)
+		private int findMinY(List<KeyValuePair<int, double?>> serie)
 		{
 			double? tMin = null;
 			lock(serie)
 			{
 				foreach (KeyValuePair<int, double?> point in serie)
 				{
-					if (tMin == null)
+					if (point.Value != null)
 					{
-						tMin = point.Value;
+						if (tMin == null)
+						{
+							tMin = point.Value;
+						}
+						else if (point.Value < tMin)
+						{
+							tMin = point.Value;
+						}
 					}
-					else if (point.Value < tMin)
+				}
+			}
+			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
+		}
+
+		public int findMinX(List<KeyValuePair<int, double?>> serie)
+		{
+			double? tMin = null;
+			lock (serie)
+			{
+				foreach (KeyValuePair<int, double?> point in serie)
+				{
+					if (point.Value != null)
 					{
-						tMin = point.Value;
+						if (tMin == null)
+						{
+							tMin = point.Key;
+						}
+						else if (point.Key < tMin)
+						{
+							tMin = point.Key;
+						}
+					}
+				}
+			}
+			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
+		}
+
+		public int findMaxX(List<KeyValuePair<int, double?>> serie)
+		{
+			double? tMin = null;
+			lock (serie)
+			{
+				foreach (KeyValuePair<int, double?> point in serie)
+				{
+					if (point.Value != null)
+					{
+						if (tMin == null)
+						{
+							tMin = point.Key;
+						}
+						else if (point.Key > tMin)
+						{
+							tMin = point.Key;
+						}
 					}
 				}
 			}

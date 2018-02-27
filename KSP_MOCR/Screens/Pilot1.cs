@@ -269,8 +269,28 @@ namespace KSP_MOCR
 			disp.Invalidate();
 		}
 
+		public void timeLog(DateTime start, DateTime end, string desc) { timeLog(start, end, desc, null); }
+		public void timeLog(DateTime start, DateTime end, string desc, DateTime? inter)
+		{
+			TimeSpan updateDuration = end - start;
+			int remainTime = (int)updateDuration.TotalMilliseconds;
+
+			if (inter != null)
+			{
+				TimeSpan interDuration = end - (DateTime)inter;
+				int interTime = (int)interDuration.TotalMilliseconds;
+				Console.WriteLine(desc + remainTime.ToString() + "ms. :: " + interTime.ToString() + "ms.");
+			}
+			else
+			{
+				Console.WriteLine(desc + remainTime.ToString() + "ms.");
+			}
+		}
+
 		public override void makeElements()
 		{
+			
+
 			for (int i = 0; i < 100; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i < 70; i++) screenIndicators.Add(null); // Initialize Indicators
 			for (int i = 0; i < 80; i++) screenButtons.Add(null); // Initialize Buttons
@@ -279,6 +299,7 @@ namespace KSP_MOCR
 			for (int i = 0; i < 6; i++) screenSegDisps.Add(null); // Initialize 7-Segment Displays
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
+			
 
 			// LABELS
 			screenLabels[0] = Helper.CreateLabel(16, 1, 13); // Local Time
@@ -294,6 +315,8 @@ namespace KSP_MOCR
 			screenLabels[10] = Helper.CreateLabel(0, 20, 80, 1, "───────── PROGRAMS ─────┬─── ACTION GROUPS ───┬─────── SAS SETTING ───────┐");
 			screenLabels[11] = Helper.CreateLabel(0, 21, 24, 1, "┌── ROLL ──┐┌── PITCH ─┐");
 			screenLabels[12] = Helper.CreateLabel(0, 29, 75, 1, "────────────────────────┴────────────┴────────────────────────────────────┤");
+
+			
 
 			// THROTTLE CONTROLS
 			screenButtons[0] = Helper.CreateButton(1, 12, 5, 1, "-10");
@@ -315,9 +338,12 @@ namespace KSP_MOCR
 			screenButtons[17].Font = form.buttonFont;
 			screenButtons[17].Click += (sender, e) => this.changeThrottle(sender, e, 1);
 
+			
+
 			// THROTTLE LABLES
 			screenLabels[15] = Helper.CreateLabel(13, 11, 4, 1, "CUR:");
 			screenLabels[16] = Helper.CreateLabel(13, 12, 4, 1, "100%");
+			
 
 			// ROTATIONAL LABELS
 			screenLabels[17] = Helper.CreateLabel(33, 4, 4, 1, "RATE");
@@ -357,11 +383,13 @@ namespace KSP_MOCR
 			screenButtons[14] = Helper.CreateButton(35, 7, 2, 2, "5");
 			screenButtons[14].Font = form.buttonFont;
 			screenButtons[14].Click += (sender, e) => this.setRotRate(sender, e, 5);
+			
 
 			// READOUT LABELS
 			screenLabels[20] = Helper.CreateLabel(1, 16, 25, 1, "R: ±XXX.X  ±XXX.X  ±XXX.X");
 			screenLabels[21] = Helper.CreateLabel(1, 17, 25, 1, "P: ±XXX.X  ±XXX.X  ±XXX.X");
 			screenLabels[22] = Helper.CreateLabel(1, 18, 25, 1, "Y: ±XXX.X  ±XXX.X  ±XXX.X");
+			
 
 			// STAGE LABEL
 			screenLabels[25] = Helper.CreateLabel(30, 15, 7, 1, "CUR: XX");
@@ -370,6 +398,7 @@ namespace KSP_MOCR
 			screenButtons[15] = Helper.CreateButton(30, 17, 7, 2, "STAGE");
 			screenButtons[15].Font = form.buttonFont;
 			screenButtons[15].Click += this.stage;
+			
 
 			// PROGRAM LABEL
 			screenLabels[30] = Helper.CreateLabel(1, 22, 23, 1, "RAT: X.X/s   RAT X.X/s");
@@ -399,6 +428,7 @@ namespace KSP_MOCR
 			// PROGRAM INDICATORS
 			screenIndicators[20] = Helper.CreateIndicator(1, 25, 10, 1, "ENGAGED");
 			screenIndicators[21] = Helper.CreateIndicator(13, 25, 10, 1, "ENGAGED");
+			
 
 			// Status
 			screenIndicators[0] = Helper.CreateIndicator(86, 1, 10, 1, "SAS");
@@ -412,6 +442,7 @@ namespace KSP_MOCR
 			screenIndicators[26] = Helper.CreateIndicator(20, 11, 10, 1, "FREE/SAS");
 			screenIndicators[27] = Helper.CreateIndicator(20, 12, 10, 1, "LOCK");
 			screenIndicators[28] = Helper.CreateIndicator(20, 13, 10, 1, "PROGRAM");
+			
 
 
 			// SAS BUTTONS
@@ -542,6 +573,7 @@ namespace KSP_MOCR
 			screenLabels[65] = Helper.CreateLabel(74, 26, 1, 1, "│");
 			screenLabels[66] = Helper.CreateLabel(74, 27, 1, 1, "│");
 			screenLabels[67] = Helper.CreateLabel(74, 28, 1, 1, "│");
+			
 
 			// Vertical Meters
 			screenVMeters[0] = Helper.CreateVMeter(83, 6, false,1);
@@ -561,6 +593,7 @@ namespace KSP_MOCR
 			screenLabels[70] = Helper.CreateLabel(82, 3, 38, 1, "┌───────────── RESOURCES ────────────┐");
 			screenLabels[71] = Helper.CreateLabel(82.5, 4, 38, 1, "         STAGE     TOTAL     TOTAL");
 			screenLabels[72] = Helper.CreateLabel(82, 5, 38, 1, "  ACCEL  LF  OX    LF  OX    MP  EL");
+			
 
 			// DSKY
 			screenSegDisps[0] = Helper.CreateSegDisp(83, 15.75, 5, true, "R1");
@@ -653,7 +686,8 @@ namespace KSP_MOCR
 			screenButtons[68].Font = form.buttonFont;
 			screenButtons[68].Click += rsetClick;
 			
-			
+
+
 			// FDAI LABELS
 			screenLabels[80] = Helper.CreateLabel(38, 3, 8, 1, "┌ FDAI ─");
 			screenLabels[81] = Helper.CreateLabel(38, 4, 1, 1, "│");
@@ -693,6 +727,7 @@ namespace KSP_MOCR
 			screenFDAI.Location = new Point((int)(46 * form.pxPrChar)+4, (int)(3 * form.pxPrLine) + 4);
 			screenFDAI.Size = new Size((int)(36 * form.pxPrChar), (int)(17 * form.pxPrLine));
 			form.Controls.Add(screenFDAI);
+			
 
 			//for (int i = 0; i < 1; i++) form.screenCharts.Add(null); // Initialize Charts
 
@@ -701,6 +736,8 @@ namespace KSP_MOCR
 
 			// Load PySSSMQ-DATA
 			loadPySSSMQData();
+
+			
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -722,13 +759,12 @@ namespace KSP_MOCR
 				screenIndicators[22].setStatus(Indicator.status.OFF);
 				screenIndicators[23].setStatus(Indicator.status.AMBER);
 			}
+			
 
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 
 				// GET DATA
-				
-				start = DateTime.Now;
 				currentStage = screenStreams.GetData(DataType.control_currentStage);
 				
 				screenStreams.setStage(currentStage);
@@ -796,6 +832,7 @@ namespace KSP_MOCR
 
 				setInerRotFromQuaternion(vesselInerRotation);
 				
+
 				screenLabels[1].Text = "MET: " + Helper.timeString(MET, 3);
 
 				// THROTTLE
@@ -957,6 +994,7 @@ namespace KSP_MOCR
 				screenVMeters[2].setValue2((curTotOx / maxTotOx) * 100);
 				screenVMeters[3].setValue1((curMonopropellant / maxMonopropellant) * 100);
 				screenVMeters[3].setValue2((curElectric / maxElectric) * 100);
+				
 
 
 				// FDAI
@@ -972,6 +1010,7 @@ namespace KSP_MOCR
 				}
 				
 				screenFDAI.Invalidate();
+				
 
 
 				// Graphs
@@ -1071,25 +1110,19 @@ namespace KSP_MOCR
 			{
 				// Pull data
 				form.form.pySSSMQ.Pull("N20R1");
-
-				// Wait for data to arrive
+				
 				screenIndicators[50].setStatus(Indicator.status.GREEN);
-				int timeout = 0;
-				while(form.dataStorage.getData("N20R1") == "")
-				{
-					if (timeout > 20) // 10 seconds
-					{
-						break;
-					}
-					Thread.Sleep(500);
-					timeout++;
-				}
-				screenIndicators[50].setStatus(Indicator.status.OFF);
 
 				// Load data
-				screenFDAI.offsetR = int.Parse(form.dataStorage.getData("N20R1")) / 100f;
-				screenFDAI.offsetP = int.Parse(form.dataStorage.getData("N20R2")) / 100f;
-				screenFDAI.offsetY = int.Parse(form.dataStorage.getData("N20R3")) / 100f;
+				int.TryParse(form.dataStorage.getData("N20R1"), out int oR);
+				int.TryParse(form.dataStorage.getData("N20R1"), out int oP);
+				int.TryParse(form.dataStorage.getData("N20R1"), out int oY);
+
+				screenFDAI.offsetR = oR / 100f;
+				screenFDAI.offsetP = oP / 100f;
+				screenFDAI.offsetY = oY / 100f;
+
+				screenIndicators[50].setStatus(Indicator.status.OFF);
 			}
 		}
 

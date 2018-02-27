@@ -158,6 +158,19 @@ namespace KSP_MOCR
 		static public Plot CreatePlot(int x, int y, int w, int h, int minX) { return CreatePlot(x, y, w, h, minX, -1, 0, -1); }
 		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX) { return CreatePlot(x, y, w, h, minX, maxX, 0, -1); }
 		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX, int minY) { return CreatePlot(x, y, w, h, minX, maxX, minY, -1); }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="x">X-position in chars</param>
+		/// <param name="y">Y-position in rows</param>
+		/// <param name="w">Width in chars</param>
+		/// <param name="h">Height in rows</param>
+		/// <param name="minX">Minimum x-value (-1 for auto)</param>
+		/// <param name="maxX">Maximum x-value (-1 for auto)</param>
+		/// <param name="minY">Minimum y-value (-1 for auto)</param>
+		/// <param name="maxY">Maximum y-value (-1 for auto)</param>
+		/// <returns></returns>
 		static public Plot CreatePlot(int x, int y, int w, int h, int minX, int maxX, int minY, int maxY)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
@@ -532,16 +545,16 @@ namespace KSP_MOCR
 			return deg * (Math.PI / 180);
 		}
 
-		static public Dictionary<int, double?> limit(Dictionary<int, double?> data, int count)
+		static public List<KeyValuePair<int, double?>> limit(List<KeyValuePair<int, double?>> data, int count)
 		{
-			Dictionary<int, double?> output = new Dictionary<int, double?>();
-			if (data[count + 1].HasValue)
+			List<KeyValuePair<int, double?>> output = new List<KeyValuePair<int, double?>>();
+			if (data[count + 1].Value != null)
 			{
 				// Find last value key
 				int index = 599;
 				while (index > count)
 				{
-					if (data[index].HasValue)
+					if (data[index].Value != null)
 					{
 						break;
 					}
@@ -550,13 +563,13 @@ namespace KSP_MOCR
 
 				for (int i = (index - count); i < index; i++)
 				{
-					if (data[i].HasValue)
+					if (data[i].Value != null)
 					{
-						output.Add(i, data[i].Value);
+						output.Add(new KeyValuePair<int, double?>(i, data[i].Value));
 					}
 					else
 					{
-						output.Add(i, null);
+						output.Add(new KeyValuePair<int, double?>(i, null));
 					}
 				}
 			}
@@ -564,13 +577,13 @@ namespace KSP_MOCR
 			{
 				for (int i = 0; i < count; i++)
 				{
-					if (data[i].HasValue)
+					if (data[i].Value != null)
 					{
-						output.Add(i, data[i].Value);
+						output.Add(new KeyValuePair<int, double?>(i, data[i].Value));
 					}
 					else
 					{
-						output.Add(i, null);
+						output.Add(new KeyValuePair<int, double?>(i, null));
 					}
 				}
 			}

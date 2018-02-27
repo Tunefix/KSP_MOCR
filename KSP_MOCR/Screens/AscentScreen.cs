@@ -156,18 +156,36 @@ namespace KSP_MOCR
 			screenIndicators[10] = Helper.CreateIndicator(97, 5, 10, 1, "MONO LOW");
 			screenIndicators[11] = Helper.CreateIndicator(108, 5, 10, 1, "FUEL LOW");
 
+			// Get target apo/peri from PySSSMQ if they exsists there. If they don't write them in.
+			string tgtapo = form.dataStorage.getData("TGTAPO");
+			string tgtperi = form.dataStorage.getData("TGTPERI");
+
+			if(tgtapo == "")
+			{
+				tgtapo = "120000";
+				form.dataStorage.setData("TGTAPO", tgtapo);
+			}
+
+			if (tgtperi == "")
+			{
+				tgtperi = "120000";
+				form.dataStorage.setData("TGTPERI", tgtperi);
+			}
 
 			for (int i = 0; i < 5; i++) screenInputs.Add(null); // Initialize Inputs
 			screenInputs[0] = Helper.CreateInput(24, 5, 8, 1, HorizontalAlignment.Right); // Target Apoapsis
-			screenInputs[0].Text = "120000";
+			screenInputs[0].Text = tgtapo;
+			screenInputs[0].TextChanged += (sender, e) => updateApo(sender, e, screenInputs[0].Text);
 			screenInputs[1] = Helper.CreateInput(24, 6, 8, 1, HorizontalAlignment.Right); // Target Periapsis
-			screenInputs[1].Text = "120000";
+			screenInputs[1].Text = tgtperi;
+			screenInputs[1].TextChanged += (sender, e) => updatePeri(sender, e, screenInputs[1].Text);
 
 
 			for (int i = 0; i < 2; i++) screenCharts.Add(null); // Initialize Charts
 
 			// Altitude vs. Time Graph
-			screenCharts[0] = Helper.CreatePlot(0, 15, 60, 15, 0, 600);
+			screenCharts[0] = Helper.CreatePlot(0, 15, 60, 15, -1, -1, 0, -1);
+			screenCharts[0].fixedXwidth = 600;
 			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 251, 251));
 			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 251, 251, 251));
 			screenCharts[0].setSeriesColor(2, Color.FromArgb(200, 0, 169, 51));
@@ -175,13 +193,14 @@ namespace KSP_MOCR
 			screenCharts[0].setSeriesColor(4, Color.FromArgb(200, 204, 51, 0));
 
 			// Gee-Force vs. Time Graph
-			screenCharts[1] = Helper.CreatePlot(60, 15, 60, 15, 0, 600);
+			screenCharts[1] = Helper.CreatePlot(60, 15, 60, 15, -1, -1);
+			screenCharts[1].fixedXwidth = 600;
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 			// Re-usable data variable for graph data
-			List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 		
@@ -357,15 +376,18 @@ namespace KSP_MOCR
 
 
 				// Graphs
-				Dictionary<int, double?> targetA = new Dictionary<int, double?>();
-				targetA[0] = tgtA;
-				targetA[600] = tgtA;
+				int xMin = screenCharts[0].findMinX(chartData["altitudeTime"]);
+				int xMax = screenCharts[0].findMaxX(chartData["altitudeTime"]);
 
-				Dictionary<int, double?> targetP = new Dictionary<int, double?>();
-				targetP[0] = tgtP;
-				targetP[600] = tgtP;
+				List<KeyValuePair<int, double?>> targetA = new List<KeyValuePair<int, double?>>();
+				targetA.Add(new KeyValuePair<int, double?>(xMin, tgtA));
+				targetA.Add(new KeyValuePair<int, double?>(xMax, tgtA));
 
-				data = new List<Dictionary<int, double?>>();
+				List<KeyValuePair<int, double?>> targetP = new List<KeyValuePair<int, double?>>();
+				targetP.Add(new KeyValuePair<int, double?>(xMin, tgtP));
+				targetP.Add(new KeyValuePair<int, double?>(xMax, tgtP));
+
+				data = new List<List<KeyValuePair<int, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(targetA);
 				types.Add(Plot.Type.LINE);
@@ -379,7 +401,7 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, false);
 
-				data = new List<Dictionary<int, double?>>();
+				data = new List<List<KeyValuePair<int, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(chartData["geeTime"]);
 				types.Add(Plot.Type.LINE);
@@ -387,6 +409,16 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[1].setData(data, types, true);
 			}
+		}
+
+		public void updateApo(object sender, EventArgs e, string data)
+		{
+			form.dataStorage.setData("TGTAPO", data);
+		}
+
+		public void updatePeri(object sender, EventArgs e, string data)
+		{
+			form.dataStorage.setData("TGTPERI", data);
 		}
 	}
 }
