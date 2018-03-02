@@ -46,5 +46,7 @@ namespace KSP_MOCR
 			screenLabels[0].Text = "DATA STORAGE\nNO DATA";
 			screenLabels[0].TextAlign = ContentAlignment.TopLeft;
 		}
+
+		public override void resize() { }
 	}
 }

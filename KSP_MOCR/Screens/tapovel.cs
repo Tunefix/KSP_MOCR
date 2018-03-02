@@ -20,7 +20,7 @@ namespace KSP_MOCR
 		{
 
 			// Re-usable data variable for graph data
-			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 			// Calculate trajectory target
@@ -38,7 +38,7 @@ namespace KSP_MOCR
 			double speed = Math.Sqrt((6.67408e-11 * mass) / distance);
 			double speedStep = speed / steps;
 
-			List<KeyValuePair<int, double?>> target = new List<KeyValuePair<int, double?>>();
+			List<KeyValuePair<double, double?>> target = new List<KeyValuePair<double, double?>>();
 
 			for (int i = 0; i <= hsteps; i++)
 			{
@@ -58,7 +58,7 @@ namespace KSP_MOCR
 				x = (int)Math.Round(sx * (speed / 2));
 				y = sy * apo;
 
-				target.Add(new KeyValuePair<int, double?>(x, y));
+				target.Add(new KeyValuePair<double, double?>(x, y));
 			}
 
 			for (int i = hsteps; i <= steps; i++)
@@ -79,12 +79,12 @@ namespace KSP_MOCR
 				x = (int)(speed - Math.Round(sx * (speed / 2)));
 				y = sy * apo;
 
-				target.Add(new KeyValuePair<int, double?>(x, y));
+				target.Add(new KeyValuePair<double, double?>(x, y));
 			}
 
 
 
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 
 
@@ -114,7 +114,12 @@ namespace KSP_MOCR
 			// Altitude vs. Orbital Speed
 			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, 3000, 0, -1);
 			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 0, 0));
-			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 0, 251, 0));
+			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 251, 251, 251));
+		}
+
+		public override void resize()
+		{
+
 		}
 
 		/// <summary>

@@ -124,5 +124,7 @@ namespace KSP_MOCR
 			// Altitude vs. Orbital Speed
 			//screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, 3000, 0, -1);
 		}
+
+		public override void resize() { }
 	}
 }

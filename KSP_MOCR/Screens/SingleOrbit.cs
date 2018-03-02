@@ -187,5 +187,7 @@ namespace KSP_MOCR
 				screenLabels[59].Text = "│    FDAI : XXX.XX  XXX.XX  XXX.XX  │";
 			}
 		}
+
+		public override void resize() { }
 	}
 }

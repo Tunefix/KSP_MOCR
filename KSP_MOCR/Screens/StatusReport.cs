@@ -51,7 +51,9 @@ namespace KSP_MOCR
 		{
 			setButtonColor(positionCode + "S");
 		}
-		
+
+		public override void resize() { }
+
 		private void setButtonColor(String key)
 		{
 			String colorData = form.dataStorage.getData(key);

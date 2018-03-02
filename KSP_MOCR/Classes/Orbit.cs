@@ -412,56 +412,59 @@ namespace KSP_MOCR
 		private void drawBurnOrbit(Graphics g, double scaler)
 		{
 			// Calculate orbit data
-			Tuple<double, double, double> angularMomentum = OrbitFunctions.crossProduct(burnVelocityVector, burnPositionVecotr);
-			Tuple<double, double, double> nVector = OrbitFunctions.getNVector(angularMomentum);
-			Tuple<double, double, double> eVector = OrbitFunctions.getEccentricityVector(burnVelocityVector, burnPositionVecotr, burn_velocityAtTIG, gravParam, burn_radiusAtTIG);
-			double burn_semiMajorAxis = OrbitFunctions.getSemiMajorAxis(burn_radiusAtTIG, burn_velocityAtTIG, gravParam);
-			double burn_inc = OrbitFunctions.getInclination(angularMomentum);
-			double burn_eccentricity = OrbitFunctions.getEccentricity(eVector);
-			double burn_periapsis = OrbitFunctions.getPeriapsis(burn_eccentricity, burn_semiMajorAxis);
-			double burn_loan = OrbitFunctions.getLongitudeOfAscendingNode(nVector);
-			double burn_argumentOfPeriapsis = OrbitFunctions.getArgumentOfPeriapsis(eVector, nVector);
-			double burn_semiMinorAxis = OrbitFunctions.getSemiMinorAxis(burn_semiMajorAxis, burn_eccentricity);
+			if (!double.IsNaN(burnVelocityVector.Item1))
+			{
+				Tuple<double, double, double> angularMomentum = OrbitFunctions.crossProduct(burnVelocityVector, burnPositionVecotr);
+				Tuple<double, double, double> nVector = OrbitFunctions.getNVector(angularMomentum);
+				Tuple<double, double, double> eVector = OrbitFunctions.getEccentricityVector(burnVelocityVector, burnPositionVecotr, burn_velocityAtTIG, gravParam, burn_radiusAtTIG);
+				double burn_semiMajorAxis = OrbitFunctions.getSemiMajorAxis(burn_radiusAtTIG, burn_velocityAtTIG, gravParam);
+				double burn_inc = OrbitFunctions.getInclination(angularMomentum);
+				double burn_eccentricity = OrbitFunctions.getEccentricity(eVector);
+				double burn_periapsis = OrbitFunctions.getPeriapsis(burn_eccentricity, burn_semiMajorAxis);
+				double burn_loan = OrbitFunctions.getLongitudeOfAscendingNode(nVector);
+				double burn_argumentOfPeriapsis = OrbitFunctions.getArgumentOfPeriapsis(eVector, nVector);
+				double burn_semiMinorAxis = OrbitFunctions.getSemiMinorAxis(burn_semiMajorAxis, burn_eccentricity);
 
-			// Draw Orbit
-			float xOffset = (float)(burn_semiMajorAxis - burn_periapsis);
-			double orbitRotation = Helper.rad2deg(burn_loan + burn_argumentOfPeriapsis);
+				// Draw Orbit
+				float xOffset = (float)(burn_semiMajorAxis - burn_periapsis);
+				double orbitRotation = Helper.rad2deg(burn_loan + burn_argumentOfPeriapsis);
 
-			StringFormat stringFormat = new StringFormat();
-			stringFormat.Alignment = StringAlignment.Near;
-			stringFormat.LineAlignment = StringAlignment.Near;
+				StringFormat stringFormat = new StringFormat();
+				stringFormat.Alignment = StringAlignment.Near;
+				stringFormat.LineAlignment = StringAlignment.Near;
 
-			GraphicsState state = g.Save();
-			g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
-			g.RotateTransform((float)-Helper.rad2deg(burn_loan));
+				GraphicsState state = g.Save();
+				g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
+				g.RotateTransform((float)-Helper.rad2deg(burn_loan));
 
-			//g.DrawLine(burnPen, new PointF(0, 0), new PointF(250, 0));
-			//String str = "Longitude of ascending node: " + Helper.toFixed(Helper.rad2deg(burn_loan), 2);
-			//g.DrawString(str, font, burnBrush, 0, 0, stringFormat);
+				//g.DrawLine(burnPen, new PointF(0, 0), new PointF(250, 0));
+				//String str = "Longitude of ascending node: " + Helper.toFixed(Helper.rad2deg(burn_loan), 2);
+				//g.DrawString(str, font, burnBrush, 0, 0, stringFormat);
 
-			g.RotateTransform((float)-Helper.rad2deg(burn_argumentOfPeriapsis));
+				g.RotateTransform((float)-Helper.rad2deg(burn_argumentOfPeriapsis));
 
-			//g.DrawLine(burnPen, new PointF(0, 0), new PointF(250, 0));
-			//str = "Argument of Periapsis: " + Helper.toFixed(Helper.rad2deg(burn_argumentOfPeriapsis), 2);
-			//g.DrawString(str, font, burnBrush, 0, 0, stringFormat);
+				//g.DrawLine(burnPen, new PointF(0, 0), new PointF(250, 0));
+				//str = "Argument of Periapsis: " + Helper.toFixed(Helper.rad2deg(burn_argumentOfPeriapsis), 2);
+				//g.DrawString(str, font, burnBrush, 0, 0, stringFormat);
 
-			float left = 0 - (float)(((burn_semiMajorAxis * 2) - burn_periapsis) * scaler);
-			float top = 0 - (float)(burn_semiMinorAxis * scaler);
-			float width = (float)((burn_semiMajorAxis * 2) * scaler);
-			float height = (float)((burn_semiMinorAxis * 2) * scaler);
+				float left = 0 - (float)(((burn_semiMajorAxis * 2) - burn_periapsis) * scaler);
+				float top = 0 - (float)(burn_semiMinorAxis * scaler);
+				float width = (float)((burn_semiMajorAxis * 2) * scaler);
+				float height = (float)((burn_semiMinorAxis * 2) * scaler);
 
-			RectangleF rect = new RectangleF(left, top, width, height);
-			g.DrawEllipse(burnPen, rect);
+				RectangleF rect = new RectangleF(left, top, width, height);
+				g.DrawEllipse(burnPen, rect);
 
-			// Restore orientation
-			g.Restore(state);
+				// Restore orientation
+				g.Restore(state);
 
 
-			String str = "P: " + Math.Round(burn_periapsis - bodyRadius).ToString();
-			g.DrawString(str, font, textBrush, 10, 2, stringFormat);
+				String str = "P: " + Math.Round(burn_periapsis - bodyRadius).ToString();
+				g.DrawString(str, font, textBrush, 10, 2, stringFormat);
 
-			str = "A: " + Math.Round((burn_semiMajorAxis * 2) - burn_periapsis - bodyRadius).ToString();
-			g.DrawString(str, font, textBrush, 12, 20, stringFormat);
+				str = "A: " + Math.Round((burn_semiMajorAxis * 2) - burn_periapsis - bodyRadius).ToString();
+				g.DrawString(str, font, textBrush, 12, 20, stringFormat);
+			}
 		}
 
 		

@@ -19,7 +19,7 @@ namespace KSP_MOCR
 		private int stage;
 		private bool hasConnection = false;
 
-		private System.Object streamlock = new System.Object();
+		public System.Object streamlock = new System.Object();
 
 		// Some much used variables
 		KRPC.Client.Services.SpaceCenter.Service spaceCenter;
@@ -62,8 +62,6 @@ namespace KSP_MOCR
 		{
 			if (hasConnection)
 			{
-				lock (streamlock)
-				{
 					if (!streams.ContainsKey(type) || force_reStream)
 					{
 						// If forced, clear out old stream
@@ -75,18 +73,26 @@ namespace KSP_MOCR
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e.Message);
+							Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
 							return null;
 						}
 					}
 					Kstream stream = streams[type];
 					dynamic output = stream.Get();
 					return output;
-				}
 			}
 			else
 			{
-				return 0;
+				switch(type)
+				{
+					case DataType.vessel_type:
+						return VesselType.Ship;
+					case DataType.orbit_celestialBody:
+						return null;
+					default:
+						return 0;
+				}
+				
 			}
 		}
 

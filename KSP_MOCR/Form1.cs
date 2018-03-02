@@ -92,6 +92,11 @@ namespace KSP_MOCR
 		CustomLabel pySSSMQStatus2;
 		CustomLabel kRPCStatus;
 
+		FileStream ostrm;
+		StreamWriter writer;
+		bool log2file = false;
+		Logger logger;
+
 		public Form1()
 		{
 			InitializeComponent();
@@ -131,6 +136,10 @@ namespace KSP_MOCR
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			logger = new Logger();
+			Console.SetOut(logger);
+			setLogOut(true); // SET TRUE TO WRITE CONSOLE TO log.txt
+
 			Console.WriteLine("FORM LOADING");
 
 			// Set up fonts and graphics
@@ -170,7 +179,7 @@ namespace KSP_MOCR
 				{
 					this.Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "Resources\\MOCR.ico");
 				}
-				catch (Exception) { }
+				catch (Exception ex) { Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace); }
 
 				// Load Images
 				//Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
@@ -544,6 +553,7 @@ namespace KSP_MOCR
 				StopPyServer(null, null);
 			}
 
+			flushLog();
 			Application.Exit();
 		}
 
@@ -593,6 +603,7 @@ namespace KSP_MOCR
 			if (e.KeyCode == Keys.ControlKey && !ctrlDown)
 			{
 				ctrlDown = true;
+				screenCallup = "";
 			}
 
 			if(ctrlDown && (e.KeyCode >= Keys.D0 && e.KeyCode <= Keys.D9))
@@ -634,22 +645,22 @@ namespace KSP_MOCR
 				{
 					if(ex is System.ArgumentNullException)
 					{
-						Console.WriteLine(ex.ToString());
+						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 					}
 
 					if (ex is FormatException)
 					{
-						Console.WriteLine(ex.ToString());
+						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 					}
 
 					if (ex is OverflowException)
 					{
-						Console.WriteLine(ex.ToString());
+						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 					}
 
 					if (ex is System.ArgumentOutOfRangeException)
 					{
-						Console.WriteLine(ex.ToString());
+						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 					}
 				}
 				screenCallup = "";
@@ -661,6 +672,36 @@ namespace KSP_MOCR
 				activeScreen.keyUp(sender, e);
 			}
 			*/
+		}
+
+		private void setLogOut(bool on)
+		{
+			if (on)
+			{
+				log2file = true;
+				try
+				{
+					ostrm = new FileStream("./log.txt", FileMode.Create, FileAccess.Write);
+					writer = new StreamWriter(ostrm);
+
+					writer.WriteLine(" === Started at " + DateTime.Now + " ===");
+					writer.WriteLine(logger.output);
+
+					writer.Close();
+					ostrm.Close();
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine("Cannot open log.txt for writing");
+					Console.WriteLine(e.Message);
+					return;
+				}
+			}
+		}
+
+		private void flushLog()
+		{
+			Console.WriteLine("=== Program ended normally " + DateTime.Now + " === ");
 		}
 	}
 }

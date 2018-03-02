@@ -20,7 +20,7 @@ namespace KSP_MOCR
 		{
 
 			// Re-usable data variable for graph data
-			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 			double fps2ms = 0.3048 * 0.2743;
@@ -76,8 +76,8 @@ namespace KSP_MOCR
 			double speed = Math.Sqrt((6.67408e-11 * mass)/distance);
 			double speedStep = speed / steps;
 
-			List<KeyValuePair<int, double?>> middle = new List<KeyValuePair<int, double?>>();
-			List<KeyValuePair<int, double?>> upper = new List<KeyValuePair<int, double?>>();
+			List<KeyValuePair<double, double?>> middle = new List<KeyValuePair<double, double?>>();
+			List<KeyValuePair<double, double?>> upper = new List<KeyValuePair<double, double?>>();
 			//Dictionary<int, double?> lower = new Dictionary<int, double?>();
 
 			for (int i = 0; i <= steps; i++)
@@ -87,7 +87,7 @@ namespace KSP_MOCR
 				double b = Math.Pow(apo - a, 2);
 				//double y = Math.Sqrt(b * (1 - (Math.Pow(x - speed, 2) / Math.Pow(speed, 2)))) + a;
 				double y = (Math.Sin((Math.PI * (x - (speed / 2))) / speed) * (apo / 2)) + (apo / 2);
-				upper.Add(new KeyValuePair<int, double?>(x, y));
+				upper.Add(new KeyValuePair<double, double?>(x, y));
 
 				//double xa = 0;
 				//y = ((3 * Math.Pow(xa, 2)) - (2 * Math.Pow(xa, 3))) * apo; // Smoothstep
@@ -109,19 +109,19 @@ namespace KSP_MOCR
 				x = (int)Math.Round(sx * speed);
 				y = sy * apo;
 
-				middle.Add(new KeyValuePair<int, double?>(x, y));
+				middle.Add(new KeyValuePair<double, double?>(x, y));
 			}
 
-			List<KeyValuePair<int, double?>> orbit = new List<KeyValuePair<int, double?>>();
+			List<KeyValuePair<double, double?>> orbit = new List<KeyValuePair<double, double?>>();
 			for(int i = 10000; i < 200000; i += 2000)
 			{
 				int x = (int)Math.Round(Math.Sqrt((6.67408e-11 * mass) / (bodyrad + i)));
-				orbit.Add(new KeyValuePair<int, double?>(x, i));
+				orbit.Add(new KeyValuePair<double, double?>(x, i));
 			}
 
 
 
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 				
 
@@ -155,6 +155,12 @@ namespace KSP_MOCR
 			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, 3000, 0, -1);
 			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 0, 0));
 			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 0, 251, 0));
+			screenCharts[0].setSeriesColor(2, Color.FromArgb(100, 251, 251, 251));
+		}
+
+		public override void resize()
+		{
+
 		}
 
 		/// <summary>
@@ -166,5 +172,6 @@ namespace KSP_MOCR
 		{
 			return ((3 * Math.Pow(t, 2)) - (2 * Math.Pow(t, 3)));
 		}
+
 	}
 }

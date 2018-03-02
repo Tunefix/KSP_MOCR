@@ -23,5 +23,7 @@ namespace KSP_MOCR
 		{
 			screenLabels[10].Text = "N20";
 		}
+
+		public override void resize() { }
 	}
 }

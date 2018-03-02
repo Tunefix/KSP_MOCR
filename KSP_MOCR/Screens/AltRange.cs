@@ -23,7 +23,7 @@ namespace KSP_MOCR
 		{
 
 			// Re-usable data variable for graph data
-			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 
@@ -39,9 +39,9 @@ namespace KSP_MOCR
 
 			int.TryParse(tgtapo, out int apo);
 
-			List<KeyValuePair<int, double?>> middle = new List<KeyValuePair<int, double?>>();
-			List<KeyValuePair<int, double?>> upper = new List<KeyValuePair<int, double?>>();
-			List<KeyValuePair<int, double?>> lower = new List<KeyValuePair<int, double?>>();
+			List<KeyValuePair<double, double?>> middle = new List<KeyValuePair<double, double?>>();
+			List<KeyValuePair<double, double?>> upper = new List<KeyValuePair<double, double?>>();
+			List<KeyValuePair<double, double?>> lower = new List<KeyValuePair<double, double?>>();
 			//Dictionary<int, double?> lower = new Dictionary<int, double?>();
 
 
@@ -50,20 +50,20 @@ namespace KSP_MOCR
 			{
 				int x = (int)Math.Round(i * (range / steps));
 				double? y = Math.Sqrt(Math.Pow(apo, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range, 2))));
-				middle.Add(new KeyValuePair<int, double?>(x, y));
+				middle.Add(new KeyValuePair<double, double?>(x, y));
 
 				double c = range / 2.5f;
 
 				y = Math.Sqrt(Math.Pow(apo + c, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range, 2)))) - c;
-				lower.Add(new KeyValuePair<int, double?>(x, y));
+				lower.Add(new KeyValuePair<double, double?>(x, y));
 
 				y = Math.Sqrt(Math.Pow(apo - c, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range, 2)))) + c;
-				upper.Add(new KeyValuePair<int, double?>(x, y));
+				upper.Add(new KeyValuePair<double, double?>(x, y));
 			}
 
 
 
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 
 			data.Add(middle);
@@ -114,6 +114,13 @@ namespace KSP_MOCR
 			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, -1, 0, -1);
 			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 0, 0));
 			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 0, 251, 0));
+			screenCharts[0].setSeriesColor(2, Color.FromArgb(100, 0, 251, 0));
+			screenCharts[0].setSeriesColor(3, Color.FromArgb(100, 251, 251, 251));
+		}
+
+		public override void resize()
+		{
+
 		}
 
 		/// <summary>

@@ -35,11 +35,11 @@ namespace KSP_MOCR
 		
 		NumberFormatInfo format = new NumberFormatInfo();
 		
-		Dictionary<int, double?> distances = new Dictionary<int, double?>();
-		Dictionary<int, double?> distancesB = new Dictionary<int, double?>();
-		Dictionary<int, double?> distancesC = new Dictionary<int, double?>();
-		Dictionary<int, double?> zedB = new Dictionary<int, double?>();
-		Dictionary<int, double?> zedC = new Dictionary<int, double?>();
+		Dictionary<double, double?> distances = new Dictionary<double, double?>();
+		Dictionary<double, double?> distancesB = new Dictionary<double, double?>();
+		Dictionary<double, double?> distancesC = new Dictionary<double, double?>();
+		Dictionary<double, double?> zedB = new Dictionary<double, double?>();
+		Dictionary<double, double?> zedC = new Dictionary<double, double?>();
 		List<Tuple<double?, double?>> posB = new List<Tuple<double?, double?>>();
 		List<Tuple<double?, double?>> posC = new List<Tuple<double?, double?>>();
 		Tuple<double, double> minDistVesselPos;
@@ -307,10 +307,10 @@ namespace KSP_MOCR
 				screenLabels[52].Text = "┘ MET:  " + Helper.timeString(minDistMETB,3) + "  DIST:  " + Helper.prtlen(Math.Round(minDistB).ToString(), 8) + "  │";
 				
 				// GRAPH IT
-				List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+				List<Dictionary<double, double?>> data = new List<Dictionary<double, double?>>();
 				List<Plot.Type> types = new List<Plot.Type>();
 				
-				data = new List<Dictionary<int, double?>>();
+				data = new List<Dictionary<double, double?>>();
 				types = new List<Plot.Type>();
 				data.Add(distancesB);
 				types.Add(Plot.Type.LINE);
@@ -318,7 +318,7 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, false);
 				
-				data = new List<Dictionary<int, double?>>();
+				data = new List<Dictionary<double, double?>>();
 				types = new List<Plot.Type>();
 				data.Add(zedB);
 				types.Add(Plot.Type.LINE);
@@ -477,6 +477,8 @@ namespace KSP_MOCR
 			screenCharts[1].setSeriesColor(1, Color.FromArgb(255, 0, 255, 0));
 		}
 
+		public override void resize() { }
+
 		private String getOrbitsData(Orbit orbit)
 		{
 			String output = "=== ORBIT ===";
@@ -505,9 +507,9 @@ namespace KSP_MOCR
 			//Thread.Sleep(100);
 			
 			// CALCULATE DISTANCES FOR THE BURN ORBIT
-			distances = new Dictionary<int, double?>();
-			distancesB = new Dictionary<int, double?>();
-			distancesC = new Dictionary<int, double?>();
+			distances = new Dictionary<double, double?>();
+			distancesB = new Dictionary<double, double?>();
+			distancesC = new Dictionary<double, double?>();
 			
 			minDistB = -1;
 			minDistMETB = 0;

@@ -33,7 +33,7 @@ namespace KSP_MOCR
 		private double xScaler;
 		private double yScaler;
 
-		private List<KeyValuePair<int, double?>>[] series;
+		private List<KeyValuePair<double, double?>>[] series;
 		private bool multiAxis = false;
 		double[] axisData;
 		Type[] seriesType;
@@ -76,23 +76,23 @@ namespace KSP_MOCR
 		{
 			while (chartLineColors.Count <= id)
 			{
-				chartLineColors.Add(Color.FromArgb(255, 251, 251, 252));
+				chartLineColors.Add(c);
 			}
 			chartLineColors[id] = c;
 		}
 
-		public void setData(List<Dictionary<int, double?>> data, List<Type> types, bool multipleYaxis)
+		public void setData(List<Dictionary<double, double?>> data, List<Type> types, bool multipleYaxis)
 		{
-			List<List<KeyValuePair<int, double?>>> tmpData = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> tmpData = new List<List<KeyValuePair<double, double?>>>();
 			
-			foreach (Dictionary<int, double?> graph in data)
+			foreach (Dictionary<double, double?> graph in data)
 			{
 				tmpData.Add(graph.ToList());
 			}
 			setData(tmpData, types, multipleYaxis);
 		}
 
-		public void setData(List<List<KeyValuePair<int, double?>>> data, List<Type> types, bool multipleYaxis)
+		public void setData(List<List<KeyValuePair<double, double?>>> data, List<Type> types, bool multipleYaxis)
 		{
 			series = data.ToArray();
 			seriesType = types.ToArray();
@@ -195,7 +195,7 @@ namespace KSP_MOCR
 
 
 				int n = 0;
-				foreach (List<KeyValuePair<int, double?>> serie in series)
+				foreach (List<KeyValuePair<double, double?>> serie in series)
 				{
 					if (multiAxis)
 					{
@@ -236,7 +236,7 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void drawCross(Graphics g, int n, List<KeyValuePair<int, double?>> serie)
+		private void drawCross(Graphics g, int n, List<KeyValuePair<double, double?>> serie)
 		{
 			/**
 			 * DRAW CROSSES
@@ -245,14 +245,14 @@ namespace KSP_MOCR
 			double? value;
 			double i;
 
-			foreach (KeyValuePair<int, double?> p in serie)
+			foreach (KeyValuePair<double, double?> p in serie)
 			{
-				if (p.Value != null)
+				if (p.Value != null && !double.IsInfinity((double)p.Value) && !double.IsNaN(p.Key) && xScaler != 0 && yScaler != 0)
 				{
 					i = p.Key;
 					value = p.Value;
 
-					int x = (int)Math.Round((i / xScaler) + plotLeft + (minX / xScaler));
+					float x = (float)((i / xScaler) + plotLeft + (Math.Abs(minX) / xScaler));
 					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
 					line[0] = new PointF(x - 4, y - 4);
 					line[1] = new PointF(x + 4, y + 4);
@@ -264,7 +264,7 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void drawLine(Graphics g, int n, List<KeyValuePair<int, double?>> serie)
+		private void drawLine(Graphics g, int n, List<KeyValuePair<double, double?>> serie)
 		{
 			/*
 			 * DRAW THE LINE
@@ -275,7 +275,7 @@ namespace KSP_MOCR
 			double? value;
 			double i;
 
-			foreach (KeyValuePair<int, double?> p in serie)
+			foreach (KeyValuePair<double, double?> p in serie)
 			{
 				i = p.Key;
 				value = p.Value;
@@ -349,15 +349,15 @@ namespace KSP_MOCR
 
 		public int findMaxX()
 		{
-			int? tMax = null;
+			double? tMax = null;
 			if (series == null) { return 0; }
 			lock (series)
 			{
-				foreach (List<KeyValuePair<int, double?>> serie in series)
+				foreach (List<KeyValuePair<double, double?>> serie in series)
 				{
 					lock(serie)
 					{
-						foreach (KeyValuePair<int, double?> point in serie)
+						foreach (KeyValuePair<double, double?> point in serie)
 						{
 							if (point.Value != null)
 							{
@@ -379,15 +379,15 @@ namespace KSP_MOCR
 
 		public int findMinX()
 		{
-			int? tMin = null;
+			double? tMin = null;
 			if(series == null) { return 0; }
 			lock(series)
 			{
-				foreach (List<KeyValuePair<int, double?>> serie in series)
+				foreach (List<KeyValuePair<double, double?>> serie in series)
 				{
 					lock(serie)
 					{
-						foreach (KeyValuePair<int, double?> point in serie)
+						foreach (KeyValuePair<double, double?> point in serie)
 						{
 							if (point.Value != null)
 							{
@@ -412,11 +412,11 @@ namespace KSP_MOCR
 			double? tMax = null;
 			lock(series)
 			{
-				foreach (List<KeyValuePair<int, double?>> serie in series)
+				foreach (List<KeyValuePair<double, double?>> serie in series)
 				{
 					lock(serie)
 					{
-						foreach (KeyValuePair<int, double?> point in serie)
+						foreach (KeyValuePair<double, double?> point in serie)
 						{
 							if (point.Value != null)
 							{
@@ -446,11 +446,11 @@ namespace KSP_MOCR
 			double? tMin = null;
 			lock(series)
 			{
-				foreach (List<KeyValuePair<int, double?>> serie in series)
+				foreach (List<KeyValuePair<double, double?>> serie in series)
 				{
 					lock(serie)
 					{
-						foreach (KeyValuePair<int, double?> point in serie)
+						foreach (KeyValuePair<double, double?> point in serie)
 						{
 							if (point.Value != null)
 							{
@@ -470,12 +470,12 @@ namespace KSP_MOCR
 			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 
-		private int findMaxY(List<KeyValuePair<int, double?>> serie)
+		private int findMaxY(List<KeyValuePair<double, double?>> serie)
 		{
 			double? tMax = null;
 			lock(serie)
 			{
-				foreach (KeyValuePair<int, double?> point in serie)
+				foreach (KeyValuePair<double, double?> point in serie)
 				{
 					if (point.Value != null)
 					{
@@ -501,12 +501,12 @@ namespace KSP_MOCR
 			}
 		}
 
-		private int findMinY(List<KeyValuePair<int, double?>> serie)
+		private int findMinY(List<KeyValuePair<double, double?>> serie)
 		{
 			double? tMin = null;
 			lock(serie)
 			{
-				foreach (KeyValuePair<int, double?> point in serie)
+				foreach (KeyValuePair<double, double?> point in serie)
 				{
 					if (point.Value != null)
 					{
@@ -524,12 +524,12 @@ namespace KSP_MOCR
 			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 
-		public int findMinX(List<KeyValuePair<int, double?>> serie)
+		public int findMinX(List<KeyValuePair<double, double?>> serie)
 		{
 			double? tMin = null;
 			lock (serie)
 			{
-				foreach (KeyValuePair<int, double?> point in serie)
+				foreach (KeyValuePair<double, double?> point in serie)
 				{
 					if (point.Value != null)
 					{
@@ -547,12 +547,12 @@ namespace KSP_MOCR
 			return tMin == null ? 0 : (int)Math.Floor((double)tMin);
 		}
 
-		public int findMaxX(List<KeyValuePair<int, double?>> serie)
+		public int findMaxX(List<KeyValuePair<double, double?>> serie)
 		{
 			double? tMin = null;
 			lock (serie)
 			{
-				foreach (KeyValuePair<int, double?> point in serie)
+				foreach (KeyValuePair<double, double?> point in serie)
 				{
 					if (point.Value != null)
 					{

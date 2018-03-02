@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,51 +12,59 @@ namespace KSP_MOCR
 	public partial class Form1 : Form
 	{
 		//public Dictionary<String, Dictionary<int, Nullable<double>>> chartData = new Dictionary<String, Dictionary<int, Nullable<double>>>();
-		public Dictionary<String, List<KeyValuePair<int, double?>>> chartData = new Dictionary<String, List<KeyValuePair<int, double?>>>();
+		public Dictionary<String, List<KeyValuePair<double, double?>>> chartData = new Dictionary<String, List<KeyValuePair<double, double?>>>();
 
 		private StreamCollection graphStreams;
 
 		public double? originLat;
 		public double originLon;
 
+		private KeyValuePair<double, double?> prevAlt = new KeyValuePair<double, double?>(0,0); // Storage of previous MET and altitude for calculation of Hdot (HDOT = m/s)
+
 		public void setupChartData(StreamCollection streamCollection)
 		{
 			graphStreams = streamCollection;
 
-			chartData.Add("altitudeTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["altitudeTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("altitudeTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["altitudeTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("apoapsisTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["apoapsisTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("apoapsisTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["apoapsisTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("periapsisTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["periapsisTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("periapsisTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["periapsisTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("geeTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["geeTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("geeTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["geeTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("terrainTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["terrainTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("terrainTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["terrainTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("dynPresTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["dynPresTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("dynPresTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["dynPresTime"].Add(new KeyValuePair<double, double?>(i, null));
 			
-			chartData.Add("rollTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["rollTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("rollTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["rollTime"].Add(new KeyValuePair<double, double?>(i, null));
 			
-			chartData.Add("pitchTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["pitchTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("pitchTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["pitchTime"].Add(new KeyValuePair<double, double?>(i, null));
 			
-			chartData.Add("yawTime", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 600; i++) chartData["yawTime"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("yawTime", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 600; i++) chartData["yawTime"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("altitudeSpeed", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i< 3000; i++) chartData["altitudeSpeed"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("altitudeSpeed", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i< 3000; i++) chartData["altitudeSpeed"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("timeToApoSpeed", new List<KeyValuePair<int, double?>>());
-			for (int i = 0; i < 3000; i++) chartData["timeToApoSpeed"].Add(new KeyValuePair<int, double?>(i, null));
+			chartData.Add("timeToApoSpeed", new List<KeyValuePair<double, double?>>());
+			for (int i = 0; i < 3000; i++) chartData["timeToApoSpeed"].Add(new KeyValuePair<double, double?>(i, null));
 
-			chartData.Add("altitudeRange", new List<KeyValuePair<int, double?>>());
+			chartData.Add("altitudeRange", new List<KeyValuePair<double, double?>>());
+
+			chartData.Add("lat", new List<KeyValuePair<double, double?>>());
+			chartData.Add("lon", new List<KeyValuePair<double, double?>>());
+
+			chartData.Add("hdot", new List<KeyValuePair<double, double?>>());
+			chartData.Add("hhdot", new List<KeyValuePair<double, double?>>());
 		}
 
 		public void updateChartData(object sender, EventArgs e)
@@ -74,21 +83,27 @@ namespace KSP_MOCR
 				float pitch = graphStreams.GetData(DataType.flight_inertial_pitch);
 				float yaw = graphStreams.GetData(DataType.flight_inertial_yaw);
 				double tapo = graphStreams.GetData(DataType.orbit_timeToApoapsis);
+				double lat = graphStreams.GetData(DataType.flight_map_latitude);
+				double lon = graphStreams.GetData(DataType.flight_map_longitude);
+
+				// Limit taop to 120 minutes
+				if(tapo > 120 * 60)
+				{
+					tapo = 120 * 60;
+				}
 
 				// Calculate Range
 				double RANGE = 0;
 				if (originLat != null)
 				{
-					float R = graphStreams.GetData(DataType.body_radius); // body radius in metres
-					double lat1 = graphStreams.GetData(DataType.flight_map_latitude);
-					double lon1 = graphStreams.GetData(DataType.flight_map_longitude);
-					double lat2 = (double)originLat;
-					double lon2 = originLon;
+					float R = graphStreams.GetData(DataType.body_radius); // body radius in metres					
+					double lat1 = (double)originLat;
+					double lon1 = originLon;
 
-					double rad1 = Helper.deg2rad(lat1);
-					double rad2 = Helper.deg2rad(lat2);
-					double deltaRad = Helper.deg2rad((lat2 - lat1));
-					double deltaLambda = Helper.deg2rad((lon2 - lon1));
+					double rad1 = Helper.deg2rad(lat);
+					double rad2 = Helper.deg2rad(lat1);
+					double deltaRad = Helper.deg2rad((lat1 - lat));
+					double deltaLambda = Helper.deg2rad((lon1 - lon));
 
 					double a = Math.Sin(deltaRad / 2) * Math.Sin(deltaRad / 2) +
 							Math.Cos(rad1) * Math.Cos(rad2) *
@@ -98,9 +113,22 @@ namespace KSP_MOCR
 					RANGE = R * c;
 				}
 
+				addValueToChart(chartData["lat"], MET, lat, 10000);
+				addValueToChart(chartData["lon"], MET, lon, 10000);
 
-				addValueToChart(chartData["altitudeTime"], (int)MET, altitude);
-				addValueToChart(chartData["apoapsisTime"], (int)MET, apoapsis);
+				// HDOT
+				if(prevAlt.Key != 0)
+				{
+					double HDOT = (double)((altitude - prevAlt.Value) / (MET - prevAlt.Key));
+					addValueToChart(chartData["hdot"], MET, HDOT, 3000);
+					addValueToChart(chartData["hhdot"], HDOT, altitude, 3000);
+				}
+				prevAlt = new KeyValuePair<double, double?>(MET, altitude);
+
+
+
+				addValueToChart(chartData["altitudeTime"], MET, altitude);
+				addValueToChart(chartData["apoapsisTime"], MET, apoapsis);
 				addValueToChart(chartData["periapsisTime"], (int)MET, periapsis);
 				addValueToChart(chartData["geeTime"], (int)MET, gee);
 				addValueToChart(chartData["terrainTime"], (int)MET, elevation);
@@ -117,12 +145,12 @@ namespace KSP_MOCR
 			}
 		}
 
-		public void addValueToChart(List<KeyValuePair<int, double?>> chart, int x, double? y)
+		public void addValueToChart(List<KeyValuePair<double, double?>> chart, double x, double? y)
 		{
 			addValueToChart(chart, x, y, 600);
 		}
 
-		public void addValueToChart(List<KeyValuePair<int, double?>> chart, int x, double? y, int maxCount)
+		public void addValueToChart(List<KeyValuePair<double, double?>> chart, double x, double? y, int maxCount)
 		{
 			if (chart.Count >= maxCount)
 			{
@@ -130,11 +158,11 @@ namespace KSP_MOCR
 				{
 					chart[i - 1] = chart[i];
 				}
-				chart[maxCount - 1] = new KeyValuePair<int, double?>(x, y);
+				chart[maxCount - 1] = new KeyValuePair<double, double?>(x, y);
 			}
 			else
 			{
-				chart.Add(new KeyValuePair<int, double?>(x, y));
+				chart.Add(new KeyValuePair<double, double?>(x, y));
 			}
 		}
 

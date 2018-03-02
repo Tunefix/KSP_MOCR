@@ -90,6 +90,8 @@ namespace KSP_MOCR
 			setIndicatorColor(screenIndicators[14], "NETWORKS");
 		}
 
+		public override void resize() { }
+
 		private void setIndicatorColor(Indicator ind, String key)
 		{
 			String colorData = form.dataStorage.getData(key);

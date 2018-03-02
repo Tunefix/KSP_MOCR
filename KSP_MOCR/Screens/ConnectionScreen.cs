@@ -81,6 +81,7 @@ namespace KSP_MOCR
 									+ "║    52 - ATTITUDE - GRAPHS (R,P,Y)\n"
 									+ "║    53 - TIME TO APOPASIS / INERTIAL VELOCITY - GRAPH\n"
 									+ "║    54 - ALTITUDE / RANGE - GRAPH\n"
+									+ "║    55 - ALTITUDE / VERTICAL SPEED (H / HDOT) - GRAPH\n"
 									+ "║   100 - PILOT\n"
 									+ "║\n"
 									+ "║   201-215 - STATUS REPORT (Requires PySSSMQ connection)\n"
@@ -92,6 +93,11 @@ namespace KSP_MOCR
 			screenLabels[5] = Helper.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
 
 			screenLabels[7].Text = "";
+		}
+
+		public override void resize()
+		{
+
 		}
 	}
 }

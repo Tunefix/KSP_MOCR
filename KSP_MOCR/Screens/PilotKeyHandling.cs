@@ -16,7 +16,7 @@ namespace KSP_MOCR
 {
 	partial class Pilot1
 	{
-		public override void keyDown(object sender, KeyEventArgs e)
+		public override bool keyDown(object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("KD: " + e.KeyCode.ToString());
 			switch (e.KeyCode)
@@ -24,177 +24,179 @@ namespace KSP_MOCR
 				case Keys.V:
 					screenButtons[50].setPressedState(true);
 					screenButtons[50].PerformClick();
-					break;
+					return true;
 				case Keys.N:
 					screenButtons[51].setPressedState(true);
 					screenButtons[51].PerformClick();
-					break;
+					return true;
 				case Keys.Enter:
 				case Keys.E:
 					screenButtons[67].setPressedState(true);
 					screenButtons[67].PerformClick();
-					break;	
+					return true;
 				case Keys.C:
 					screenButtons[64].setPressedState(true);
 					screenButtons[64].PerformClick();
-					break;
+					return true;
 				case Keys.P:
 					screenButtons[65].setPressedState(true);
 					screenButtons[65].PerformClick();
-					break;
+					return true;
 				case Keys.R:
 					screenButtons[68].setPressedState(true);
 					screenButtons[68].PerformClick();
-					break;
+					return true;
 				case Keys.K:
 					screenButtons[66].setPressedState(true);
 					screenButtons[66].PerformClick();
-					break;
-					
+					return true;
+
 				case Keys.Subtract:
 				case Keys.OemMinus:
 					screenButtons[53].setPressedState(true);
 					screenButtons[53].PerformClick();
-					break;
+					return true;
 				case Keys.Add:
 				case Keys.Oemplus:
 					screenButtons[52].setPressedState(true);
 					screenButtons[52].PerformClick();
-					break;
-					
-					
+					return true;
+
+
 				case Keys.D0:
 				case Keys.NumPad0:
 					screenButtons[54].setPressedState(true);
 					screenButtons[54].PerformClick();
-					break;
+					return true;
 				case Keys.D1:
 				case Keys.NumPad1:
 					screenButtons[57].setPressedState(true);
 					screenButtons[57].PerformClick();
-					break;
+					return true;
 				case Keys.D2:
 				case Keys.NumPad2:
 					screenButtons[60].setPressedState(true);
 					screenButtons[60].PerformClick();
-					break;
+					return true;
 				case Keys.D3:
 				case Keys.NumPad3:
 					screenButtons[63].setPressedState(true);
 					screenButtons[63].PerformClick();
-					break;
+					return true;
 				case Keys.D4:
 				case Keys.NumPad4:
 					screenButtons[56].setPressedState(true);
 					screenButtons[56].PerformClick();
-					break;
+					return true;
 				case Keys.D5:
 				case Keys.NumPad5:
 					screenButtons[59].setPressedState(true);
 					screenButtons[59].PerformClick();
-					break;
+					return true;
 				case Keys.D6:
 				case Keys.NumPad6:
 					screenButtons[62].setPressedState(true);
 					screenButtons[62].PerformClick();
-					break;
+					return true;
 				case Keys.D7:
 				case Keys.NumPad7:
 					screenButtons[55].setPressedState(true);
 					screenButtons[55].PerformClick();
-					break;
+					return true;
 				case Keys.D8:
 				case Keys.NumPad8:
 					screenButtons[58].setPressedState(true);
 					screenButtons[58].PerformClick();
-					break;
+					return true;
 				case Keys.D9:
 				case Keys.NumPad9:
 					screenButtons[61].setPressedState(true);
 					screenButtons[61].PerformClick();
-					break;
+					return true;
 			}
+			return false;
 		}
 		
-		public override void keyUp(object sender, KeyEventArgs e)
+		public override bool keyUp(object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("KU: " + e.KeyCode.ToString());
 			switch (e.KeyCode)
 			{
 				case Keys.V:
 					screenButtons[50].setPressedState(false);
-					break;
+					return true;
 				case Keys.N:
 					screenButtons[51].setPressedState(false);
-					break;
+					return true;
 				case Keys.Enter:	
 				case Keys.E:
 					screenButtons[67].setPressedState(false);
-					break;
+					return true;
 				case Keys.C:
 					screenButtons[64].setPressedState(false);
-					break;
+					return true;
 				case Keys.P:
 					screenButtons[65].setPressedState(false);
-					break;
+					return true;
 				case Keys.R:
 					screenButtons[68].setPressedState(false);
-					break;
+					return true;
 				case Keys.K:
 					screenButtons[66].setPressedState(false);
-					break;
-					
+					return true;
+
 				case Keys.Subtract:
 				case Keys.OemMinus:
 					screenButtons[53].setPressedState(false);
-					break;
+					return true;
 				case Keys.Add:
 				case Keys.Oemplus:
 					screenButtons[52].setPressedState(false);
-					break;
-					
+					return true;
+
 				case Keys.D0:
 				case Keys.NumPad0:
 					screenButtons[54].setPressedState(false);
-					break;
+					return true;
 				case Keys.D1:
 				case Keys.NumPad1:
 					screenButtons[57].setPressedState(false);
-					break;
+					return true;
 				case Keys.D2:
 				case Keys.NumPad2:
 					screenButtons[60].setPressedState(false);
-					break;
+					return true;
 				case Keys.D3:
 				case Keys.NumPad3:
 					screenButtons[63].setPressedState(false);
-					break;
+					return true;
 				case Keys.D4:
 				case Keys.NumPad4:
 					screenButtons[56].setPressedState(false);
-					break;
+					return true;
 				case Keys.D5:
 				case Keys.NumPad5:
 					screenButtons[59].setPressedState(false);
-					break;
+					return true;
 				case Keys.D6:
 				case Keys.NumPad6:
 					screenButtons[62].setPressedState(false);
-					break;
+					return true;
 				case Keys.D7:
 				case Keys.NumPad7:
 					screenButtons[55].setPressedState(false);
-					break;
+					return true;
 				case Keys.D8:
 				case Keys.NumPad8:
 					screenButtons[58].setPressedState(false);
-					break;
+					return true;
 				case Keys.D9:
 				case Keys.NumPad9:
 					screenButtons[61].setPressedState(false);
-					break;
-					
+					return true;
+
 			}
+			return false;
 		}
 
 		private void verbClick(object sender, EventArgs e)

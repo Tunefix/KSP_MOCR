@@ -40,26 +40,28 @@ namespace KSP_MOCR
 		
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-			List<List<KeyValuePair<int, double?>>> data;
+			List<List<KeyValuePair<double, double?>>> data;
 			List<Plot.Type> types = new List<Plot.Type>();
 			
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 			data.Add(chartData["rollTime"]);
 			types.Add(Plot.Type.LINE);
 			screenCharts[0].setData(data, types, false);
 			
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 			data.Add(chartData["pitchTime"]);
 			types.Add(Plot.Type.LINE);
 			screenCharts[1].setData(data, types, false);
 			
-			data = new List<List<KeyValuePair<int, double?>>>();
+			data = new List<List<KeyValuePair<double, double?>>>();
 			types = new List<Plot.Type>();
 			data.Add(chartData["yawTime"]);
 			types.Add(Plot.Type.LINE);
 			screenCharts[2].setData(data, types, false);
 		}
+
+		public override void resize() { }
 	}
 }

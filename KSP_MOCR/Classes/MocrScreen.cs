@@ -35,9 +35,11 @@ namespace KSP_MOCR
 
 		public int updateRate = 1000;
 
-		public Dictionary<String, List<KeyValuePair<int, double?>>> chartData;
+		public Dictionary<String, List<KeyValuePair<double, double?>>> chartData;
 
 		public Screen form;
+
+		private Object updateLock = new System.Object();
 
 		public static MocrScreen Create(int id, Screen form)
 		{
@@ -75,6 +77,8 @@ namespace KSP_MOCR
 					return new TApoVel(form);
 				case 54:
 					return new AltRange(form);
+				case 55:
+					return new HvsHdot(form);
 				case 100:
 					return new Pilot1(form);
 				case 201:
@@ -118,91 +122,100 @@ namespace KSP_MOCR
 			int w = (int)Math.Ceiling(this.width * form.pxPrChar) + form.padding_left + form.padding_right;
 			int h = (int)Math.Ceiling(this.height * form.pxPrLine) + form.padding_top + form.padding_bottom;
 			this.form.ClientSize = new Size(w, h);
+			resize();
 		}
 
 		public void updateElements(object sender, EventArgs e)
 		{
-			updateLocalElements(sender, e);
+			lock (updateLock)
+			{
+				updateLocalElements(sender, e);
+			}
 		}
 
 		abstract public void updateLocalElements(object sender, EventArgs e);
 		abstract public void makeElements();
+		public void resize(object sender, EventArgs e) { resize(); }
+		abstract public void resize();
 
-		public virtual void keyDown(object sender, KeyEventArgs e) { }
-		public virtual void keyUp(object sender, KeyEventArgs e) { }
+		public virtual bool keyDown(object sender, KeyEventArgs e) { return false; }
+		public virtual bool keyUp(object sender, KeyEventArgs e) { return false; }
 		//abstract public void destroyStreams();
 
 		public void destroy()
 		{
-			// Clear old lables
-			foreach (Label label in screenLabels) { if (label != null) { label.Dispose(); } }
-			screenLabels.Clear();
-			screenLabels.TrimExcess();
-
-			// Clear old Inputs
-			foreach (TextBox box in screenInputs) { if (box != null) { box.Dispose(); } }
-			screenInputs.Clear();
-			screenInputs.TrimExcess();
-
-			// Clear old Buttons
-			foreach (MocrButton button in screenButtons) { if (button != null) { button.Dispose(); } }
-			screenButtons.Clear();
-			screenButtons.TrimExcess();
-
-			// Clear old charts
-			foreach (Plot chart in screenCharts) { if (chart != null) { chart.Dispose(); } }
-			screenCharts.Clear();
-			screenCharts.TrimExcess();
-
-			// Clear old indicators
-			foreach (Indicator indicator in screenIndicators) { if (indicator != null) { indicator.Dispose(); } }
-			screenIndicators.Clear();
-			screenIndicators.TrimExcess();
-
-			// Clear old EngineIndicators
-			foreach (EngineIndicator indicator in screenEngines) { if (indicator != null) { indicator.Dispose(); } }
-			screenEngines.Clear();
-			screenEngines.TrimExcess();
-			
-			// Clear old VerticalMeters
-			foreach (VerticalMeter meter in screenVMeters) { if (meter != null) { meter.Dispose(); } }
-			screenVMeters.Clear();
-			screenVMeters.TrimExcess();
-			
-			// Clear old 7-segment displays
-			foreach (SegDisp disp in screenSegDisps) { if (disp != null) { disp.Dispose(); } }
-			screenSegDisps.Clear();
-			screenSegDisps.TrimExcess();
-			
-			// Clear Drop Downs
-			foreach (MocrDropdown drop in screenDropdowns) { if (drop != null) { drop.Dispose(); } }
-			screenDropdowns.Clear();
-			screenDropdowns.TrimExcess();
-			
-			// Clear Maps
-			foreach (Map map in screenMaps) { if (map != null) { map.Dispose(); } }
-			screenMaps.Clear();
-			screenMaps.TrimExcess();
-
-			// Clear old FDAI
-			if (screenFDAI != null)
+			lock (updateLock)
 			{
-				screenFDAI.Dispose();
-				screenFDAI = null;
-			}
+				// Clear old lables
+				foreach (Label label in screenLabels) { if (label != null) { label.Dispose(); } }
+				screenLabels.Clear();
+				screenLabels.TrimExcess();
 
-			// Clear old Orbit
-			if (screenOrbit != null)
-			{
-				screenOrbit.Dispose();
-				screenOrbit = null;
-			}
+				// Clear old Inputs
+				foreach (TextBox box in screenInputs) { if (box != null) { box.Dispose(); } }
+				screenInputs.Clear();
+				screenInputs.TrimExcess();
 
-			// Clear all streams
-			if (screenStreams != null)
-			{
-				screenStreams.CloseStreams();
-				screenStreams = null;
+				// Clear old Buttons
+				foreach (MocrButton button in screenButtons) { if (button != null) { button.Dispose(); } }
+				screenButtons.Clear();
+				screenButtons.TrimExcess();
+
+				// Clear old charts
+				foreach (Plot chart in screenCharts) { if (chart != null) { chart.Dispose(); } }
+				screenCharts.Clear();
+				screenCharts.TrimExcess();
+
+				// Clear old indicators
+				foreach (Indicator indicator in screenIndicators) { if (indicator != null) { indicator.Dispose(); } }
+				screenIndicators.Clear();
+				screenIndicators.TrimExcess();
+
+				// Clear old EngineIndicators
+				foreach (EngineIndicator indicator in screenEngines) { if (indicator != null) { indicator.Dispose(); } }
+				screenEngines.Clear();
+				screenEngines.TrimExcess();
+
+				// Clear old VerticalMeters
+				foreach (VerticalMeter meter in screenVMeters) { if (meter != null) { meter.Dispose(); } }
+				screenVMeters.Clear();
+				screenVMeters.TrimExcess();
+
+				// Clear old 7-segment displays
+				foreach (SegDisp disp in screenSegDisps) { if (disp != null) { disp.Dispose(); } }
+				screenSegDisps.Clear();
+				screenSegDisps.TrimExcess();
+
+				// Clear Drop Downs
+				foreach (MocrDropdown drop in screenDropdowns) { if (drop != null) { drop.Dispose(); } }
+				screenDropdowns.Clear();
+				screenDropdowns.TrimExcess();
+
+				// Clear Maps
+				foreach (Map map in screenMaps) { if (map != null) { map.Dispose(); } }
+				screenMaps.Clear();
+				screenMaps.TrimExcess();
+
+				// Clear old FDAI
+				if (screenFDAI != null)
+				{
+					screenFDAI.Dispose();
+					screenFDAI = null;
+				}
+
+				// Clear old Orbit
+				if (screenOrbit != null)
+				{
+					screenOrbit.Dispose();
+					screenOrbit = null;
+				}
+
+				// Clear all streams
+				if (screenStreams != null)
+				{
+					screenStreams.CloseStreams();
+					screenStreams = null;
+				}
 			}
 		}
 	}

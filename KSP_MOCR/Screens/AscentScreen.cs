@@ -200,7 +200,7 @@ namespace KSP_MOCR
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 			// Re-usable data variable for graph data
-			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 		
@@ -379,15 +379,15 @@ namespace KSP_MOCR
 				int xMin = screenCharts[0].findMinX(chartData["altitudeTime"]);
 				int xMax = screenCharts[0].findMaxX(chartData["altitudeTime"]);
 
-				List<KeyValuePair<int, double?>> targetA = new List<KeyValuePair<int, double?>>();
-				targetA.Add(new KeyValuePair<int, double?>(xMin, tgtA));
-				targetA.Add(new KeyValuePair<int, double?>(xMax, tgtA));
+				List<KeyValuePair<double, double?>> targetA = new List<KeyValuePair<double, double?>>();
+				targetA.Add(new KeyValuePair<double, double?>(xMin, tgtA));
+				targetA.Add(new KeyValuePair<double, double?>(xMax, tgtA));
 
-				List<KeyValuePair<int, double?>> targetP = new List<KeyValuePair<int, double?>>();
-				targetP.Add(new KeyValuePair<int, double?>(xMin, tgtP));
-				targetP.Add(new KeyValuePair<int, double?>(xMax, tgtP));
+				List<KeyValuePair<double, double?>> targetP = new List<KeyValuePair<double, double?>>();
+				targetP.Add(new KeyValuePair<double, double?>(xMin, tgtP));
+				targetP.Add(new KeyValuePair<double, double?>(xMax, tgtP));
 
-				data = new List<List<KeyValuePair<int, double?>>>();
+				data = new List<List<KeyValuePair<double, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(targetA);
 				types.Add(Plot.Type.LINE);
@@ -401,7 +401,7 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, false);
 
-				data = new List<List<KeyValuePair<int, double?>>>();
+				data = new List<List<KeyValuePair<double, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(chartData["geeTime"]);
 				types.Add(Plot.Type.LINE);
@@ -409,6 +409,11 @@ namespace KSP_MOCR
 				types.Add(Plot.Type.LINE);
 				screenCharts[1].setData(data, types, true);
 			}
+		}
+
+		public override void resize()
+		{
+
 		}
 
 		public void updateApo(object sender, EventArgs e, string data)

@@ -26,7 +26,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -52,7 +52,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -78,7 +78,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -104,7 +104,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -130,7 +130,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -156,7 +156,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -182,7 +182,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -208,7 +208,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -234,7 +234,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}
@@ -260,7 +260,7 @@ namespace KSP_MOCR
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				stream.Start();
 				return stream.Get();
 			}

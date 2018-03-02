@@ -545,9 +545,9 @@ namespace KSP_MOCR
 			return deg * (Math.PI / 180);
 		}
 
-		static public List<KeyValuePair<int, double?>> limit(List<KeyValuePair<int, double?>> data, int count)
+		static public List<KeyValuePair<double, double?>> limit(List<KeyValuePair<double, double?>> data, int count)
 		{
-			List<KeyValuePair<int, double?>> output = new List<KeyValuePair<int, double?>>();
+			List<KeyValuePair<double, double?>> output = new List<KeyValuePair<double, double?>>();
 			if (data[count + 1].Value != null)
 			{
 				// Find last value key
@@ -565,11 +565,11 @@ namespace KSP_MOCR
 				{
 					if (data[i].Value != null)
 					{
-						output.Add(new KeyValuePair<int, double?>(i, data[i].Value));
+						output.Add(new KeyValuePair<double, double?>(i, data[i].Value));
 					}
 					else
 					{
-						output.Add(new KeyValuePair<int, double?>(i, null));
+						output.Add(new KeyValuePair<double, double?>(i, null));
 					}
 				}
 			}
@@ -579,11 +579,11 @@ namespace KSP_MOCR
 				{
 					if (data[i].Value != null)
 					{
-						output.Add(new KeyValuePair<int, double?>(i, data[i].Value));
+						output.Add(new KeyValuePair<double, double?>(i, data[i].Value));
 					}
 					else
 					{
-						output.Add(new KeyValuePair<int, double?>(i, null));
+						output.Add(new KeyValuePair<double, double?>(i, null));
 					}
 				}
 			}

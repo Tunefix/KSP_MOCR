@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using KRPC.Client.Services.SpaceCenter;
+using System.Globalization;
 
 namespace KSP_MOCR
 {
@@ -20,13 +21,19 @@ namespace KSP_MOCR
 
 		public VesselType vesselType;
 		public CelestialBody body;
+		public string bodyName;
+
+		public bool tail = false;
+		public bool fade = false;
+		public int taillength = 3000;
 
 		readonly Pen CoordinatePen = new Pen(Color.FromArgb(32, 78, 128, 118), 1.5f);
-		readonly Pen trackHistoryPen = new Pen(Color.FromArgb(200, 255, 255, 255), 2f);
 		readonly Brush craftBrush = new SolidBrush(Color.FromArgb(230, 255, 255, 255));
 
-		public Dictionary<int, PointF?> trackHistory;
-		
+		public List<KeyValuePair<double, double?>> trackHistory;
+		public List<KeyValuePair<double, double?>> trackHistoryLat;
+		public List<KeyValuePair<double, double?>> trackHistoryLon;
+
 		public Map()
 		{
 			this.DoubleBuffered = true;
@@ -55,48 +62,71 @@ namespace KSP_MOCR
 			}
 
 			// DRAW TRACK HISTORY
-			drawTrackHistory(g);
+			if(trackHistoryLat != null && trackHistoryLat.Count > 1 && tail == true) drawTrackHistory(g);
 
 			// DRAW FUTURE GROUNDTRACK
 			drawGroundTrack(g);
 
 			// DRAW SPACECRAFT
-			float relativeLongitude = (float)((this.Width / 360f) * (longitude + 180));
-			float relativeLatitude = (float)(this.Height - ((this.Height / 180f) * (latitude + 90)));
-			PointF[] craftPoly = getVesselPath(vesselType, 10f, relativeLongitude, relativeLatitude);
-			g.FillPolygon(craftBrush, craftPoly);
-			
-			
-			this.Invalidate();
+			if (trackHistoryLat != null && trackHistoryLat.Count > 1)
+			{
+				int lastPosition = trackHistoryLat.Count - 1;
+				double lat = (double)trackHistoryLat[lastPosition].Value;
+				double lon = (double)trackHistoryLon[lastPosition].Value;
+
+				//Console.WriteLine("LL: " + lat.ToString() + " :: " + lon.ToString());
+
+				float relativeLongitude = (float)((this.Width / 360f) * (lon + 180));
+				float relativeLatitude = (float)(this.Height - ((this.Height / 180f) * (lat + 90)));
+				PointF[] craftPoly = getVesselPath(vesselType, 10f, relativeLongitude, relativeLatitude);
+				g.FillPolygon(craftBrush, craftPoly);
+			}
 		}
 
 		private void loadMap()
 		{
-			if (map != null)
-			{
-				map.Dispose();
-			}
-
 			if (body != null)
 			{
-				String bodyName = body.Name;
-				if (bodyName == "") bodyName = "Kerbin";
+				if(bodyName != body.Name)
+				{
+					if (map != null) map.Dispose();
+					bodyName = body.Name;
+					loadMapFile(bodyName);
+				}
+			}
+			else if(bodyName != null && bodyName != "")
+			{
+				if(map == null)
+				{
+					loadMapFile(bodyName);
+				}
+			}
+			else
+			{
+				if (bodyName == "" || bodyName == null)
+				{
+					bodyName = "Kerbin";
+					loadMapFile(bodyName);
+				}
+			}
+		}
 
-				try
+		private void loadMapFile(String file)
+		{
+			try
+			{
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
 				{
-					if (Environment.OSVersion.Platform == PlatformID.Unix)
-					{
-						map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/" + bodyName + "Map.png");
-					}
-					else
-					{
-						map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\" + bodyName + "Map.png");
-					}
+					map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/" + file + "Map.png");
 				}
-				catch (Exception ex)
+				else
 				{
-					Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
+					map = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\" + file + "Map.png");
 				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 			}
 		}
 
@@ -105,17 +135,33 @@ namespace KSP_MOCR
 			PointF? prevPoint = null;
 			PointF newPoint;
 
+			Pen trackHistoryPen = new Pen(Color.FromArgb(200, 255, 255, 255), 2f);
+
 			float rightLimit = (float)((this.Width / 360f) * (270));
 			float leftLimit = (float)((this.Width / 360f) * (90));
 			
-			if (trackHistory != null)
+			if (trackHistoryLat != null)
 			{
-				foreach (KeyValuePair<int, PointF?> pair in trackHistory)
+				int count = trackHistoryLat.Count;
+				int offset = 0;
+				if (taillength < count) offset = count - taillength;
+
+				for (int n = offset; n < count; n++)
 				{
-					if (pair.Value != null)
+					if (trackHistoryLat[n].Value != null)
 					{
-						float relativeLongitude = (float)((this.Width / 360f) * (pair.Value.Value.X + 180));
-						float relativeLatitude = (float)(this.Height - ((this.Height / 180f) * (pair.Value.Value.Y + 90)));
+						if(fade)
+						{
+							int A = (int)(Math.Round((200f / (count / 1.5f)) * n));
+							if (A > 200) A = 200;
+							trackHistoryPen = new Pen(Color.FromArgb(A, 255, 255, 255), 2f);
+						}
+						
+						double lat = (double)trackHistoryLat[n].Value;
+						double lon = (double)trackHistoryLon[n].Value;
+
+						float relativeLongitude = (float)((this.Width / 360f) * (lon + 180));
+						float relativeLatitude = (float)(this.Height - ((this.Height / 180f) * (lat + 90)));
 						newPoint = new PointF(relativeLongitude, relativeLatitude);
 						
 						if (prevPoint != null)
@@ -139,6 +185,7 @@ namespace KSP_MOCR
 						
 						prevPoint = newPoint;
 					}
+					n++;
 				}
 			}
 		}

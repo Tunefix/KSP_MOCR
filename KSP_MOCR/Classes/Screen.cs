@@ -29,7 +29,7 @@ namespace KSP_MOCR
 		public double charOffset;
 		public double lineOffset;
 
-		public Dictionary<String, List<KeyValuePair<int, double?>>> chartData;
+		public Dictionary<String, List<KeyValuePair<double, double?>>> chartData;
 		
 		
 		public System.Timers.Timer screenTimer;
@@ -67,8 +67,10 @@ namespace KSP_MOCR
 
 			this.KeyPreview = true;
 
-			this.KeyDown += this.form.Form1_KeyDown;
-			this.KeyUp += this.form.Form1_KeyUp;
+			this.KeyDown += localKeyDown;
+			this.KeyUp += localKeyUp;
+
+			
 			
 			// Initiate Screen Timer
 			screenTimer = new System.Timers.Timer();
@@ -135,6 +137,8 @@ namespace KSP_MOCR
 
 				// Start the update process
 				screenTimer.Start();
+
+				this.Resize += activeScreen.resize;
 			}
 			else
 			{
@@ -152,6 +156,36 @@ namespace KSP_MOCR
 				streamCollection.CloseStreams();
 			}
 			this.Dispose();
+		}
+
+		private void localKeyDown(object sender, KeyEventArgs e)
+		{
+			if(activeScreen != null && !form.ctrlDown)
+			{
+				if(!activeScreen.keyDown(sender, e))
+				{
+					this.form.Form1_KeyDown(sender, e);
+				}
+			}
+			else
+			{
+				this.form.Form1_KeyDown(sender, e);
+			}
+		}
+
+		private void localKeyUp(object sender, KeyEventArgs e)
+		{
+			if (activeScreen != null && !form.ctrlDown)
+			{
+				if(!activeScreen.keyUp(sender, e))
+				{
+					this.form.Form1_KeyUp(sender, e);
+				}
+			}
+			else
+			{
+				this.form.Form1_KeyUp(sender, e);
+			}
 		}
 	}
 }

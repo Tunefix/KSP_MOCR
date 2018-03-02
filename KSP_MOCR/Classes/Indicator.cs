@@ -44,7 +44,9 @@ namespace KSP_MOCR
 		public enum status { OFF, GREEN, RED, BLUE, AMBER, WHITE }
 		public enum style { SIMPLE, BORDER }
 		public style indStyle { get; set; }
-		//private bool lit = false;
+
+		public bool lit { get; set; }
+		public status color { get; set; }
 		
 		private Brush backBrush;
 		private Brush foreBrush;
@@ -64,6 +66,8 @@ namespace KSP_MOCR
 		public void setStatus(status s, bool lit)
 		{
 			this.ForeColor = FColor[s];
+			this.lit = lit;
+			this.color = s;
 			if (lit)
 			{
 				this.BackColor = BColorLit[s];

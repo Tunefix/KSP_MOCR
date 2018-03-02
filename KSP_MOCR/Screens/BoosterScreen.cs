@@ -160,7 +160,7 @@ namespace KSP_MOCR
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 			// Re-usable data variable for graph data
-			List<List<KeyValuePair<int, double?>>> data = new List<List<KeyValuePair<int, double?>>>();
+			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
 
@@ -362,13 +362,15 @@ namespace KSP_MOCR
 				
 
 				// Graphs
-				data = new List<List<KeyValuePair<int, double?>>>();
+				data = new List<List<KeyValuePair<double, double?>>>();
 				types = new List<Plot.Type>();
 				data.Add(Helper.limit(chartData["geeTime"],300));
 				types.Add(Plot.Type.LINE);
 				screenCharts[0].setData(data, types, true);
 			}
 		}
+
+		public override void resize() { }
 
 		private void updateDeltaVStats()
 		{

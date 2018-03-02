@@ -150,7 +150,7 @@ namespace KSP_MOCR
 		{
 			this.form = form;
 			this.chartData = form.form.chartData;
-			screenStreams = new StreamCollection(form.connection);
+			this.screenStreams = form.streamCollection;
 
 			this.updateRate = 500;
 
@@ -1103,6 +1103,8 @@ namespace KSP_MOCR
 				/**/
 			}
 		}
+
+		public override void resize() { }
 
 		private void loadPySSSMQData()
 		{
