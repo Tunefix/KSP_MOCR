@@ -82,6 +82,7 @@ namespace KSP_MOCR
 									+ "║    53 - TIME TO APOPASIS / INERTIAL VELOCITY - GRAPH\n"
 									+ "║    54 - ALTITUDE / RANGE - GRAPH\n"
 									+ "║    55 - ALTITUDE / VERTICAL SPEED (H / HDOT) - GRAPH\n"
+									+ "║    56 - FLIGHT PATH ANGLE / INERTIAL VELOCITY - GRAPH\n"
 									+ "║   100 - PILOT\n"
 									+ "║\n"
 									+ "║   201-215 - STATUS REPORT (Requires PySSSMQ connection)\n"

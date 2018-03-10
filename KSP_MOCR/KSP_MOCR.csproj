@@ -131,6 +131,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\DataStorageScreen.cs" />
+    <Compile Include="Screens\FpaVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
     <Compile Include="Screens\Pilot1.cs" />
     <Compile Include="Screens\StreamsScreen.cs" />

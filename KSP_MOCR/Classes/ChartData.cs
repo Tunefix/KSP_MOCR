@@ -65,6 +65,8 @@ namespace KSP_MOCR
 
 			chartData.Add("hdot", new List<KeyValuePair<double, double?>>());
 			chartData.Add("hhdot", new List<KeyValuePair<double, double?>>());
+
+			chartData.Add("FlightangleVelocity", new List<KeyValuePair<double, double?>>());
 		}
 
 		public void updateChartData(object sender, EventArgs e)
@@ -81,10 +83,13 @@ namespace KSP_MOCR
 				float dynPress = graphStreams.GetData(DataType.flight_dynamicPressure);
 				float roll = graphStreams.GetData(DataType.flight_inertial_roll);
 				float pitch = graphStreams.GetData(DataType.flight_inertial_pitch);
+				Tuple<double, double, double> prograde = graphStreams.GetData(DataType.flight_prograde);
+				float aoa = graphStreams.GetData(DataType.flight_angleOfAttack);
 				float yaw = graphStreams.GetData(DataType.flight_inertial_yaw);
 				double tapo = graphStreams.GetData(DataType.orbit_timeToApoapsis);
 				double lat = graphStreams.GetData(DataType.flight_map_latitude);
 				double lon = graphStreams.GetData(DataType.flight_map_longitude);
+
 
 				// Limit taop to 120 minutes
 				if(tapo > 120 * 60)
@@ -124,6 +129,24 @@ namespace KSP_MOCR
 					addValueToChart(chartData["hhdot"], HDOT, altitude, 3000);
 				}
 				prevAlt = new KeyValuePair<double, double?>(MET, altitude);
+
+				// FLIGHT PATH ANGLE
+				// Flight path angle is the angle between the velocity vector (prograde), and the local horizon.
+
+				// Surface direction unit length
+				double surf = Math.Sqrt(Math.Pow(prograde.Item2, 2) + Math.Pow(prograde.Item3, 2));
+
+				// Flight path angle
+				double fpa;
+				if (surf < 0.00001)
+				{
+					fpa = 90;
+				}
+				else
+				{
+					fpa = Helper.rad2deg(Math.Atan(prograde.Item1 / surf));
+				}
+				addValueToChart(chartData["FlightangleVelocity"], speed, fpa, 3000);
 
 
 

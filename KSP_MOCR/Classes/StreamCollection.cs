@@ -130,6 +130,7 @@ namespace KSP_MOCR
 			flight = connection.SpaceCenter().ActiveVessel.Flight(surfaceRefFrame);
 			mapFlight = connection.SpaceCenter().ActiveVessel.Flight(mapRefFrame);
 
+			
 			Kstream stream;
 
 			switch (type)
@@ -239,6 +240,10 @@ namespace KSP_MOCR
 					stream = new floatStream(connection.AddStream(() => flight.GForce));
 					break;
 
+				case DataType.flight_angleOfAttack:
+					stream = new floatStream(connection.AddStream(() => flight.AngleOfAttack));
+					break;
+
 				case DataType.flight_meanAltitude:
 					stream = new doubleStream(connection.AddStream(() => flight.MeanAltitude));
 					break;
@@ -323,6 +328,10 @@ namespace KSP_MOCR
 					stream = new floatStream(connection.AddStream(() => flight.StaticPressure));
 					break;
 
+				case DataType.flight_prograde:
+					stream = new tuple3Stream(connection.AddStream(() => flight.Prograde));
+					break;
+
 
 				///// INERTIAL FLIGHT DATA /////
 
@@ -340,6 +349,9 @@ namespace KSP_MOCR
 					break;
 				case DataType.flight_inertial_rotation:
 					stream = new tuple4Stream(connection.AddStream(() => inertFlight.Rotation));
+					break;
+				case DataType.flight_inertial_velocity:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Velocity));
 					break;
 
 

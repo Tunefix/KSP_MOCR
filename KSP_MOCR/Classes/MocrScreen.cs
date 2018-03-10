@@ -79,6 +79,8 @@ namespace KSP_MOCR
 					return new AltRange(form);
 				case 55:
 					return new HvsHdot(form);
+				case 56:
+					return new FpaVel(form);
 				case 100:
 					return new Pilot1(form);
 				case 201:
