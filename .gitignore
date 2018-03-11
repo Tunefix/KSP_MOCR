@@ -6,6 +6,9 @@ KSP_MOCR/obj/*
 # Ignore Release directory
 Releases/*
 
+# Ignore Research images
+MOCR/*
+
 # Ignore userprefs
 KSP_MOCR.userprefs
 
