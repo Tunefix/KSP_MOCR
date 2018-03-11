@@ -22,6 +22,10 @@ namespace KSP_MOCR
 		/// <summary>
 		/// float
 		/// </summary>
+		body_rotPeriod,
+		/// <summary>
+		/// float
+		/// </summary>
 		body_mass,
 
 		control_SAS,

@@ -13,7 +13,7 @@ namespace KSP_MOCR
 	public abstract class MocrScreen
 	{
 		public List<Color> chartLineColors = new List<Color>();
-		public List<Label> screenLabels = new List<Label>();
+		public List<CustomLabel> screenLabels = new List<CustomLabel>();
 		public List<TextBox> screenInputs = new List<TextBox>();
 		public List<MocrButton> screenButtons = new List<MocrButton>();
 		public List<Indicator> screenIndicators = new List<Indicator>();
@@ -23,6 +23,7 @@ namespace KSP_MOCR
 		public List<MocrDropdown> screenDropdowns = new List<MocrDropdown>();
 		public List<Plot> screenCharts = new List<Plot>();
 		public List<Map> screenMaps = new List<Map>();
+		public List<Screw> screenScrews = new List<Screw>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
 
@@ -197,6 +198,11 @@ namespace KSP_MOCR
 				foreach (Map map in screenMaps) { if (map != null) { map.Dispose(); } }
 				screenMaps.Clear();
 				screenMaps.TrimExcess();
+
+				// Clear Screws
+				foreach (Screw screw in screenScrews) { if (screw != null) { screw.Dispose(); } }
+				screenScrews.Clear();
+				screenScrews.TrimExcess();
 
 				// Clear old FDAI
 				if (screenFDAI != null)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace KSP_MOCR
@@ -56,7 +58,9 @@ namespace KSP_MOCR
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			g.SmoothingMode = SmoothingMode.AntiAlias;
+			g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+			g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
 			float charWidth;
 			if (sign)

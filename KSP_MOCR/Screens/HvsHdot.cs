@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using KRPC.Client.Services.KRPC;
+using System.Globalization;
 
 namespace KSP_MOCR
 {
@@ -9,6 +10,7 @@ namespace KSP_MOCR
 	{
 
 		double maxHDOT = 500;
+		double apo = 120000;
 
 		public HvsHdot(Screen form)
 		{
@@ -27,16 +29,11 @@ namespace KSP_MOCR
 			List<List<KeyValuePair<double, double?>>> data = new List<List<KeyValuePair<double, double?>>>();
 			List<Plot.Type> types = new List<Plot.Type>();
 
+			// CHECT FOR NEW APO
 			string tgtapo = form.dataStorage.getData("TGTAPO");
-			if (tgtapo == "")
-			{
-				tgtapo = "120000";
-				form.dataStorage.setData("TGTAPO", "120000");
-			}
-			int.TryParse(tgtapo, out int apo);
+			if (apo.ToString() != tgtapo) calcApoMax();
 
-			maxHDOT = apo / 150f;
-			screenInputs[0].Text = maxHDOT.ToString();
+			screenInputs[0].Text = Math.Round(maxHDOT).ToString();
 
 			// SATURN V LINE
 			List<KeyValuePair<double, double?>> sat = new List<KeyValuePair<double, double?>>();
@@ -108,6 +105,7 @@ namespace KSP_MOCR
 			}
 
 			screenCharts[0].maxY = (int)Math.Round(apo * 1.1f);
+			screenCharts[0].maxX = (int)Math.Round(maxHDOT * 1.1f);
 			screenCharts[0].setData(data, types, false);
 		}
 
@@ -132,6 +130,32 @@ namespace KSP_MOCR
 			screenCharts[0].setSeriesColor(4, Color.FromArgb(200, 0, 169, 51));
 			screenCharts[0].setSeriesColor(5, Color.FromArgb(200, 0, 51, 204));
 			screenCharts[0].setSeriesColor(6, Color.FromArgb(200, 204, 51, 0));
+
+
+			calcApoMax();
+			
+		}
+
+		public void calcApoMax()
+		{
+			string tgtapo = form.dataStorage.getData("TGTAPO");
+			if (tgtapo == "")
+			{
+				tgtapo = "120000";
+				form.dataStorage.setData("TGTAPO", "120000");
+			}
+			int.TryParse(tgtapo, out int tapo);
+			if (tapo != -1) apo = tapo;
+
+			// FIND ORBITAL SPEED (CIRCULAR ORBIT)
+			double mass = form.streamCollection.GetData(DataType.body_mass);
+			if (mass == 0) { mass = 5.2915158e22; }
+			double bodyrad = form.streamCollection.GetData(DataType.body_radius);
+			if (bodyrad == 0) { bodyrad = 600000; }
+			double distance = bodyrad + apo;
+			double speed = Math.Sqrt((6.67408e-11 * mass) / distance);
+
+			maxHDOT = (apo / speed) * 20;
 		}
 
 		public override void resize()

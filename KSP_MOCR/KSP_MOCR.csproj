@@ -117,7 +117,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\CustomLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Classes\Logger.cs" />
+    <Compile Include="Classes\Screw.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Screens\AltRange.cs" />
     <Compile Include="Screens\AscentScreen.cs" />
     <Compile Include="Screens\BoosterScreen.cs" />
@@ -179,9 +185,7 @@
     <Compile Include="Classes\Indicator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Classes\helper.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Classes\helper.cs" />
     <Compile Include="Classes\StreamCollection.cs" />
     <Compile Include="Classes\DataType.cs" />
     <Compile Include="Classes\Kstream.cs" />

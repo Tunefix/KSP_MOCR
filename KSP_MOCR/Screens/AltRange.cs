@@ -54,10 +54,10 @@ namespace KSP_MOCR
 
 				double c = range / 2.5f;
 
-				y = Math.Sqrt(Math.Pow(apo + c, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range, 2)))) - c;
-				lower.Add(new KeyValuePair<double, double?>(x, y));
+				y = Math.Sqrt(Math.Pow(apo, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range * 0.8, 2))));
+				if(!double.IsNaN((double)y)) lower.Add(new KeyValuePair<double, double?>(x, y));
 
-				y = Math.Sqrt(Math.Pow(apo - c, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range, 2)))) + c;
+				y = Math.Sqrt(Math.Pow(apo, 2) * (1 - (Math.Pow(x - range, 2) / Math.Pow(range * 1.2, 2))));
 				upper.Add(new KeyValuePair<double, double?>(x, y));
 			}
 

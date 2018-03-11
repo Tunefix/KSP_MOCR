@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace KSP_MOCR
 
 		readonly Dictionary<status, Color> BColor = new Dictionary<status, Color>()
 		{
-			{status.OFF, Color.FromArgb(255, 56, 56, 56)},
+			{status.OFF, Color.FromArgb(255, 96, 96, 96)},
 			{status.GREEN, Color.FromArgb(255, 32, 128, 32)},
 			{status.RED, Color.FromArgb(255, 128, 32, 32)},
 			{status.BLUE, Color.FromArgb(255, 32, 32, 128)},
@@ -50,7 +51,7 @@ namespace KSP_MOCR
 		
 		private Brush backBrush;
 		private Brush foreBrush;
-		readonly Pen borderPen = new Pen(Color.FromArgb(255, 0, 0, 0), 1f);
+		readonly Pen borderPen = new Pen(Color.FromArgb(255, 96, 96, 96), 1f);
 		readonly Brush backgroundColor = new SolidBrush(Color.FromArgb(255, 200, 200, 200));
 		readonly Pen ControlOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 1f);
 		readonly Pen ControlInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 2f);
@@ -84,7 +85,9 @@ namespace KSP_MOCR
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			g.SmoothingMode = SmoothingMode.AntiAlias;
+			g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+			g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
 			if (indStyle == style.BORDER)
 			{
@@ -166,7 +169,13 @@ namespace KSP_MOCR
 			}
 
 			// Border
-			g.DrawRectangle(borderPen, new Rectangle(0, 0, this.Width, this.Height));
+			//g.DrawRectangle(borderPen, new Rectangle(0, 0, this.Width, this.Height));
+
+			// Border
+			g.DrawRectangle(borderPen, 0, 0, this.Width - 1, this.Height - 1);
+
+			// Border Shadow
+			g.DrawRectangle(ControlBorderShadowPen, 1, 1, this.Width - 3, this.Height - 3);
 		}
 	}
 }

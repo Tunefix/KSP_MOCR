@@ -177,7 +177,7 @@ namespace KSP_MOCR
 				start = loopTime.Ticks;
 
 				// Refresh FDAI values and display
-				if (screenFDAI != null)
+				if (screenFDAI != null && form.form.connected)
 				{
 					if (FDAImode == FDAIMode.SURF)
 					{

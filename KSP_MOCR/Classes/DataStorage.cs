@@ -80,7 +80,10 @@ namespace KSP_MOCR
 		/// </summary>
 		public void Pull()
 		{
-			client.Pull("&");
+			if (client.IsConnected())
+			{
+				client.Pull("&");
+			}
 		}
 	}
 }

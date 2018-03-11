@@ -156,6 +156,10 @@ namespace KSP_MOCR
 					stream = new floatStream(connection.AddStream(() => orbit.Body.Mass));
 					break;
 
+				case DataType.body_rotPeriod:
+					stream = new floatStream(connection.AddStream(() => orbit.Body.RotationalPeriod));
+					break;
+
 				///// CONTROL DATA /////
 
 				case DataType.control_SAS:

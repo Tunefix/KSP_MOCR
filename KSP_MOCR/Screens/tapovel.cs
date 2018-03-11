@@ -127,7 +127,7 @@ namespace KSP_MOCR
 		/// </summary>
 		/// <param name="t"></param>
 		/// <returns></returns>
-		public double smootstep(double t)
+		public double smootstep(double t, double m0, double m1)
 		{
 			return ((3 * Math.Pow(t, 2)) - (2 * Math.Pow(t, 3)));
 		}

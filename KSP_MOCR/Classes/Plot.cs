@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 
 namespace KSP_MOCR
 {
@@ -109,7 +111,9 @@ namespace KSP_MOCR
 				labelBrush = new SolidBrush(labelColor);
 
 				Graphics g = e.Graphics;
-				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				g.SmoothingMode = SmoothingMode.AntiAlias;
+				g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+				g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
 				if (maxX == -1 || autoXmax == true) { maxX = findMaxX(); autoXmax = true; }
 				if (minX == -1 || autoXmin == true) { minX = findMinX(); autoXmin = true; }

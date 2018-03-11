@@ -42,7 +42,7 @@ namespace KSP_MOCR
 
 		public override void makeElements()
 		{
-			for (int i = 0; i < 30; i++) screenLabels.Add(null); // Initialize Labels
+			for (int i = 0; i < 32; i++) screenLabels.Add(null); // Initialize Labels
 			for (int i = 0; i< 1; i++) screenInputs.Add(null); // Initialize Inputs
 
 
@@ -93,6 +93,13 @@ namespace KSP_MOCR
 			screenLabels[25].Text = "┼─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ─┬─ ─ ─ ─ ┼";
 			screenLabels[25].ForeColor = Color.FromArgb(255, 255, 255);
 			screenLabels[25].BackColor = Color.Maroon;
+
+			screenLabels[26] = Helper.CreateLabel(60, 7, 25, 1, "THIS IS STANDARD TEXT", false);
+			screenLabels[27] = Helper.CreateLabel(60, 8, 25, 1, "     THIS IS BIG TEXT", true);
+			screenLabels[28] = Helper.CreateLabel(85, 7, 10, 1, "432.67", false);
+			screenLabels[29] = Helper.CreateLabel(85, 8, 10, 1, "432.67", true);
+			screenLabels[30] = Helper.CreateLabel(85, 6, 10, 1, "432.67", false);
+			screenLabels[31] = Helper.CreateLabel(85, 9, 10, 1, "432.67", true);
 
 		}
 

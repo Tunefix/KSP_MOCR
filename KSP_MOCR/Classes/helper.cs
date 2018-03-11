@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -10,57 +12,13 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace KSP_MOCR
 {
-	/*
-	 * I am using this class for labels to have full controll over where the text is
-	 * rendered in the label-coordinate system. 
-	 * */
-	public class CustomLabel : Label
-	{
-		double charWidth = 9;
-		double lineHeight = 19;
-		double charOffset = -2.5;
-		double lineOffset = 0;
-
-		public CustomLabel()
-		{
-		}
-
-		public void setCharWidth(double w){this.charWidth = w;}
-		public void setlineHeight(double h) { this.lineHeight = h;}
-		public void setcharOffset(double o) { this.charOffset = o; }
-		public void setlineOffset(double o) { this.lineOffset = o; }
-
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			// Simple draw-line
-			//e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), -2.5f, 0);
-
-			// Draw each character on its own, to align everything
-			float yPos = (float)lineOffset;
-			double charsBack = 0;
-			for (int i = 0; i < Text.Length; i++)
-			{
-				String letter = Text.Substring(i, 1);
-
-				if (letter == "\n")
-				{
-					yPos += (float)lineHeight;
-					charsBack = (i+1) * charWidth;
-				}
-				else
-				{
-					float xPos = (float)(charOffset + (charWidth * i) - charsBack);
-					e.Graphics.DrawString(letter, Font, new SolidBrush(ForeColor), xPos, yPos);
-				}
-			}
-		}
-	}
-
 	static class Helper
 	{
 		static Screen form;
 
 		public enum Align { LEFT, RIGHT, CENTER };
+
+		static Random gen = new Random(DateTime.Now.Millisecond);
 
 		static public void setForm(Screen form)
 		{
@@ -96,10 +54,11 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		static public Label CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, ""); }
-		static public Label CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, ""); }
-		static public Label CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, ""); }
-		static public Label CreateLabel(double x, double y, double w, double h, String t)
+		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true); }
+		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t) { return CreateLabel(x, y, w, h, t, true); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
@@ -123,6 +82,7 @@ namespace KSP_MOCR
 			label.FlatStyle = FlatStyle.Flat;
 			label.BorderStyle = BorderStyle.None;
 			label.ForeColor = form.foreColor;
+			label.bigText = bigText;
 			form.Controls.Add(label);
 			return label;
 		}
@@ -151,6 +111,20 @@ namespace KSP_MOCR
 			button.Padding = new Padding(0);
 			form.Controls.Add(button);
 			return button;
+		}
+
+		static public Screw CreateScrew(double x, double y)
+		{
+			int top = (int)(y * form.pxPrLine) + form.padding_top - 1;
+			int left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
+
+			Screw screw = new Screw();
+			screw.Location = new Point(left, top);
+			screw.Size = new Size(29, 29);
+			screw.angle = Helper.random() * 180;
+
+			form.Controls.Add(screw);
+			return screw;
 		}
 
 
@@ -610,6 +584,15 @@ namespace KSP_MOCR
 			str = pre + str;
 
 			return str;
+		}
+
+		/// <summary>
+		/// Returns a pseudorandom value between 0 and 1
+		/// </summary>
+		/// <returns></returns>
+		public static float random()
+		{
+			return gen.Next(0, 10000) / 10000f;
 		}
 	}
 }

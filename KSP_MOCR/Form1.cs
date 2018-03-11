@@ -62,8 +62,10 @@ namespace KSP_MOCR
 		public int padding_bottom = 4;
 		public int padding_left = 4;
 
-		public Color foreColor = Color.FromArgb(255, 239, 239, 239);
+		public Color foreColor = Color.FromArgb(255, 230, 240, 250);
 		public Color chartAxisColor = Color.FromArgb(255, 119, 102, 51);
+
+		
 
 		public List<Color> chartLineColors = new List<Color>();
 
@@ -643,25 +645,7 @@ namespace KSP_MOCR
 				}
 				catch(Exception ex)
 				{
-					if(ex is System.ArgumentNullException)
-					{
-						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-					}
-
-					if (ex is FormatException)
-					{
-						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-					}
-
-					if (ex is OverflowException)
-					{
-						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-					}
-
-					if (ex is System.ArgumentOutOfRangeException)
-					{
-						Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-					}
+					Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
 				}
 				screenCallup = "";
 			}
