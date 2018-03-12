@@ -11,6 +11,10 @@ namespace KSP_MOCR
 			this.form = form;
 			this.form.BackColor = Color.FromArgb(255, 62, 64, 68);
 
+			Image myimage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\darknoise.png");
+			this.form.BackgroundImage = myimage;
+			this.form.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Tile;
+
 			this.width = 68;
 			this.height = 11;
 			this.updateRate = 200;

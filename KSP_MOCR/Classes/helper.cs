@@ -115,7 +115,7 @@ namespace KSP_MOCR
 
 		static public Screw CreateScrew(double x, double y)
 		{
-			int top = (int)(y * form.pxPrLine) + form.padding_top - 1;
+			int top = (int)(y * form.pxPrLine) + form.padding_top + 4;
 			int left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
 
 			Screw screw = new Screw();
