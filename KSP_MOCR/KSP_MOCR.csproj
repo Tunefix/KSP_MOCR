@@ -120,6 +120,9 @@
     <Compile Include="Classes\CustomLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Classes\EventIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Classes\Logger.cs" />
     <Compile Include="Classes\Screw.cs">
       <SubType>Component</SubType>
@@ -137,6 +140,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\DataStorageScreen.cs" />
+    <Compile Include="Screens\EventPanelEECOM1.cs" />
+    <Compile Include="Screens\EventPanelFido1.cs" />
     <Compile Include="Screens\FpaVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
     <Compile Include="Screens\Pilot1.cs" />

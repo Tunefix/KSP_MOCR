@@ -51,6 +51,8 @@ namespace KSP_MOCR
 		public Font font;
 		public Font buttonFont;
 		public Font smallFont;
+		public Font smallFontB;
+		public Font tinyFont;
 
 		public double pxPrChar;
 		public double pxPrLine;
@@ -153,6 +155,8 @@ namespace KSP_MOCR
 				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
 				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
 				smallFont = new Font("Ubuntu Mono", 8, FontStyle.Regular);
+				smallFontB = new Font("Ubuntu Mono", 8, FontStyle.Bold);
+				tinyFont = new Font("Ubuntu Mono", 7, FontStyle.Bold);
 
 				pxPrChar = 8;
 				pxPrLine = 16;
@@ -171,6 +175,8 @@ namespace KSP_MOCR
 				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
 				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
 				smallFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Regular);
+				smallFontB = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Bold);
+				tinyFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 7, FontStyle.Bold);
 
 				pxPrChar = 9;
 				pxPrLine = 19;

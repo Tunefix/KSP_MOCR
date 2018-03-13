@@ -54,16 +54,28 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true); }
-		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t) { return CreateLabel(x, y, w, h, t, true); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText)
+		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true, false); }
+		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true, false); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true, false); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t) { return CreateLabel(x, y, w, h, t, true, false); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText) { return CreateLabel(x, y, w, h, t, true, false); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText, bool pixels)
 		{
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
-			int left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
+			int top, left, width, height;
+			if (pixels)
+			{
+				top = (int)y;
+				left = (int)x;
+				width = (int)w;
+				height = (int)h;
+			}
+			else
+			{
+				width = (int)Math.Ceiling((w * form.pxPrChar));
+				height = (int)Math.Ceiling(h * form.pxPrLine);
+				top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
+				left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
+			}
 
 
 			CustomLabel label = new CustomLabel();
@@ -88,14 +100,26 @@ namespace KSP_MOCR
 		}
 
 
-		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, ""); }
-		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, ""); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t)
+		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false); }
+		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, 1, t, false); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels)
 		{
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			int top, left, width, height;
+			if (pixels)
+			{
+				top = (int)y;
+				left = (int)x;
+				width = (int)w;
+				height = (int)h;
+			}
+			else
+			{
+				top = (int)(y * form.pxPrLine) + form.padding_top;
+				left = (int)((x * form.pxPrChar) + form.padding_left);
+				width = (int)Math.Ceiling((w * form.pxPrChar));
+				height = (int)Math.Ceiling(h * form.pxPrLine);
+			}
 
 			MocrButton button = new MocrButton();
 			button.Location = new Point(left, top);
@@ -112,19 +136,63 @@ namespace KSP_MOCR
 			form.Controls.Add(button);
 			return button;
 		}
-
-		static public Screw CreateScrew(double x, double y)
+		static public Screw CreateScrew(double x, double y) { return CreateScrew(x, y, false); }
+		static public Screw CreateScrew(double x, double y, bool pixels)
 		{
-			int top = (int)(y * form.pxPrLine) + form.padding_top + 4;
-			int left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
+			int top, left;
+			if (pixels)
+			{
+				top = (int)Math.Round(y - 3);
+				left = (int)Math.Round(x - 3);
+			}
+			else
+			{
+				top = (int)(y * form.pxPrLine) + form.padding_top + 4;
+				left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
+			}
 
 			Screw screw = new Screw();
 			screw.Location = new Point(left, top);
-			screw.Size = new Size(29, 29);
+			screw.Size = new Size(34, 34);
 			screw.angle = Helper.random() * 180;
 
 			form.Controls.Add(screw);
 			return screw;
+		}
+
+		static public EventIndicator createEventIndicator(double x, double y) { return createEventIndicator(x, y, false, false); }
+		static public EventIndicator createEventIndicator(double x, double y, bool small, bool pixels)
+		{
+			int top, left;
+			if (pixels)
+			{
+				top = (int)Math.Round(y - 3);
+				left = (int)Math.Round(x - 3);
+			}
+			else
+			{
+				top = (int)(y * form.pxPrLine) + form.padding_top + 4;
+				left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
+			}
+
+			EventIndicator ind = new EventIndicator();
+			
+			ind.Location = new Point(left, top);
+
+			if (small)
+			{
+				ind.Size = new Size(47, 22);
+				ind.small = true;
+				ind.Font = form.tinyFont;
+			}
+			else
+			{
+				ind.Size = new Size(70, 56);
+				ind.Font = form.smallFontB;
+			}
+
+			form.Controls.Add(ind);
+			return ind;
 		}
 
 
@@ -236,17 +304,29 @@ namespace KSP_MOCR
 		}
 
 
-		static public Indicator CreateIndicator(double x, double y, int w, int h, String t)
+		static public Indicator CreateIndicator(double x, double y, int w, int h, String t) { return CreateIndicator(x, y, w, h, t, false); }
+		static public Indicator CreateIndicator(double x, double y, int w, int h, String t, bool pixels)
 		{
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			int top, left, width, height;
+			if (pixels)
+			{
+				top = (int)y;
+				left = (int)x;
+				width = (int)w;
+				height = (int)h;
+			}
+			else
+			{
+				top = (int)(y * form.pxPrLine) + form.padding_top;
+				left = (int)((x * form.pxPrChar) + form.padding_left);
+				width = (int)Math.Ceiling((w * form.pxPrChar));
+				height = (int)Math.Ceiling(h * form.pxPrLine);
+			}
 
 			Color fColor = form.foreColor;
 
 			Indicator label = new Indicator();
-			label.Font = form.font;
+			label.Font = form.smallFontB;
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
 			label.Text = t;

@@ -15,8 +15,9 @@ namespace KSP_MOCR
 			this.form.BackgroundImage = myimage;
 			this.form.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Tile;
 
-			this.width = 68;
-			this.height = 11;
+			this.charSize = false;
+			this.width = 532;
+			this.height = 196;
 			this.updateRate = 200;
 		}
 
@@ -29,67 +30,67 @@ namespace KSP_MOCR
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
-			screenLabels[0] = Helper.CreateLabel(4, 0.25, 60, 1.5, "CONTROLLER STATUS");
-			screenLabels[0].type = CustomLabel.LabelType.ENGRAVED;
+			//screenLabels[0] = Helper.CreateLabel(4, 0.25, 60, 1.5, "CONTROLLER STATUS");
+			//screenLabels[0].type = CustomLabel.LabelType.ENGRAVED;
 
-			screenIndicators[0] = Helper.CreateIndicator(4, 2, 10, 3, "BOOSTER");
+			screenIndicators[0] = Helper.CreateIndicator(56, 14, 70, 56, "BOOSTER", true);
 			screenIndicators[0].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[1] = Helper.CreateIndicator(14, 2, 10, 3, "RETRO");
+			screenIndicators[1] = Helper.CreateIndicator(126, 14, 70, 56, "RETRO", true);
 			screenIndicators[1].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[2] = Helper.CreateIndicator(24, 2, 10, 3, "FIDO");
+			screenIndicators[2] = Helper.CreateIndicator(196, 14, 70, 56, "FIDO", true);
 			screenIndicators[2].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[3] = Helper.CreateIndicator(34, 2, 10, 3, "GUIDO");
+			screenIndicators[3] = Helper.CreateIndicator(266, 14, 70, 56, "GUIDO", true);
 			screenIndicators[3].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[4] = Helper.CreateIndicator(44, 2, 10, 3, "");
+			screenIndicators[4] = Helper.CreateIndicator(336, 14, 70, 56, "", true);
 			screenIndicators[4].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[5] = Helper.CreateIndicator(54, 2, 10, 3, "");
+			screenIndicators[5] = Helper.CreateIndicator(406, 14, 70, 56, "", true);
 			screenIndicators[5].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[6] = Helper.CreateIndicator(4, 5, 10, 3, "SURGEON");
+			screenIndicators[6] = Helper.CreateIndicator(56, 70, 70, 56, "SURGEON", true);
 			screenIndicators[6].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[7] = Helper.CreateIndicator(14, 5, 10, 3, "CAPCOM");
+			screenIndicators[7] = Helper.CreateIndicator(126, 70, 70, 56, "CAPCOM", true);
 			screenIndicators[7].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[8] = Helper.CreateIndicator(24, 5, 10, 3, "EECOM");
+			screenIndicators[8] = Helper.CreateIndicator(196, 70, 70, 56, "EECOM", true);
 			screenIndicators[8].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[9] = Helper.CreateIndicator(34, 5, 10, 3, "GNC");
+			screenIndicators[9] = Helper.CreateIndicator(266, 70, 70, 56, "GNC", true);
 			screenIndicators[9].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[10] = Helper.CreateIndicator(44, 5, 10, 3, "TELMU");
+			screenIndicators[10] = Helper.CreateIndicator(336, 70, 70, 56, "TELMU", true);
 			screenIndicators[10].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[11] = Helper.CreateIndicator(54, 5, 10, 3, "CONTROL");
+			screenIndicators[11] = Helper.CreateIndicator(406, 70, 70, 56, "CONTROL", true);
 			screenIndicators[11].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[12] = Helper.CreateIndicator(4, 8, 10, 3, "INCO");
+			screenIndicators[12] = Helper.CreateIndicator(56, 126, 70, 56, "INCO", true);
 			screenIndicators[12].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[13] = Helper.CreateIndicator(14, 8, 10, 3, "O&P");
+			screenIndicators[13] = Helper.CreateIndicator(126, 126, 70, 56, "O&P", true);
 			screenIndicators[13].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[14] = Helper.CreateIndicator(24, 8, 10, 3, "AFLIGHT");
+			screenIndicators[14] = Helper.CreateIndicator(196, 126, 70, 56, "AFLIGHT", true);
 			screenIndicators[14].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[15] = Helper.CreateIndicator(34, 8, 10, 3, "FAO");
+			screenIndicators[15] = Helper.CreateIndicator(266, 126, 70, 56, "FAO", true);
 			screenIndicators[15].indStyle = Indicator.style.BORDER;
 			
-			screenIndicators[16] = Helper.CreateIndicator(44, 8, 10, 3, "NETWORK");
+			screenIndicators[16] = Helper.CreateIndicator(336, 126, 70, 56, "NETWORK", true);
 			screenIndicators[16].indStyle = Indicator.style.BORDER;
 
-			screenIndicators[17] = Helper.CreateIndicator(54, 8, 10, 3, "");
+			screenIndicators[17] = Helper.CreateIndicator(406, 126, 70, 56, "", true);
 			screenIndicators[17].indStyle = Indicator.style.BORDER;
 
-			screenScrews[0] = Helper.CreateScrew(0.5, 2);
-			screenScrews[1] = Helper.CreateScrew(64.5, 2);
-			screenScrews[2] = Helper.CreateScrew(0.5, 8);
-			screenScrews[3] = Helper.CreateScrew(64.5, 8);
+			screenScrews[0] = Helper.CreateScrew(4, 42, true);
+			screenScrews[1] = Helper.CreateScrew(500, 42, true);
+			screenScrews[2] = Helper.CreateScrew(4, 140, true);
+			screenScrews[3] = Helper.CreateScrew(500, 140, true);
 
 			form.dataStorage.Pull();
 		}

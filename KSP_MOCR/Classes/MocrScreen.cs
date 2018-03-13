@@ -24,6 +24,7 @@ namespace KSP_MOCR
 		public List<Plot> screenCharts = new List<Plot>();
 		public List<Map> screenMaps = new List<Map>();
 		public List<Screw> screenScrews = new List<Screw>();
+		public List<EventIndicator> screenEventIndicators = new List<EventIndicator>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
 
@@ -31,6 +32,7 @@ namespace KSP_MOCR
 
 		public int width = 120; // in chars
 		public int height = 30; // in rows
+		public bool charSize = true; // Wheter size and positions are in chars/rows or pixels(without padding)
 
 		public int screenType;
 
@@ -44,86 +46,189 @@ namespace KSP_MOCR
 
 		public static MocrScreen Create(int id, Screen form)
 		{
-			form.Text = id.ToString();
+			string idstr = id.ToString();
+			string name = "";
+			MocrScreen scr = null;
 			switch (id)
 			{
 				case 0:
-					return new ConnectionScreen(form);
+					scr = new ConnectionScreen(form);
+					name = "";
+					break;
 				case 1:
-					return new AscentScreen(form);
+					scr = new AscentScreen(form);
+					name = "";
+					break;
 				case 2:
-					return new BoosterScreen(form);
+					scr = new BoosterScreen(form);
+					name = "";
+					break;
 				case 3:
-					return new ResourcesScreen(form);
+					scr = new ResourcesScreen(form);
+					name = "";
+					break;
 				case 4:
-					return new FDO(form);
+					scr = new FDO(form);
+					name = "";
+					break;
 				case 5:
-					return new SingleOrbit(form);
+					scr = new SingleOrbit(form);
+					name = "";
+					break;
 				case 8:
-					return new MapScreen(form);
+					scr = new MapScreen(form);
+					name = "";
+					break;
 				case 9:
 					Console.WriteLine("MAKING TEST");
-					return new TestScreen(form);
+					scr = new TestScreen(form);
+					name = "";
+					break;
 				case 11:
-					return new StreamsScreen(form);
+					scr = new StreamsScreen(form);
+					name = "";
+					break;
 				case 12:
-					return new DataStorageScreen(form);
+					scr = new DataStorageScreen(form);
+					name = "";
+					break;
 				case 50:
-					return new Terrain(form);
+					scr = new Terrain(form);
+					name = "";
+					break;
 				case 51:
-					return new AltVel(form);
+					scr = new AltVel(form);
+					name = "";
+					break;
 				case 52:
-					return new Attitude(form);
+					scr = new Attitude(form);
+					name = "";
+					break;
 				case 53:
-					return new TApoVel(form);
+					scr = new TApoVel(form);
+					name = "";
+					break;
 				case 54:
-					return new AltRange(form);
+					scr = new AltRange(form);
+					name = "";
+					break;
 				case 55:
-					return new HvsHdot(form);
+					scr = new HvsHdot(form);
+					name = "";
+					break;
 				case 56:
-					return new FpaVel(form);
+					scr = new FpaVel(form);
+					name = "";
+					break;
+				case 60:
+					scr = new EventPanelFido1(form);
+					name = "Event Indicator - FIDO #1";
+					break;
+				case 70:
+					scr = new EventPanelEECOM1(form);
+					name = "Event Indicator - EECOM #1";
+					break;
 				case 100:
-					return new Pilot1(form);
+					scr = new Pilot1(form);
+					name = "";
+					break;
 				case 201:
-					return new StatusReport(form, "BOOSTER");
+					scr = new StatusReport(form, "BOOSTER");
+					name = "";
+					break;
 				case 202:
-					return new StatusReport(form, "RETRO");
+					scr = new StatusReport(form, "RETRO");
+					name = "";
+					break;
 				case 203:
-					return new StatusReport(form, "FIDO");
+					scr = new StatusReport(form, "FIDO");
+					name = "";
+					break;
 				case 204:
-					return new StatusReport(form, "GUIDO");
+					scr = new StatusReport(form, "GUIDO");
+					name = "";
+					break;
 				case 205:
-					return new StatusReport(form, "SURGEON");
+					scr = new StatusReport(form, "SURGEON");
+					name = "";
+					break;
 				case 206:
-					return new StatusReport(form, "CAPCOM");
+					scr = new StatusReport(form, "CAPCOM");
+					name = "";
+					break;
 				case 207:
-					return new StatusReport(form, "EECOM");
+					scr = new StatusReport(form, "EECOM");
+					name = "";
+					break;
 				case 208:
-					return new StatusReport(form, "GNC");
+					scr = new StatusReport(form, "GNC");
+					name = "";
+					break;
 				case 209:
-					return new StatusReport(form, "TELMU");
+					scr = new StatusReport(form, "TELMU");
+					name = "";
+					break;
 				case 210:
-					return new StatusReport(form, "CONTROL");
+					scr = new StatusReport(form, "CONTROL");
+					name = "";
+					break;
 				case 211:
-					return new StatusReport(form, "INCO");
+					scr = new StatusReport(form, "INCO");
+					name = "";
+					break;
 				case 212:
-					return new StatusReport(form, "O&P");
+					scr = new StatusReport(form, "O&P");
+					name = "";
+					break;
 				case 213:
-					return new StatusReport(form, "AFLIGHT");
+					scr = new StatusReport(form, "AFLIGHT");
+					name = "";
+					break;
 				case 214:
-					return new StatusReport(form, "FAO");
+					scr = new StatusReport(form, "FAO");
+					name = "";
+					break;
 				case 215:
-					return new StatusReport(form, "NETWORK");
+					scr = new StatusReport(form, "NETWORK");
+					name = "";
+					break;
 				case 220:
-					return new StatusPanel(form);
+					scr = new StatusPanel(form);
+					name = "";
+					break;
 			}
+
+			
+			if(name != "")
+			{
+				form.Text = idstr + " - " + name;
+			}
+			else
+			{
+				form.Text = idstr;
+			}
+
+			if(scr != null)
+			{
+				return scr;
+			}
+
 			return null;
 		}
 
 		public void resizeForm()
 		{
-			int w = (int)Math.Ceiling(this.width * form.pxPrChar) + form.padding_left + form.padding_right;
-			int h = (int)Math.Ceiling(this.height * form.pxPrLine) + form.padding_top + form.padding_bottom;
+			int w, h;
+			if (charSize)
+			{
+				w = (int)Math.Ceiling(this.width * form.pxPrChar) + form.padding_left + form.padding_right;
+				h = (int)Math.Ceiling(this.height * form.pxPrLine) + form.padding_top + form.padding_bottom;
+			}
+			else
+			{
+				w = width;
+				h = height;
+			}
 			this.form.ClientSize = new Size(w, h);
 			resize();
 		}
@@ -203,6 +308,11 @@ namespace KSP_MOCR
 				foreach (Screw screw in screenScrews) { if (screw != null) { screw.Dispose(); } }
 				screenScrews.Clear();
 				screenScrews.TrimExcess();
+
+				// Clear EventIndicators
+				foreach (EventIndicator indicator in screenEventIndicators) { if (indicator != null) { indicator.Dispose(); } }
+				screenEventIndicators.Clear();
+				screenEventIndicators.TrimExcess();
 
 				// Clear old FDAI
 				if (screenFDAI != null)
