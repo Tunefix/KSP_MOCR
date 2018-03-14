@@ -87,10 +87,10 @@ namespace KSP_MOCR
 			screenIndicators[17] = Helper.CreateIndicator(406, 126, 70, 56, "", true);
 			screenIndicators[17].indStyle = Indicator.style.BORDER;
 
-			screenScrews[0] = Helper.CreateScrew(4, 42, true);
-			screenScrews[1] = Helper.CreateScrew(500, 42, true);
-			screenScrews[2] = Helper.CreateScrew(4, 140, true);
-			screenScrews[3] = Helper.CreateScrew(500, 140, true);
+			screenScrews[0] = Helper.CreateScrew(4, 36, true);
+			screenScrews[1] = Helper.CreateScrew(500, 36, true);
+			screenScrews[2] = Helper.CreateScrew(4, 134, true);
+			screenScrews[3] = Helper.CreateScrew(500, 134, true);
 
 			form.dataStorage.Pull();
 		}

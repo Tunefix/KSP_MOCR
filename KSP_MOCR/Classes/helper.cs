@@ -54,12 +54,14 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true, false); }
-		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true, false); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true, false); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t) { return CreateLabel(x, y, w, h, t, true, false); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText) { return CreateLabel(x, y, w, h, t, true, false); }
-		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText, bool pixels)
+		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true, false, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true, false, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true, false, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t) { return CreateLabel(x, y, w, h, t, true, false, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, CustomLabel.LabelType type) { return CreateLabel(x, y, w, h, t, true, false, type); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText) { return CreateLabel(x, y, w, h, t, bigText, false, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText, bool pixels) { return CreateLabel(x, y, w, h, t, bigText, pixels, CustomLabel.LabelType.NORMAL); }
+		static public CustomLabel CreateLabel(double x, double y, double w, double h, String t, bool bigText, bool pixels, CustomLabel.LabelType type)
 		{
 			int top, left, width, height;
 			if (pixels)
@@ -76,6 +78,8 @@ namespace KSP_MOCR
 				top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
 				left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
 			}
+
+			
 
 
 			CustomLabel label = new CustomLabel();
@@ -95,6 +99,18 @@ namespace KSP_MOCR
 			label.BorderStyle = BorderStyle.None;
 			label.ForeColor = form.foreColor;
 			label.bigText = bigText;
+			label.type = type;
+
+			if (type == CustomLabel.LabelType.CRT)
+			{
+				left = (int)Math.Round(x * (2f / 3f * form.pxPrLine));
+				width = (int)Math.Ceiling((w * (2f / 3f * form.pxPrLine)));
+
+				label.setCharWidth((2f / 3f * form.pxPrLine));
+				label.Location = new Point(left, top);
+				label.Size = new Size(width, height);
+			}
+
 			form.Controls.Add(label);
 			return label;
 		}
@@ -102,7 +118,8 @@ namespace KSP_MOCR
 
 		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false); }
 		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, 1, t, false); }
+		static public MocrButton CreateButton(double x, double y, double w, double h) { return CreateButton(x, y, w, h, "", false); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, h, t, false); }
 		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels)
 		{
 			int top, left, width, height;
@@ -130,7 +147,7 @@ namespace KSP_MOCR
 			//button.FlatAppearance.BorderSize = 1;
 			//button.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 64, 64, 64);
 			//button.FlatAppearance.MouseDownBackColor = Color.FromArgb(255, 16, 16, 16);
-			button.Font = form.font;
+			button.Font = form.smallFontB;
 			button.Text = t;
 			button.Padding = new Padding(0);
 			form.Controls.Add(button);
@@ -142,8 +159,8 @@ namespace KSP_MOCR
 			int top, left;
 			if (pixels)
 			{
-				top = (int)Math.Round(y - 3);
-				left = (int)Math.Round(x - 3);
+				top = (int)Math.Round(y - 4);
+				left = (int)Math.Round(x - 4);
 			}
 			else
 			{
@@ -166,13 +183,13 @@ namespace KSP_MOCR
 			int top, left;
 			if (pixels)
 			{
-				top = (int)Math.Round(y - 3);
-				left = (int)Math.Round(x - 3);
+				top = (int)Math.Round(y);
+				left = (int)Math.Round(x);
 			}
 			else
 			{
-				top = (int)(y * form.pxPrLine) + form.padding_top + 4;
-				left = (int)((x * form.pxPrChar) + form.padding_left) - 1;
+				top = (int)(y * form.pxPrLine) + form.padding_top;
+				left = (int)((x * form.pxPrChar) + form.padding_left);
 			}
 
 			EventIndicator ind = new EventIndicator();

@@ -51,15 +51,15 @@ namespace KSP_MOCR
 			screenButtons[2].setLightColor(MocrButton.color.GREEN);
 			screenButtons[2].Click += (sender, e) => clickButton(sender, e, screenButtons[2]);
 
-			screenButtons[3] = Helper.CreateButton(98, 14, 70, 56, "ABORT\nREQD", true);
+			screenButtons[3] = Helper.CreateButton(98, 14, 70, 56, "ABORT\nREQ'D", true);
 			screenButtons[3].Font = form.smallFontB;
 			screenButtons[3].buttonStyle = MocrButton.style.LIGHT;
 			screenButtons[3].setLightColor(MocrButton.color.RED);
-
-			screenScrews[0] = Helper.CreateScrew(4, 42, true);
-			screenScrews[1] = Helper.CreateScrew(234, 42, true);
-			screenScrews[2] = Helper.CreateScrew(4, 140, true);
-			screenScrews[3] = Helper.CreateScrew(234, 140, true);
+			
+			screenScrews[0] = Helper.CreateScrew(4, 36, true);
+			screenScrews[1] = Helper.CreateScrew(234, 36, true);
+			screenScrews[2] = Helper.CreateScrew(4, 134, true);
+			screenScrews[3] = Helper.CreateScrew(234, 134, true);
 
 			form.dataStorage.Pull();
 			Thread.Sleep(1000);

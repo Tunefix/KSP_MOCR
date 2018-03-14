@@ -75,6 +75,10 @@ namespace KSP_MOCR
 					scr = new SingleOrbit(form);
 					name = "";
 					break;
+				case 6:
+					scr = new Electrical(form);
+					name = "";
+					break;
 				case 8:
 					scr = new MapScreen(form);
 					name = "";
@@ -121,8 +125,12 @@ namespace KSP_MOCR
 					name = "";
 					break;
 				case 60:
-					scr = new EventPanelFido1(form);
-					name = "Event Indicator - FIDO #1";
+					scr = new FIDO_P5(form);
+					name = "FIDO - EVENT INDICATOR #1";
+					break;
+				case 61:
+					scr = new FIDO_P3(form);
+					name = "FIDO - PHASE CONTROL KEYBORAD";
 					break;
 				case 70:
 					scr = new EventPanelEECOM1(form);

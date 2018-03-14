@@ -262,6 +262,10 @@ namespace KSP_MOCR
 		vessel_velocity,
 		vessel_rotation,
 		vessel_direction,
-		vessel_angularVelocity
+		vessel_angularVelocity,
+		/// <summary>
+		/// Parts
+		/// </summary>
+		vessel_parts
 	}
 }

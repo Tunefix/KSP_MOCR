@@ -88,6 +88,7 @@ namespace KSP_MOCR
 					case DataType.vessel_type:
 						return VesselType.Ship;
 					case DataType.orbit_celestialBody:
+					case DataType.vessel_parts:
 						return null;
 					default:
 						return 0;
@@ -520,6 +521,10 @@ namespace KSP_MOCR
 				case DataType.vessel_velocity:
 					stream = new tuple3Stream(connection.AddStream(() => vessel.Velocity(vessel.Orbit.Body.NonRotatingReferenceFrame)));
 					break;
+				case DataType.vessel_parts:
+					stream = new vesselPartsStream(connection.AddStream(() => vessel.Parts));
+					break;
+
 				
 				default:
 					throw (new Exception("DataType: " + type.ToString() + " not supported"));

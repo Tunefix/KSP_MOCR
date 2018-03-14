@@ -12,6 +12,13 @@ namespace KSP_MOCR
 {
 	public class EventIndicator : Control
 	{
+		/**
+		 * WHEN A LIMIT IS EXCEEDED THE CORRESPONDING EVENT INDICATOR SHOULD TURN ON AND
+		 * REMAIN LIT UNTIL IT IS RESET.
+		 * 
+		 * 
+		 */
+
 		public string upperText = "";
 		public string lowerText = "";
 
@@ -19,14 +26,23 @@ namespace KSP_MOCR
 
 		public enum color { OFF, WHITE, AMBER, RED, GREEN, BLUE, WHITE_LIT, AMBER_LIT, RED_LIT, GREEN_LIT, BLUE_LIT}
 
-		public color upperColor = color.WHITE;
-		public color lowerColor = color.WHITE;
+		private color upperColor = color.OFF;
+		private color lowerColor = color.OFF;
+
+		public color upperOffColor = color.WHITE;
+		public color lowerOffColor = color.WHITE;
+		public color upperOnColor = color.WHITE_LIT;
+		public color lowerOnColor = color.WHITE_LIT;
 
 		enum type { UPPER, LOWER, FULL}
 
 		readonly Brush background = new SolidBrush(Color.FromArgb(255, 128, 128, 128));
 		readonly Brush black = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
 		readonly Pen border = new Pen(Color.FromArgb(255, 128, 128, 128), 4f);
+
+		readonly Pen ControlOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 4f);
+		readonly Pen ControlInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 2f);
+		readonly Pen ControlBorderShadowPen = new Pen(Color.FromArgb(55, 0, 0, 0), 1f);
 
 		readonly Brush textBrushLight = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
 
@@ -57,6 +73,30 @@ namespace KSP_MOCR
 			{
 				upperColor = c;
 			}
+			Invalidate();
+		}
+
+		public void turnOnUpper()
+		{
+			upperColor = upperOnColor;
+			Invalidate();
+		}
+
+		public void turnOnLower()
+		{
+			lowerColor = lowerOnColor;
+			Invalidate();
+		}
+
+		public void turnOffUpper()
+		{
+			upperColor = upperOffColor;
+			Invalidate();
+		}
+
+		public void turnOffLower()
+		{
+			lowerColor = lowerOffColor;
 			Invalidate();
 		}
 
@@ -91,7 +131,8 @@ namespace KSP_MOCR
 		}
 
 		void drawNormal(Graphics g)
-		{ 
+		{
+			float outerBorderWidth = 4;
 
 			// FILL
 			drawFill(type.UPPER, upperColor, g);
@@ -106,7 +147,13 @@ namespace KSP_MOCR
 			drawText(type.LOWER, lowerText, g);
 
 			// OUTER BORDER
-			g.DrawRectangle(border, 0, 0, this.Width, this.Height);
+			//g.DrawRectangle(border, 0, 0, this.Width, this.Height);
+
+			// Border Shadow
+			g.DrawRectangle(ControlBorderShadowPen, outerBorderWidth + 1f, outerBorderWidth + 1f, this.Width - ((outerBorderWidth + 1f) * 2), this.Height - ((outerBorderWidth + 1f) * 2));
+
+			// Border
+			g.DrawRectangle(ControlOuterBorderPen, outerBorderWidth / 2f, outerBorderWidth / 2f, this.Width - outerBorderWidth, this.Height - outerBorderWidth);
 
 			// BORDERS AND MIDDLE SEP LINE
 			g.FillRectangle(black, 4, 4, this.Width - 8, 4);

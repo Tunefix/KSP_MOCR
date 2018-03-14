@@ -18,7 +18,7 @@ namespace KSP_MOCR
 			g.SmoothingMode = SmoothingMode.HighQuality;
 			g.InterpolationMode = InterpolationMode.HighQualityBilinear;
 
-			float size = this.Width - 6;
+			float size = this.Width - 8;
 			
 			
 
@@ -32,10 +32,10 @@ namespace KSP_MOCR
 			
 
 			
-			g.FillEllipse(backest, 1, 1, size + 4, size + 4);
-			g.FillEllipse(screw, 3, 3, size, size);
-			g.DrawEllipse(rim, 2, 2, size + 1, size + 1);
-			g.DrawEllipse(highlight, 3, 3, size, size);
+			g.FillEllipse(backest, 2, 2, size + 4, size + 4);
+			g.FillEllipse(screw, 4, 4, size, size);
+			g.DrawEllipse(rim, 3, 3, size + 1, size + 1);
+			g.DrawEllipse(highlight, 4, 4, size, size);
 
 			GraphicsState state = g.Save();
 
@@ -44,9 +44,9 @@ namespace KSP_MOCR
 			g.TranslateTransform(-Width / 2, -Height / 2);
 
 
-			g.FillRectangle(groove, 3, (Height / 2) - 2, size, 4);
-			g.DrawLine(highlight, 3, (Height / 2) - 2, Width - 3, (Height / 2) - 2);
-			g.DrawLine(highlight, 3, (Height / 2) + 2, Width - 3, (Height / 2) + 2);
+			g.FillRectangle(groove, 4, (Height / 2) - 2, size, 4);
+			g.DrawLine(highlight, 4, (Height / 2) - 2, Width - 3, (Height / 2) - 2);
+			g.DrawLine(highlight, 4, (Height / 2) + 2, Width - 3, (Height / 2) + 2);
 
 			g.Restore(state);
 		}

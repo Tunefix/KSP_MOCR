@@ -1,5 +1,6 @@
 ﻿using System;
 using KRPC.Client.Services.SpaceCenter;
+using System.Collections.Generic;
 
 namespace KSP_MOCR
 {
@@ -248,6 +249,32 @@ namespace KSP_MOCR
 		KRPC.Client.Stream<VesselType> stream { get; set; }
 
 		public vesselTypeStream(KRPC.Client.Stream<VesselType> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
+				stream.Start();
+				return stream.Get();
+			}
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
+
+	class vesselPartsStream : Kstream
+	{
+		KRPC.Client.Stream<Parts> stream { get; set; }
+
+		public vesselPartsStream(KRPC.Client.Stream<Parts> s)
 		{
 			stream = s;
 		}

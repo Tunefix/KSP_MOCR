@@ -23,7 +23,7 @@ namespace KSP_MOCR
 		public bool bigText = true; // Wheter to use text that fill the height. (More than default)
 		public bool blur = false; // Slighty blurry text, looks a little like a crt monitor
 		public bool glow = false; // A slight glow of the text, also a crt-effect.
-		public enum LabelType { NORMAL, ENGRAVED}
+		public enum LabelType { NORMAL, ENGRAVED, CRT}
 		public LabelType type = LabelType.NORMAL;
 
 		public CustomLabel()
@@ -52,10 +52,55 @@ namespace KSP_MOCR
 				case LabelType.ENGRAVED:
 					DrawEngraved(e);
 					break;
+				case LabelType.CRT:
+					DrawCRT(e);
+					break;
 				default:
 					DrawNormal(e);
 					break;
 			}
+		}
+
+		void DrawCRT(PaintEventArgs e)
+		{
+			if (blur)
+			{
+				e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+			}
+			else
+			{
+				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+			}
+
+			// Draw each character on its own, to align everything
+			float yPos = (float)lineOffset;
+			double charsBack = 0;
+			GraphicsState state = e.Graphics.Save();
+
+			double scaledLineHeight = lineHeight;
+			
+			e.Graphics.ScaleTransform(1.0f, 1.20f);
+			scaledLineHeight = lineHeight / 1.20f;
+			yPos = (float)(lineOffset - (lineHeight * 0.20f));
+
+
+			for (int i = 0; i < Text.Length; i++)
+			{
+				String letter = Text.Substring(i, 1);
+
+				if (letter == "\n")
+				{
+					yPos += (float)scaledLineHeight;
+					charsBack = (i + 1) * charWidth;
+				}
+				else
+				{
+					float xPos = (float)(charOffset + (charWidth * i) - charsBack);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(ForeColor), xPos, yPos);
+				}
+			}
+
+			e.Graphics.Restore(state);
 		}
 
 		void DrawEngraved(PaintEventArgs e)
