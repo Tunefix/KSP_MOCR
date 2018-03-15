@@ -25,11 +25,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ": " + e.Message + "\n" + e.StackTrace);
+				return 0;
 			}
 		}
 
@@ -51,11 +50,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch(Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return 0f;
 			}
 		}
 
@@ -77,11 +75,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return 0;
 			}
 		}
 
@@ -103,11 +100,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return false;
 			}
 		}
 
@@ -129,11 +125,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return "";
 			}
 		}
 
@@ -155,11 +150,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return new Tuple<double, double, double>(1,1,1);
 			}
 		}
 
@@ -181,11 +175,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return new Tuple<double, double, double, double>(1,1,1,1);
 			}
 		}
 
@@ -207,11 +200,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return SASMode.StabilityAssist;
 			}
 		}
 
@@ -233,11 +225,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return null;
 			}
 		}
 
@@ -259,11 +250,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return VesselType.Ship;
 			}
 		}
 
@@ -285,11 +275,10 @@ namespace KSP_MOCR
 			{
 				return stream.Get();
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace);
-				stream.Start();
-				return stream.Get();
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return null;
 			}
 		}
 

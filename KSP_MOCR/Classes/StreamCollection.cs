@@ -11,13 +11,15 @@ namespace KSP_MOCR
 {
 	public sealed class StreamCollection
 	{
-		readonly KRPC.Client.Connection connection;
+		private KRPC.Client.Connection connection;
 		private static Dictionary<DataType, Kstream> streams = new Dictionary<DataType, Kstream>();
 
 		private static readonly StreamCollection instance = new StreamCollection();
 
 		private int stage;
 		private bool hasConnection = false;
+
+		public GameScene gameScene = GameScene.SpaceCenter;
 
 		public System.Object streamlock = new System.Object();
 
@@ -34,6 +36,7 @@ namespace KSP_MOCR
 		ReferenceFrame mapRefFrame;
 		Flight inertFlight;
 		Flight mapFlight;
+		KRPC.Client.Services.KRPC.Service krpc;
 
 		static StreamCollection()
 		{
@@ -57,43 +60,96 @@ namespace KSP_MOCR
 			hasConnection = true;
 		}
 
+		public void setConnection(Connection con)
+		{
+			connection = con;
+			hasConnection = true;
+		}
+
+		public void setGameScene(GameScene s)
+		{
+			gameScene = s;
+
+			// CLEAR STREAMS IF SCENE IS NOT FLIGHT
+			if(s != GameScene.Flight && streams.Count > 0)
+			{
+				CloseStreams();
+			}
+		}
+
 		public dynamic GetData(DataType type){return GetData(type, false);}
 		public dynamic GetData(DataType type, bool force_reStream)
 		{
-			if (hasConnection)
+			if (hasConnection && gameScene == GameScene.Flight)
 			{
-					if (!streams.ContainsKey(type) || force_reStream)
-					{
-						// If forced, clear out old stream
-						if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
-
-						try
-						{
-							addStream(type);
-						}
-						catch (Exception e)
-						{
-							Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
-							return null;
-						}
-					}
-					Kstream stream = streams[type];
-					dynamic output = stream.Get();
-					return output;
-			}
-			else
-			{
-				switch(type)
+				if (!streams.ContainsKey(type) || force_reStream)
 				{
-					case DataType.vessel_type:
-						return VesselType.Ship;
-					case DataType.orbit_celestialBody:
-					case DataType.vessel_parts:
+					// If forced, clear out old stream
+					if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
+
+					try
+					{
+						addStream(type);
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
 						return null;
-					default:
-						return 0;
+					}
 				}
-				
+
+				dynamic output;
+				try
+				{
+					Kstream stream = streams[type];
+					output = stream.Get();
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+					output = GetData(type, true);
+				}
+
+				return output;
+			}
+			return getNullResult(type);
+		}
+
+		private dynamic getNullResult(DataType type)
+		{
+			switch (type)
+			{
+				case DataType.vessel_type:
+					return VesselType.Ship;
+				case DataType.orbit_celestialBody:
+				case DataType.vessel_parts:
+					return null;
+				case DataType.flight_inertial_direction:
+				case DataType.flight_prograde:
+					return new Tuple<double, double, double>(1, 1, 1);
+				case DataType.body_name:
+					return "";
+				case DataType.control_SAS:
+				case DataType.control_RCS:
+				case DataType.control_abort:
+				case DataType.control_actionGroup0:
+				case DataType.control_actionGroup1:
+				case DataType.control_actionGroup2:
+				case DataType.control_actionGroup3:
+				case DataType.control_actionGroup4:
+				case DataType.control_actionGroup5:
+				case DataType.control_actionGroup6:
+				case DataType.control_actionGroup7:
+				case DataType.control_actionGroup8:
+				case DataType.control_actionGroup9:
+				case DataType.control_antennas:
+				case DataType.control_brakes:
+				case DataType.control_cargoBays:
+				case DataType.control_lights:
+				case DataType.control_gear:
+					return false;
+				default:
+					return 0;
 			}
 		}
 

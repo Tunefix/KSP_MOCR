@@ -52,7 +52,6 @@ namespace KSP_MOCR
 
 			screenLabels[0] = Helper.CreateLabel(1, 4, 58, 1); // Connection Status
 			screenLabels[0].Text = "NOT CONNECTED";
-			screenLabels[0].TextAlign = ContentAlignment.TopLeft;
 
 			screenLabels[1] = Helper.CreateLabel(61, 4, 58, 2);
 

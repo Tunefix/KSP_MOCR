@@ -26,6 +26,7 @@ namespace KSP_MOCR
 		public Font smallFont;
 		public Font smallFontB;
 		public Font tinyFont;
+		public Font CRTfont;
 		public Color foreColor;
 		public Color chartAxisColor;
 		public double charOffset;
@@ -55,6 +56,7 @@ namespace KSP_MOCR
 			this.padding_right = form.padding_right;
 			this.padding_bottom = form.padding_bottom;
 			this.font = form.font;
+			this.CRTfont = form.CRTfont;
 			this.buttonFont = form.buttonFont;
 			this.smallFont = form.smallFont;
 			this.smallFontB = form.smallFontB;

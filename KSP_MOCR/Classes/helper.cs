@@ -54,6 +54,54 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
+		static public CustomLabel CreateCRTLabel(double x, double y, double w, double h, String t)
+		{
+			double charW = 9.0;
+			double charH = 15.6;
+
+			double width = w * charW;
+			double height = h * charH;
+			double top = (y * charH) + form.padding_top;
+			double left =(x * charW) + form.padding_left;
+
+			// Make a proper size
+			int x2 = (int)Math.Floor(left);
+			double xPad = left - x2;
+
+			int y2 = (int)Math.Floor(top);
+			double yPad = top - y2;
+
+			int w2 = (int)Math.Ceiling(width + xPad);
+			int h2 = (int)Math.Ceiling(height + yPad);
+			
+
+			CustomLabel label = new CustomLabel();
+			label.setCharWidth(charW);
+			label.setlineHeight(charH);
+			label.setcharOffset(-3.0);
+			label.setlineOffset(-3.5);
+			label.Font = form.CRTfont;
+			label.AutoSize = false;
+			label.Location = new Point(x2, y2);
+			label.Size = new Size(w2, h2);
+			label.LocationF = new PointF((float)left, (float)top);
+			label.SizeF = new SizeF((float)width, (float)height);
+			label.Text = t;
+			label.ForeColor = form.foreColor;
+			label.bigText = true;
+			label.type = CustomLabel.LabelType.CRT;
+
+			form.Controls.Add(label);
+
+			return label;
+		}
+
+
+		// <param name="x">int, Position from left in characters</param>
+		// <param name="y">int, Position from top in lines</param>
+		// <param name="w">int, Width of label in characters</param>
+		// <param name="h">int, Height of label in lines</param>
+		// <param name="t">String, Text of label</param>
 		static public CustomLabel CreateLabel(double x, double y) { return CreateLabel(x, y, 8, 1, "", true, false, CustomLabel.LabelType.NORMAL); }
 		static public CustomLabel CreateLabel(double x, double y, double w) { return CreateLabel(x, y, w, 1, "", true, false, CustomLabel.LabelType.NORMAL); }
 		static public CustomLabel CreateLabel(double x, double y, double w, double h) { return CreateLabel(x, y, w, h, "", true, false, CustomLabel.LabelType.NORMAL); }
@@ -89,14 +137,11 @@ namespace KSP_MOCR
 			label.setlineOffset(form.lineOffset);
 			label.Font = form.font;
 			label.AutoSize = false;
-			label.TextAlign = ContentAlignment.TopCenter;
 			label.Location = new Point(left, top);
 			label.Size = new Size(width, height);
 			label.Text = t;
 			label.Padding = new Padding(0);
 			label.Margin = new Padding(0);
-			label.FlatStyle = FlatStyle.Flat;
-			label.BorderStyle = BorderStyle.None;
 			label.ForeColor = form.foreColor;
 			label.bigText = bigText;
 			label.type = type;
@@ -470,12 +515,21 @@ namespace KSP_MOCR
 			return label;
 		}
 
-		static public OrbitGraph CreateOrbit(int x, int y, int w, int h)
+		static public OrbitGraph CreateOrbit(int x, int y, int w, int h) { return CreateOrbit(x, y, w, h, false); }
+		static public OrbitGraph CreateOrbit(int x, int y, int w, int h, bool pixels)
 		{
 			int width = (int)Math.Ceiling((w * form.pxPrChar));
 			int height = (int)Math.Ceiling(h * form.pxPrLine);
 			int top = (int)(y * form.pxPrLine) + form.padding_top;
 			int left = (int)((x * form.pxPrChar) + form.padding_left);
+
+			if(pixels)
+			{
+				width = w;
+				height = h;
+				left = x;
+				top = y;
+			}
 			
 			OrbitGraph orbit = new OrbitGraph(form.buttonFont);
 			orbit.Location = new Point(left, top);

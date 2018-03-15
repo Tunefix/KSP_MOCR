@@ -14,7 +14,7 @@ namespace KSP_MOCR
 	 * I am using this class for labels to have full controll over where the text is
 	 * rendered in the label-coordinate system. 
 	 * */
-	public class CustomLabel : Label
+	public class CustomLabel : Control
 	{
 		double charWidth = 9;
 		double lineHeight = 19;
@@ -25,9 +25,14 @@ namespace KSP_MOCR
 		public bool glow = false; // A slight glow of the text, also a crt-effect.
 		public enum LabelType { NORMAL, ENGRAVED, CRT}
 		public LabelType type = LabelType.NORMAL;
+		public PointF LocationF;
+		public SizeF SizeF;
+
+		readonly Color blurColor = Color.FromArgb(10, 245, 250, 255);
 
 		public CustomLabel()
 		{
+			this.DoubleBuffered = true;
 		}
 
 		public void setCharWidth(double w) { this.charWidth = w; }
@@ -63,26 +68,24 @@ namespace KSP_MOCR
 
 		void DrawCRT(PaintEventArgs e)
 		{
-			if (blur)
-			{
-				e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-			}
-			else
-			{
-				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-			}
+			double xPad = LocationF.X - Location.X;
+			double yPad = LocationF.Y - Location.Y;
+
+			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+
 
 			// Draw each character on its own, to align everything
-			float yPos = (float)lineOffset;
+			float yPos = (float)(yPad + lineOffset);
+			float xPos = (float)xPad;
 			double charsBack = 0;
 			GraphicsState state = e.Graphics.Save();
 
 			double scaledLineHeight = lineHeight;
 			
-			e.Graphics.ScaleTransform(1.0f, 1.20f);
+			/*e.Graphics.ScaleTransform(1.0f, 1.20f);
 			scaledLineHeight = lineHeight / 1.20f;
 			yPos = (float)(lineOffset - (lineHeight * 0.20f));
-
+			*/
 
 			for (int i = 0; i < Text.Length; i++)
 			{
@@ -95,12 +98,21 @@ namespace KSP_MOCR
 				}
 				else
 				{
-					float xPos = (float)(charOffset + (charWidth * i) - charsBack);
+					xPos = (float)((charWidth * i) - charsBack + xPad + charOffset);
 					e.Graphics.DrawString(letter, Font, new SolidBrush(ForeColor), xPos, yPos);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos - 1f, yPos - 1f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos + 1f, yPos + 1f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos - 1f, yPos + 1f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos + 1f, yPos - 1f);
+
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos - 2f, yPos - 2f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos + 2f, yPos + 2f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos - 2f, yPos + 2f);
+					e.Graphics.DrawString(letter, Font, new SolidBrush(blurColor), xPos + 2f, yPos - 2f);
 				}
 			}
 
-			e.Graphics.Restore(state);
+			//e.Graphics.Restore(state);
 		}
 
 		void DrawEngraved(PaintEventArgs e)
@@ -227,6 +239,12 @@ namespace KSP_MOCR
 			{
 				e.Graphics.Restore(state);
 			}
+		}
+
+		protected override void OnTextChanged(EventArgs e)
+		{
+			base.OnTextChanged(e);
+			this.Invalidate();
 		}
 	}
 }

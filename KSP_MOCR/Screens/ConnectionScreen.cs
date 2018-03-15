@@ -71,8 +71,9 @@ namespace KSP_MOCR
 									+ "║     1 - ASCENT\n"
 									+ "║     2 - BOOSTER\n"
 									+ "║     3 - RESOURCES\n"
-									+ "║     4 - FLIGHT DYNAMICS\n"
-									+ "║     5 - ORBIT\n"
+									+ "║     4 - ORBIT VIEW\n"
+									+ "║     5 - ORBIT DATA\n"
+									+ "║     6 - ELECTRICAL SYSTEMS\n"
 									+ "║     8 - MAP VIEW\n"
 									+ "║     9 - FONT/ALIGNMENT TEST\n"
 									+ "║    12 - DATA STORAGE (PySSSMQ)\n"
@@ -89,7 +90,6 @@ namespace KSP_MOCR
 									+ "║   220 - STATUS PANEL (Requires PySSSMQ connection)\n"
 									+ "║\n"
 									+ "║\n";
-			screenLabels[4].TextAlign = ContentAlignment.TopLeft;
 
 			screenLabels[5] = Helper.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
 

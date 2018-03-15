@@ -49,6 +49,7 @@ namespace KSP_MOCR
 
 		static private List<PrivateFontCollection> _fontCollections;
 		public Font font;
+		public Font CRTfont;
 		public Font buttonFont;
 		public Font smallFont;
 		public Font smallFontB;
@@ -95,6 +96,7 @@ namespace KSP_MOCR
 		CustomLabel pySSSMQStatus;
 		CustomLabel pySSSMQStatus2;
 		CustomLabel kRPCStatus;
+		CustomLabel gameScene;
 
 		FileStream ostrm;
 		StreamWriter writer;
@@ -153,6 +155,7 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO UNIX");
 
 				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
+				CRTfont = new Font("Ubuntu Mono", 12, FontStyle.Regular);
 				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
 				smallFont = new Font("Ubuntu Mono", 8, FontStyle.Regular);
 				smallFontB = new Font("Ubuntu Mono", 8, FontStyle.Bold);
@@ -173,6 +176,7 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO WINDOWS");
 
 				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
+				CRTfont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
 				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
 				smallFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Regular);
 				smallFontB = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Bold);
@@ -197,7 +201,10 @@ namespace KSP_MOCR
 
 			// Setup DataStorage
 			dataStorage = new DataStorage(pySSSMQ);
-			
+
+			// Initiate SteamCollection
+			streamCollection = StreamCollection.Instance;
+
 			// Setup PySSSMQ Handler
 			pySSSMQ_handler = new PySSSMQ_Handler();
 			pySSSMQ_handler.storage = dataStorage;
@@ -206,7 +213,7 @@ namespace KSP_MOCR
 			this.KeyPreview = true;
 
 			// Setup form style
-			this.BackColor = Color.FromArgb(255, 16, 16, 16);
+			this.BackColor = Color.FromArgb(255, 24, 24, 24);
 			this.ForeColor = foreColor;
 			this.ClientSize = new Size((int)(pxPrChar * 44) + padding_left + padding_right, (int)(pxPrLine * 20) + padding_top + padding_bottom);
 
@@ -254,14 +261,11 @@ namespace KSP_MOCR
 			ipAddrLbl.setlineOffset(lineOffset);
 			ipAddrLbl.Font = font;
 			ipAddrLbl.AutoSize = false;
-			ipAddrLbl.TextAlign = ContentAlignment.TopCenter;
 			ipAddrLbl.Location = getPoint(22, 1);
 			ipAddrLbl.Size = getSize(20, 1);
 			ipAddrLbl.Text = "Server IP:";
 			ipAddrLbl.Padding = new Padding(0);
 			ipAddrLbl.Margin = new Padding(0);
-			ipAddrLbl.FlatStyle = FlatStyle.Flat;
-			ipAddrLbl.BorderStyle = BorderStyle.None;
 			ipAddrLbl.ForeColor = foreColor;
 			this.Controls.Add(ipAddrLbl);
 			
@@ -272,14 +276,11 @@ namespace KSP_MOCR
 			nameLbl.setlineOffset(lineOffset);
 			nameLbl.Font = font;
 			nameLbl.AutoSize = false;
-			nameLbl.TextAlign = ContentAlignment.TopCenter;
 			nameLbl.Location = getPoint(22, 4);
 			nameLbl.Size = getSize(20, 1);
 			nameLbl.Text = "Your ID:";
 			nameLbl.Padding = new Padding(0);
 			nameLbl.Margin = new Padding(0);
-			nameLbl.FlatStyle = FlatStyle.Flat;
-			nameLbl.BorderStyle = BorderStyle.None;
 			nameLbl.ForeColor = foreColor;
 			this.Controls.Add(nameLbl);
 			
@@ -326,14 +327,11 @@ namespace KSP_MOCR
 			kRPCStatus.setlineOffset(lineOffset);
 			kRPCStatus.Font = font;
 			kRPCStatus.AutoSize = false;
-			kRPCStatus.TextAlign = ContentAlignment.TopCenter;
 			kRPCStatus.Location = getPoint(1, 9);
 			kRPCStatus.Size = getSize(42, 1);
 			kRPCStatus.Text = "   kRPC: NOT CONNECTED";
 			kRPCStatus.Padding = new Padding(0);
 			kRPCStatus.Margin = new Padding(0);
-			kRPCStatus.FlatStyle = FlatStyle.Flat;
-			kRPCStatus.BorderStyle = BorderStyle.None;
 			kRPCStatus.ForeColor = foreColor;
 			this.Controls.Add(kRPCStatus);
 			
@@ -344,16 +342,29 @@ namespace KSP_MOCR
 			pySSSMQStatus.setlineOffset(lineOffset);
 			pySSSMQStatus.Font = font;
 			pySSSMQStatus.AutoSize = false;
-			pySSSMQStatus.TextAlign = ContentAlignment.TopCenter;
 			pySSSMQStatus.Location = getPoint(1, 10);
 			pySSSMQStatus.Size = getSize(42, 1);
 			pySSSMQStatus.Text = "PySSSMQ: NOT CONNECTED";
 			pySSSMQStatus.Padding = new Padding(0);
 			pySSSMQStatus.Margin = new Padding(0);
-			pySSSMQStatus.FlatStyle = FlatStyle.Flat;
-			pySSSMQStatus.BorderStyle = BorderStyle.None;
 			pySSSMQStatus.ForeColor = foreColor;
 			this.Controls.Add(pySSSMQStatus);
+
+			// GAME SCENE
+			gameScene = new CustomLabel();
+			gameScene.setCharWidth(pxPrChar);
+			gameScene.setlineHeight(pxPrLine);
+			gameScene.setcharOffset(charOffset);
+			gameScene.setlineOffset(lineOffset);
+			gameScene.Font = font;
+			gameScene.AutoSize = false;
+			gameScene.Location = getPoint(1, 12);
+			gameScene.Size = getSize(42, 1);
+			gameScene.Text = "GAME SCENE: ";
+			gameScene.Padding = new Padding(0);
+			gameScene.Margin = new Padding(0);
+			gameScene.ForeColor = foreColor;
+			this.Controls.Add(gameScene);
 
 			// PySSSMQ BUTTON
 			MocrButton pybutton = new MocrButton();
@@ -384,14 +395,11 @@ namespace KSP_MOCR
 			pySSSMQStatus2.setlineOffset(lineOffset);
 			pySSSMQStatus2.Font = font;
 			pySSSMQStatus2.AutoSize = false;
-			pySSSMQStatus2.TextAlign = ContentAlignment.TopCenter;
 			pySSSMQStatus2.Location = getPoint(1, 16);
 			pySSSMQStatus2.Size = getSize(42, 5);
-			pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNUNG";
+			pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNING";
 			pySSSMQStatus2.Padding = new Padding(0);
 			pySSSMQStatus2.Margin = new Padding(0);
-			pySSSMQStatus2.FlatStyle = FlatStyle.Flat;
-			pySSSMQStatus2.BorderStyle = BorderStyle.None;
 			pySSSMQStatus2.ForeColor = foreColor;
 			this.Controls.Add(pySSSMQStatus2);
 
@@ -433,6 +441,18 @@ namespace KSP_MOCR
 			else
 			{
 				pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNING";
+			}
+
+			if (krpc != null)
+			{
+				GameScene Scn = krpc.CurrentGameScene;
+				string scene = Scn.ToString();
+				gameScene.Text = "GAME SCENE: " + scene;
+
+				if(streamCollection != null)
+				{
+					streamCollection.setGameScene(Scn);
+				}
 			}
 		}
 
@@ -476,7 +496,7 @@ namespace KSP_MOCR
 					krpc = connection.KRPC();
 					spaceCenter = connection.SpaceCenter();
 
-					streamCollection = new StreamCollection(connection);
+					streamCollection.setConnection(connection);
 
 					// Setup graphable data
 					setupChartData(streamCollection);

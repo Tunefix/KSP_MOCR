@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using KRPC.Client.Services.SpaceCenter;
+using System.Drawing.Text;
 
 namespace KSP_MOCR
 {
@@ -112,7 +113,11 @@ namespace KSP_MOCR
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			g.SmoothingMode = SmoothingMode.HighQuality;
+			g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+
+			// DEBUG TEST
+			g.FillRectangle(new SolidBrush(Color.Maroon), 0, 0, this.Width, this.Height);
 
 			// Check for body and orbitset
 			if (body != null && orbitApoapsis != 0)
@@ -301,7 +306,7 @@ namespace KSP_MOCR
 				// Restore orientation
 				g.Restore(state);
 
-				drawBurnOrbit(g, scaler);
+				//drawBurnOrbit(g, scaler);
 
 
 				// Draw Positional data (if exists)

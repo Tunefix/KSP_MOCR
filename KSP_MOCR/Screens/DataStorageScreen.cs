@@ -44,7 +44,6 @@ namespace KSP_MOCR
 
 			screenLabels[0] = Helper.CreateLabel(1, 1, 118, 28); // Connection Status
 			screenLabels[0].Text = "DATA STORAGE\nNO DATA";
-			screenLabels[0].TextAlign = ContentAlignment.TopLeft;
 		}
 
 		public override void resize() { }

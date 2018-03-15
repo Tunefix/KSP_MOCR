@@ -68,7 +68,7 @@ namespace KSP_MOCR
 					name = "";
 					break;
 				case 4:
-					scr = new FDO(form);
+					scr = new OrbitView(form);
 					name = "";
 					break;
 				case 5:
@@ -94,6 +94,10 @@ namespace KSP_MOCR
 					break;
 				case 12:
 					scr = new DataStorageScreen(form);
+					name = "";
+					break;
+				case 40:
+					scr = new FDO(form);
 					name = "";
 					break;
 				case 50:
@@ -263,7 +267,7 @@ namespace KSP_MOCR
 			lock (updateLock)
 			{
 				// Clear old lables
-				foreach (Label label in screenLabels) { if (label != null) { label.Dispose(); } }
+				foreach (Control label in screenLabels) { if (label != null) { label.Dispose(); } }
 				screenLabels.Clear();
 				screenLabels.TrimExcess();
 
