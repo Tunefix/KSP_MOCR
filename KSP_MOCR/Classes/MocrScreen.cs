@@ -283,7 +283,10 @@ namespace KSP_MOCR
 
 		abstract public void updateLocalElements(object sender, EventArgs e);
 		abstract public void makeElements();
-		public void resize(object sender, EventArgs e) { resize(); }
+		public void resize(object sender, EventArgs e)
+		{
+			resize();
+		}
 		abstract public void resize();
 
 		public virtual bool keyDown(object sender, KeyEventArgs e) { return false; }

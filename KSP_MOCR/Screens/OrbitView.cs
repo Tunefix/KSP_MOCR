@@ -39,9 +39,7 @@ namespace KSP_MOCR
 			this.height = 508;
 			this.updateRate = 1000;
 
-			body = form.connection.SpaceCenter().ActiveVessel.Orbit.Body;
-			bodyRadius = body.EquatorialRadius;
-			bodyName = body.Name;
+			
 		}
 
 		public override void makeElements()
@@ -49,9 +47,7 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
-			screenOrbit = Helper.CreateOrbit(0, 0, 674, 508, true);
-			IList<CelestialBody> bodySatellites = body.Satellites;
-			screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
+			screenOrbit = Helper.CreateOrbit(0, 0, 674, 508, true);	
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -70,7 +66,12 @@ namespace KSP_MOCR
 				radius = screenStreams.GetData(DataType.orbit_radius);
 				trueAnomaly = screenStreams.GetData(DataType.orbit_trueAnomaly);
 
+				body = form.connection.SpaceCenter().ActiveVessel.Orbit.Body;
+				bodyRadius = body.EquatorialRadius;
+				bodyName = body.Name;
 
+				IList<CelestialBody> bodySatellites = body.Satellites;
+				screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
 				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly);
 
 				screenOrbit.Invalidate();
@@ -79,7 +80,10 @@ namespace KSP_MOCR
 
 		public override void resize()
 		{
-			//screenOrbit.Size = form.ClientSize;
+			if (screenOrbit != null)
+			{
+				screenOrbit.Size = form.ClientSize;
+			}
 		}
 
 		
