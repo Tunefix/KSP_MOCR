@@ -284,4 +284,29 @@ namespace KSP_MOCR
 
 		public override void Remove() { stream.Remove(); }
 	}
+
+	class referenceFrameStream : Kstream
+	{
+		KRPC.Client.Stream<ReferenceFrame> stream { get; set; }
+
+		public referenceFrameStream(KRPC.Client.Stream<ReferenceFrame> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return null;
+			}
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
 }

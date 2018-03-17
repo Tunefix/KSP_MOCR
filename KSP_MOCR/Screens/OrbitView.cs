@@ -15,8 +15,6 @@ namespace KSP_MOCR
 		String bodyName;
 
 		// TELEMETRY FIELDS
-		double MET = 0;
-		double UT = 0;
 		double apopapsis;
 		double periapsis;
 		double eccentricity;
@@ -81,6 +79,7 @@ namespace KSP_MOCR
 
 		public override void resize()
 		{
+			//screenOrbit.Size = form.ClientSize;
 		}
 
 		

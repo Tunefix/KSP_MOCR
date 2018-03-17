@@ -139,6 +139,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screens\CrtTest.cs" />
+    <Compile Include="Screens\CrtTest2.cs" />
     <Compile Include="Screens\DataStorageScreen.cs" />
     <Compile Include="Screens\Electrical.cs" />
     <Compile Include="Screens\EventPanelEECOM1.cs" />

@@ -49,11 +49,16 @@ namespace KSP_MOCR
 
 		static private List<PrivateFontCollection> _fontCollections;
 		public Font font;
-		public Font CRTfont;
 		public Font buttonFont;
 		public Font smallFont;
 		public Font smallFontB;
 		public Font tinyFont;
+
+		public Font CRTfont1;
+		public Font CRTfont2;
+		public Font CRTfont3;
+		public Font CRTfont4;
+		public Font CRTfont5;
 
 		public double pxPrChar;
 		public double pxPrLine;
@@ -65,7 +70,8 @@ namespace KSP_MOCR
 		public int padding_bottom = 4;
 		public int padding_left = 4;
 
-		public Color foreColor = Color.FromArgb(255, 230, 240, 250);
+		//public Color foreColor = Color.FromArgb(255, 230, 240, 250);
+		public Color foreColor = Color.FromArgb(255, 226, 241, 254); // MORE BLUE COLOR
 		public Color chartAxisColor = Color.FromArgb(255, 119, 102, 51);
 
 		
@@ -100,7 +106,6 @@ namespace KSP_MOCR
 
 		FileStream ostrm;
 		StreamWriter writer;
-		bool log2file = false;
 		Logger logger;
 
 		public Form1()
@@ -155,11 +160,16 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO UNIX");
 
 				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
-				CRTfont = new Font("Ubuntu Mono", 12, FontStyle.Regular);
 				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
 				smallFont = new Font("Ubuntu Mono", 8, FontStyle.Regular);
 				smallFontB = new Font("Ubuntu Mono", 8, FontStyle.Bold);
 				tinyFont = new Font("Ubuntu Mono", 7, FontStyle.Bold);
+
+				CRTfont1 = new Font("Ubuntu Mono", 7, FontStyle.Regular);
+				CRTfont2 = new Font("Ubuntu Mono", 9, FontStyle.Regular);
+				CRTfont3 = new Font("Ubuntu Mono", 12, FontStyle.Regular);
+				CRTfont4 = new Font("Ubuntu Mono", 14, FontStyle.Regular);
+				CRTfont5 = new Font("Ubuntu Mono", 18, FontStyle.Regular);
 
 				pxPrChar = 8;
 				pxPrLine = 16;
@@ -176,11 +186,16 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO WINDOWS");
 
 				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
-				CRTfont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
 				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
 				smallFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Regular);
 				smallFontB = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Bold);
 				tinyFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 7, FontStyle.Bold);
+
+				CRTfont1 = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 7, FontStyle.Regular);
+				CRTfont2 = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 9, FontStyle.Regular);
+				CRTfont3 = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
+				CRTfont4 = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 14, FontStyle.Regular);
+				CRTfont5 = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 18, FontStyle.Regular);
 
 				pxPrChar = 9;
 				pxPrLine = 19;
@@ -642,11 +657,6 @@ namespace KSP_MOCR
 			{
 				screenCallup += (x - 96).ToString();
 			}
-			/*
-			if (activeScreen != null)
-			{
-				activeScreen.keyDown(sender, e);
-			}*/
 		}
 
 		public void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -675,20 +685,12 @@ namespace KSP_MOCR
 				}
 				screenCallup = "";
 			}
-
-			/*
-			if (activeScreen != null)
-			{
-				activeScreen.keyUp(sender, e);
-			}
-			*/
 		}
 
 		private void setLogOut(bool on)
 		{
 			if (on)
 			{
-				log2file = true;
 				try
 				{
 					ostrm = new FileStream("./log.txt", FileMode.Create, FileAccess.Write);

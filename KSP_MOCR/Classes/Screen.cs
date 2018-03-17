@@ -26,7 +26,13 @@ namespace KSP_MOCR
 		public Font smallFont;
 		public Font smallFontB;
 		public Font tinyFont;
-		public Font CRTfont;
+
+		public Font CRTfont1;
+		public Font CRTfont2;
+		public Font CRTfont3;
+		public Font CRTfont4;
+		public Font CRTfont5;
+
 		public Color foreColor;
 		public Color chartAxisColor;
 		public double charOffset;
@@ -56,7 +62,6 @@ namespace KSP_MOCR
 			this.padding_right = form.padding_right;
 			this.padding_bottom = form.padding_bottom;
 			this.font = form.font;
-			this.CRTfont = form.CRTfont;
 			this.buttonFont = form.buttonFont;
 			this.smallFont = form.smallFont;
 			this.smallFontB = form.smallFontB;
@@ -67,6 +72,12 @@ namespace KSP_MOCR
 			this.lineOffset = form.lineOffset;
 			this.chartData = form.chartData;
 
+			this.CRTfont1 = form.CRTfont1;
+			this.CRTfont2 = form.CRTfont2;
+			this.CRTfont3 = form.CRTfont3;
+			this.CRTfont4 = form.CRTfont4;
+			this.CRTfont5 = form.CRTfont5;
+
 			this.BackColor = form.BackColor;
 
 			this.FormClosing += ScreenClosing;
@@ -76,6 +87,7 @@ namespace KSP_MOCR
 			this.KeyDown += localKeyDown;
 			this.KeyUp += localKeyUp;
 
+			this.DoubleBuffered = true;
 			
 			
 			// Initiate Screen Timer
@@ -155,6 +167,8 @@ namespace KSP_MOCR
 
 		private void ScreenClosing(object sender, FormClosingEventArgs e)
 		{
+			Console.WriteLine("CLOSING " +": ScrTp: " + this.screenType
+					+ ", ScrID: " + this.ID);
 			screenTimer.Stop();
 			screenTimer.Dispose();
 			if (streamCollection != null)

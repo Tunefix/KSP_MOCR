@@ -25,15 +25,27 @@ namespace KSP_MOCR
 			Helper.form = form;
 		}
 
-		static public TextBox CreateInput(int x, int y) { return CreateInput(x, y, 8, 1, HorizontalAlignment.Left); }
-		static public TextBox CreateInput(int x, int y, int w) { return CreateInput(x, y, w, 1, HorizontalAlignment.Left); }
-		static public TextBox CreateInput(int x, int y, int w, int h) { return CreateInput(x, y, w, h, HorizontalAlignment.Left); }
-		static public TextBox CreateInput(int x, int y, int w, int h, HorizontalAlignment align)
+		static public TextBox CreateInput(int x, int y) { return CreateInput(x, y, 8, 1, HorizontalAlignment.Left, false); }
+		static public TextBox CreateInput(int x, int y, int w) { return CreateInput(x, y, w, 1, HorizontalAlignment.Left, false); }
+		static public TextBox CreateInput(int x, int y, int w, int h) { return CreateInput(x, y, w, h, HorizontalAlignment.Left, false); }
+		static public TextBox CreateInput(int x, int y, int w, int h, HorizontalAlignment align) { return CreateInput(x, y, w, h, align, false); }
+		static public TextBox CreateInput(int x, int y, int w, int h, HorizontalAlignment align, bool pixels)
 		{
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine) - 1;
-			int top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
-			int left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
+			int top, left, width, height;
+			if (pixels)
+			{
+				top = (int)y;
+				left = (int)x;
+				width = (int)w;
+				height = (int)h;
+			}
+			else
+			{
+				width = (int)Math.Ceiling((w * form.pxPrChar));
+				height = (int)Math.Ceiling(h * form.pxPrLine) - 1;
+				top = (int)(Math.Ceiling(y * form.pxPrLine) + form.padding_top);
+				left = (int)(Math.Ceiling(x * form.pxPrChar) + form.padding_left);
+			}
 
 			TextBox input = new TextBox();
 			input.Location = new Point(left, top);
@@ -54,12 +66,62 @@ namespace KSP_MOCR
 		// <param name="w">int, Width of label in characters</param>
 		// <param name="h">int, Height of label in lines</param>
 		// <param name="t">String, Text of label</param>
-		static public CustomLabel CreateCRTLabel(double x, double y, double w, double h, String t)
+		// <param name="s">int, Font size. 1-5</param>
+		// <param name="pixels">bool, wheter x,y,w,h is in pixels</param>
+		static public CustomLabel CreateCRTLabel(double x, double y, double w, double h, String t) { return CreateCRTLabel(x, y, w, h, t, 3, false); }
+		static public CustomLabel CreateCRTLabel(double x, double y, double w, double h, String t, int s) { return CreateCRTLabel(x, y, w, h, t, s, false); }
+		static public CustomLabel CreateCRTLabel(double x, double y, double w, double h, String t, int s, bool pixels)
 		{
 			double charW = 9.0;
 			double charH = 15.6;
+			double charOffset = -3.0;
+			double lineOffset = -3.5;
+			Font font = form.CRTfont3;
 
-			double width = w * charW;
+			// LIMIT size
+			if (s < 1) s = 1;
+			if (s > 5) s = 5;
+			switch (s)
+			{
+				case 1:
+					charW = 5.0;
+					charH = 9.0;
+					charOffset = 0.0;
+					lineOffset = -1.0;
+					font = form.CRTfont1;
+					break;
+				case 2:
+					charW = 7.0;
+					charH = 11.0;
+					charOffset = -0.5;
+					lineOffset = -1.0;
+					font = form.CRTfont2;
+					break;
+				case 3:
+					charW = 9.0;
+					charH = 14.0;
+					charOffset = -1.0;
+					lineOffset = -3.0;
+					font = form.CRTfont3;
+					break;
+				case 4:
+					charW = 10.0;
+					charH = 16.0;
+					charOffset = -2.0;
+					lineOffset = -3.5;
+					font = form.CRTfont4;
+					break;
+				case 5:
+					charW = 14.0;
+					charH = 20.0;
+					charOffset = -3.0;
+					lineOffset = -5.5;
+					font = form.CRTfont5;
+					break;
+			}
+			
+
+			double width = (w * charW) + 2;
 			double height = h * charH;
 			double top = (y * charH) + form.padding_top;
 			double left =(x * charW) + form.padding_left;
@@ -78,9 +140,9 @@ namespace KSP_MOCR
 			CustomLabel label = new CustomLabel();
 			label.setCharWidth(charW);
 			label.setlineHeight(charH);
-			label.setcharOffset(-3.0);
-			label.setlineOffset(-3.5);
-			label.Font = form.CRTfont;
+			label.setcharOffset(charOffset);
+			label.setlineOffset(lineOffset);
+			label.Font = font;
 			label.AutoSize = false;
 			label.Location = new Point(x2, y2);
 			label.Size = new Size(w2, h2);
@@ -420,17 +482,34 @@ namespace KSP_MOCR
 			return dropdown;
 		}
 
-		static public EngineIndicator CreateEngine(int x, int y, int w, int h, String t)
+		/// <summary>
+		/// Place Engine Indicator with center at x, y
+		/// </summary>
+		/// <param name="x">int; Pixels from left edge to center of engine</param>
+		/// <param name="y">int; Pixels from top to center of engine</param>
+		/// <param name="t">string; Text to be displayed in the enging</param>
+		/// <param name="thrust">double; thrust of the engine (used to determine size)</param>
+		/// <returns></returns>
+		static public EngineIndicator CreateEngine(int x, int y, string t, double thrust)
 		{
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
+			int top = y + form.padding_top;
+			int left = x + form.padding_left;
+			
 
 			EngineIndicator label = new EngineIndicator();
 			label.Font = form.font;
+			
+
+			if(thrust > label.maxThrust) { thrust = label.maxThrust; }
+			int size = (int)Math.Ceiling((thrust / label.maxThrust) * label.maxDiameter);
+			if (size < label.minDiameter) size = label.minDiameter;
+
+			// Recalculate left and top
+			left = (int)Math.Round(left - (size / 2f));
+			top = (int)Math.Round(top - (size / 2f));
+
 			label.Location = new Point(left, top);
-			label.Size = new Size(width, height);
+			label.Size = new Size(size, size);
 			label.Text = t;
 
 			form.Controls.Add(label);
@@ -615,7 +694,9 @@ namespace KSP_MOCR
 
 				ts = ts - sec;
 				ts = Math.Round(ts * 100f);
-				sec_s = sec_s + "." + ts.ToString();
+				string tsStr = ts.ToString();
+				if (tsStr.Length == 1) tsStr += "0";
+				sec_s = sec_s + "." + tsStr;
 				
 				output = min_s + ":" + sec_s;
 			}

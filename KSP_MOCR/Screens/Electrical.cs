@@ -22,8 +22,8 @@ namespace KSP_MOCR
 			this.screenStreams = form.streamCollection;
 
 			this.charSize = false;
-			this.width = 674;
-			this.height = 508;
+			this.width = 656;
+			this.height = 494;
 			this.updateRate = 1000;
 		}
 
@@ -35,16 +35,16 @@ namespace KSP_MOCR
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
 			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 5, 1, "SCR 6");
-			screenLabels[1] = Helper.CreateCRTLabel(21, 0, 30, 1, "SPACECRAFT ELECTRICAL SYSTEMS");
-			screenLabels[2] = Helper.CreateCRTLabel(0, 1, 12, 1, "LT: XX:XX:XX");
-			screenLabels[3] = Helper.CreateCRTLabel(29, 1, 14, 1, "MET: XXX:XX:XX");
+			screenLabels[1] = Helper.CreateCRTLabel(17, 0, 30, 1, "SPACECRAFT ELECTRICAL SYSTEMS", 4);
+			screenLabels[2] = Helper.CreateCRTLabel(0, 1.5, 12, 1, "LT: XX:XX:XX");
+			screenLabels[3] = Helper.CreateCRTLabel(29, 1.5, 14, 1, "MET: XXX:XX:XX");
 
 			screenLabels[4] = Helper.CreateCRTLabel(0, 3, 72, 1, "─── SOLAR PANELS ──── GEN ─── SUN ─┬────────────── TOTALS ──────────────");
 			screenLabels[5] = Helper.CreateCRTLabel(0, 18, 72, 1, "─────────────── STORAGE ──────────────── CAP ───── LVL ───── FLW ──────");
-			screenLabels[6] = Helper.CreateCRTLabel(36, 4, 36, 1, "                GEN     SUN");
-			screenLabels[7] = Helper.CreateCRTLabel(36, 5, 36, 1, "     SOLAR:   XXXX.XX    X.XX");
-			screenLabels[8] = Helper.CreateCRTLabel(36, 7, 36, 1, "                CAP     LVL     FLW");
-			screenLabels[9] = Helper.CreateCRTLabel(36, 8, 36, 1, "   STORAGE:  XXXX.XX XXXX.XX XXXX.XX");
+			screenLabels[6] = Helper.CreateCRTLabel(36, 4, 36, 1, "               GEN     SUN");
+			screenLabels[7] = Helper.CreateCRTLabel(36, 5, 36, 1, "    SOLAR:   XXXX.XX    X.XX");
+			screenLabels[8] = Helper.CreateCRTLabel(36, 7, 36, 1, "               CAP     LVL     FLW");
+			screenLabels[9] = Helper.CreateCRTLabel(36, 8, 36, 1, "  STORAGE:  XXXX.XX XXXX.XX XXXX.XX");
 			//screenLabels[7] = Helper.CreateCRTLabel(1, 15, 58, 1, "──────────── STORAGE ───────────── CAP ────── LVL ──────");
 
 			for (int i = 4; i < 17; i++)
@@ -153,7 +153,7 @@ namespace KSP_MOCR
 							storageFlwSum += flow;
 
 							string s = "";
-							s += Helper.prtlen(p.Title, 35, Helper.Align.RIGHT);
+							s += Helper.prtlen(p.Title.ToUpper(), 35, Helper.Align.RIGHT);
 							s += Helper.prtlen(Helper.toFixed(maxAmount, 2), 10, Helper.Align.RIGHT);
 							s += Helper.prtlen(Helper.toFixed(curAmount, 2), 10, Helper.Align.RIGHT);
 							s += Helper.prtlen(Helper.toFixed(flow, 2), 10, Helper.Align.RIGHT);
@@ -173,7 +173,7 @@ namespace KSP_MOCR
 
 
 							string s = "";
-							s += Helper.prtlen(p.Title, 18, Helper.Align.RIGHT);
+							s += Helper.prtlen(p.Title.ToUpper(), 18, Helper.Align.RIGHT);
 							s += Helper.prtlen(Helper.toFixed(flow, 2), 8, Helper.Align.RIGHT);
 							s += Helper.prtlen(Helper.toFixed(sun, 2), 8, Helper.Align.RIGHT);
 							source.Add(s);
@@ -201,9 +201,9 @@ namespace KSP_MOCR
 					}
 
 					// PRINT TOTALS
-					screenLabels[7].Text = "     SOLAR: " + Helper.prtlen(Helper.toFixed(solarGenSum, 2), 8, Helper.Align.RIGHT) + Helper.prtlen(Helper.toFixed(solarSunSum, 2), 8, Helper.Align.RIGHT);
+					screenLabels[7].Text = "    SOLAR: " + Helper.prtlen(Helper.toFixed(solarGenSum, 2), 8, Helper.Align.RIGHT) + Helper.prtlen(Helper.toFixed(solarSunSum, 2), 8, Helper.Align.RIGHT);
 
-					string storSums = "   STORAGE: ";
+					string storSums = "  STORAGE: ";
 					storSums += Helper.prtlen(Helper.toFixed(storageCapSum, 2), 8, Helper.Align.RIGHT);
 					storSums += Helper.prtlen(Helper.toFixed(storageLvlSum, 2), 8, Helper.Align.RIGHT);
 					storSums += Helper.prtlen(Helper.toFixed(storageFlwSum, 2), 8, Helper.Align.RIGHT);

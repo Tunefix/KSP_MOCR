@@ -27,8 +27,9 @@ namespace KSP_MOCR
 		public LabelType type = LabelType.NORMAL;
 		public PointF LocationF;
 		public SizeF SizeF;
+		public int CrtSize = 3; // Whitch size font to use for CRT-rendering. 1-5
 
-		readonly Color blurColor = Color.FromArgb(10, 245, 250, 255);
+		readonly Color blurColor = Color.FromArgb(10, 226, 241, 254);
 
 		public CustomLabel()
 		{
@@ -72,6 +73,9 @@ namespace KSP_MOCR
 			double yPad = LocationF.Y - Location.Y;
 
 			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+
+			// FILL BACKGROUND
+			//e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 255, 0, 0)), 0, 0, Width, Height);
 
 
 			// Draw each character on its own, to align everything

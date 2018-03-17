@@ -36,7 +36,6 @@ namespace KSP_MOCR
 		ReferenceFrame mapRefFrame;
 		Flight inertFlight;
 		Flight mapFlight;
-		KRPC.Client.Services.KRPC.Service krpc;
 
 		static StreamCollection()
 		{
@@ -84,12 +83,19 @@ namespace KSP_MOCR
 			{
 				if (!streams.ContainsKey(type) || force_reStream)
 				{
-					// If forced, clear out old stream
-					if (force_reStream) { streams[type].Remove(); streams.Remove(type); }
+					// If forced, clear out old stream (is it exists)
+					if (force_reStream && streams.ContainsKey(type))
+					{
+						streams[type].Remove(); streams.Remove(type);
+						Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " REMOVED STREAM: " + type.ToString());
+						// GIVE THE SERVER SOME TIME TO REACT
+						Thread.Sleep(1);
+					}
 
 					try
 					{
 						addStream(type);
+						Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " ADDED STREAM: " + type.ToString());
 					}
 					catch (Exception e)
 					{
@@ -123,6 +129,7 @@ namespace KSP_MOCR
 					return VesselType.Ship;
 				case DataType.orbit_celestialBody:
 				case DataType.vessel_parts:
+				case DataType.vessel_referenceFrame:
 					return null;
 				case DataType.flight_inertial_direction:
 				case DataType.flight_prograde:
@@ -570,7 +577,13 @@ namespace KSP_MOCR
 				case DataType.vessel_type:
 					stream = new vesselTypeStream(connection.AddStream(() => vessel.Type));
 					break;
-					
+				case DataType.vessel_mass:
+					stream = new floatStream(connection.AddStream(() => vessel.Mass));
+					break;
+				case DataType.vessel_dryMass:
+					stream = new floatStream(connection.AddStream(() => vessel.DryMass));
+					break;
+
 				case DataType.vessel_position:
 					stream = new tuple3Stream(connection.AddStream(() => vessel.Position(vessel.Orbit.Body.NonRotatingReferenceFrame)));
 					break;
@@ -581,7 +594,11 @@ namespace KSP_MOCR
 					stream = new vesselPartsStream(connection.AddStream(() => vessel.Parts));
 					break;
 
-				
+				case DataType.vessel_referenceFrame:
+					stream = new referenceFrameStream(connection.AddStream(() => vessel.ReferenceFrame));
+					break;
+
+
 				default:
 					throw (new Exception("DataType: " + type.ToString() + " not supported"));
 			}

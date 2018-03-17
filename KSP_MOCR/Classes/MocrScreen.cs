@@ -34,7 +34,9 @@ namespace KSP_MOCR
 		public int height = 30; // in rows
 		public bool charSize = true; // Wheter size and positions are in chars/rows or pixels(without padding)
 
-		public int screenType;
+		private static int screenType;
+		private static string idstr;
+		private static string name;
 
 		public int updateRate = 1000;
 
@@ -43,11 +45,13 @@ namespace KSP_MOCR
 		public Screen form;
 
 		private Object updateLock = new System.Object();
+		
 
 		public static MocrScreen Create(int id, Screen form)
 		{
-			string idstr = id.ToString();
-			string name = "";
+			screenType = id;
+			idstr = id.ToString();
+			name = "";
 			MocrScreen scr = null;
 			switch (id)
 			{
@@ -69,7 +73,7 @@ namespace KSP_MOCR
 					break;
 				case 4:
 					scr = new OrbitView(form);
-					name = "";
+					name = "SPACECRAFT ORBIT (INCLINATION NOT INCLUDED)";
 					break;
 				case 5:
 					scr = new SingleOrbit(form);
@@ -139,6 +143,30 @@ namespace KSP_MOCR
 				case 70:
 					scr = new EventPanelEECOM1(form);
 					name = "Event Indicator - EECOM #1";
+					break;
+				case 91:
+					scr = new CrtTest(form, 1);
+					name = "CRT TEST SCREEN - FONT SIZE 1";
+					break;
+				case 92:
+					scr = new CrtTest(form, 2);
+					name = "CRT TEST SCREEN - FONT SIZE 2";
+					break;
+				case 93:
+					scr = new CrtTest(form, 3);
+					name = "CRT TEST SCREEN - FONT SIZE 3";
+					break;
+				case 94:
+					scr = new CrtTest(form, 4);
+					name = "CRT TEST SCREEN - FONT SIZE 4";
+					break;
+				case 95:
+					scr = new CrtTest(form, 5);
+					name = "CRT TEST SCREEN - FONT SIZE 5";
+					break;
+				case 99:
+					scr = new CrtTest2(form, 5);
+					name = "CRT TEST SCREEN #2";
 					break;
 				case 100:
 					scr = new Pilot1(form);

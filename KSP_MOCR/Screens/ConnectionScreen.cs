@@ -12,7 +12,6 @@ namespace KSP_MOCR
 {
 	class ConnectionScreen : MocrScreen
 	{
-		KRPC.Schema.KRPC.Status status;
 
 		public ConnectionScreen(Screen form)
 		{

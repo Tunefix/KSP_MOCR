@@ -56,6 +56,7 @@ namespace KSP_MOCR
 		static Brush periBrush = new SolidBrush(Color.FromArgb(200, 0, 200, 0));
 		static Brush textBrush = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
 		static Brush burnBrush = new SolidBrush(Color.FromArgb(200, 200, 0, 0));
+		static Brush bodyBrush = new SolidBrush(bodyColor);
 
 		readonly Font font;
 
@@ -117,14 +118,14 @@ namespace KSP_MOCR
 			g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
 			// DEBUG TEST
-			g.FillRectangle(new SolidBrush(Color.Maroon), 0, 0, this.Width, this.Height);
+			//g.FillRectangle(new SolidBrush(Color.Maroon), 0, 0, this.Width, this.Height);
 
 			// Check for body and orbitset
 			if (body != null && orbitApoapsis != 0)
 			{
 				// Determine scaler
 				int maxSizePx;
-				if (this.Width > this.Height)
+				if (this.Width < this.Height)
 				{
 					maxSizePx = this.Width;
 				}
@@ -135,7 +136,7 @@ namespace KSP_MOCR
 
 				// Get biggest apopapsis of sattelites
 				double satMaxApo = 0;
-				lock(bodySatellites)
+				/*lock(bodySatellites)
 				{
 					foreach (CelestialBody sat in bodySatellites)
 					{
@@ -144,7 +145,7 @@ namespace KSP_MOCR
 							satMaxApo = sat.Orbit.Apoapsis;
 						}
 					}
-				}
+				}*/
 
 				// Check of vessel orbit is biggest
 				if (orbitApoapsis > satMaxApo)
@@ -167,7 +168,7 @@ namespace KSP_MOCR
 				float width = (float)(bodyRadius * 2 * scaler);
 				float height = (float)(bodyRadius * 2 * scaler);
 				RectangleF rect = new RectangleF(left, top, width, height);
-				g.DrawEllipse(bodyPen, rect);
+				g.FillEllipse(bodyBrush, rect);
 				
 				GraphicsState state = g.Save();
 				g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
