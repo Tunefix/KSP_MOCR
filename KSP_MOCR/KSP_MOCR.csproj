@@ -117,6 +117,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AGC.cs" />
     <Compile Include="Classes\CustomLabel.cs">
       <SubType>Component</SubType>
     </Compile>

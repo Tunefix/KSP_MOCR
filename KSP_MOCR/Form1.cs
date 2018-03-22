@@ -97,12 +97,17 @@ namespace KSP_MOCR
 
 		public StreamCollection streamCollection = StreamCollection.Instance;
 
+		AGC agc;
+
 		TextBox ipAddr;
 		TextBox name;
 		CustomLabel pySSSMQStatus;
 		CustomLabel pySSSMQStatus2;
 		CustomLabel kRPCStatus;
 		CustomLabel gameScene;
+
+		CustomLabel AGCStatus;
+		MocrButton AGCButton;
 
 		FileStream ostrm;
 		StreamWriter writer;
@@ -224,13 +229,16 @@ namespace KSP_MOCR
 			pySSSMQ_handler = new PySSSMQ_Handler();
 			pySSSMQ_handler.storage = dataStorage;
 
+			// Setup AGC
+			agc = new AGC(dataStorage, streamCollection);
+
 			// Enable key preview
 			this.KeyPreview = true;
 
 			// Setup form style
 			this.BackColor = Color.FromArgb(255, 24, 24, 24);
 			this.ForeColor = foreColor;
-			this.ClientSize = new Size((int)(pxPrChar * 44) + padding_left + padding_right, (int)(pxPrLine * 20) + padding_top + padding_bottom);
+			this.ClientSize = new Size((int)(pxPrChar * 44) + padding_left + padding_right, (int)(pxPrLine * 24) + padding_top + padding_bottom);
 
 			// Initiate Graph Timer
 			graphTimer = new System.Timers.Timer();
@@ -418,6 +426,32 @@ namespace KSP_MOCR
 			pySSSMQStatus2.ForeColor = foreColor;
 			this.Controls.Add(pySSSMQStatus2);
 
+
+			// AGC STATUS AND CONTROL
+			AGCStatus = new CustomLabel();
+			AGCStatus.setCharWidth(pxPrChar);
+			AGCStatus.setlineHeight(pxPrLine);
+			AGCStatus.setcharOffset(charOffset);
+			AGCStatus.setlineOffset(lineOffset);
+			AGCStatus.Font = font;
+			AGCStatus.AutoSize = false;
+			AGCStatus.Location = getPoint(1, 21);
+			AGCStatus.Size = getSize(42, 1);
+			AGCStatus.Text = "AGC: NOT RUNNING";
+			AGCStatus.Padding = new Padding(0);
+			AGCStatus.Margin = new Padding(0);
+			AGCStatus.ForeColor = foreColor;
+			this.Controls.Add(AGCStatus);
+
+			AGCButton = new MocrButton();
+			AGCButton.Location = getPoint(1, 22);
+			AGCButton.Size = getSize(24, 1);
+			AGCButton.Cursor = Cursors.Hand;
+			AGCButton.Font = font;
+			AGCButton.Text = "Start AGC";
+			AGCButton.Padding = new Padding(0);
+			AGCButton.Click += toggleAGC;
+			this.Controls.Add(AGCButton);
 		}
 		
 		private void checkForEnter(object sender, KeyEventArgs e)
@@ -444,6 +478,20 @@ namespace KSP_MOCR
 			return new Size(width, height);
 		}
 
+		private void toggleAGC(object sender, EventArgs e)
+		{
+			if(agc.isRunning())
+			{
+				agc.Stop();
+				AGCButton.Text = "Start AGC";
+			}
+			else
+			{
+				agc.Start();
+				AGCButton.Text = "Stop AGC";
+			}
+		}
+
 		public void statusCheckTick(object sender, EventArgs e)
 		{
 			//Process[] pname = Process.GetProcesses();
@@ -468,6 +516,16 @@ namespace KSP_MOCR
 				{
 					streamCollection.setGameScene(Scn);
 				}
+			}
+
+			// AGC STATUS CHECK
+			if(agc.isRunning())
+			{
+				AGCStatus.Text = "AGC: RUNNING";
+			}
+			else
+			{
+				AGCStatus.Text = "AGC: NOT RUNNING";
 			}
 		}
 
@@ -543,6 +601,7 @@ namespace KSP_MOCR
 					if (pySSSMQ.IsConnected())
 					{
 						pySSSMQStatus.Text = "PySSSMQ: CONNECTED";
+						dataStorage.Pull();
 					}
 					else
 					{
@@ -567,7 +626,7 @@ namespace KSP_MOCR
 			p.StartInfo.WorkingDirectory = System.Environment.CurrentDirectory;
 			p.StartInfo.FileName = "python\\pythonw.exe";
 			p.StartInfo.Arguments = " PySSSMQ_server.py";
-			p.StartInfo.UseShellExecute = true;
+			p.StartInfo.UseShellExecute = false;
 			p.Start();
 		}
 

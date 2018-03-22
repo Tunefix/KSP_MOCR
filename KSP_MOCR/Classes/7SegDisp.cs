@@ -53,7 +53,7 @@ namespace KSP_MOCR
 			this.signState = sign;
 			this.pad = pad;
 			this.align = align;
-			//this.Invalidate(); // This gets done by a separate thread under pilot-screen
+			this.Invalidate();
 		}
 
 
