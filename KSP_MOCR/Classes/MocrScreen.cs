@@ -83,7 +83,7 @@ namespace KSP_MOCR
 					break;
 				case 6:
 					scr = new Electrical(form);
-					name = "";
+					name = "ELECTRICAL SYSTEMS";
 					break;
 				case 8:
 					scr = new MapScreen(form);

@@ -67,12 +67,14 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+			screenLabels[2].Text = "LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
+
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				MET = screenStreams.GetData(DataType.vessel_MET);
 				parts = screenStreams.GetData(DataType.vessel_parts);
 
-				screenLabels[2].Text = "LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
+				
 				screenLabels[3].Text = "MET: " + Helper.timeString(MET, 3);
 
 				// FIND SOURCES, DRAINS, AND STORAGE
@@ -183,20 +185,26 @@ namespace KSP_MOCR
 					// PRINT FIRST 13 OF EACH
 					for (int i = 0; i < 13; i++)
 					{
-						if (source.Count > i) screenLabels[10 + i].Text = source[i];
-					}
-
-					int n = 0;
-					foreach(KeyValuePair<ulong, string> kvp in storage)
-					{
-						if(n < 13)
+						if (source.Count > i)
 						{
-							if(storage.Count > n) screenLabels[30 + n].Text = kvp.Value;
-							n++;
+							screenLabels[10 + i].Text = source[i];
 						}
 						else
 						{
-							break;
+							screenLabels[10 + i].Text = "";
+						}
+					}
+
+					for(int i = 0; i < 13; i++)
+					{ 
+						if (storage.Count > i)
+						{
+							KeyValuePair<ulong, string> kvp = storage.ElementAt(i);
+							screenLabels[30 + i].Text = kvp.Value;
+						}
+						else
+						{
+							screenLabels[30 + i].Text = "";
 						}
 					}
 
