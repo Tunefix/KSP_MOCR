@@ -8,7 +8,7 @@ namespace KSP_MOCR
 {
 	public class MocrButton : Control
 	{
-		public enum style {LIGHT, THIN_BORDER_LIGHT, PUSH}
+		public enum style {LIGHT, THIN_BORDER_LIGHT, PUSH, DSKY}
 		public style buttonStyle { get; set; }
 
 		private bool pressed = false;

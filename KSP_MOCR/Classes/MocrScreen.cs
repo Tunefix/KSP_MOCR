@@ -29,6 +29,7 @@ namespace KSP_MOCR
 		public OrbitGraph screenOrbit;
 
 		public StreamCollection screenStreams;
+		public DataStorage dataStorage;
 
 		public int width = 120; // in chars
 		public int height = 30; // in rows
@@ -39,6 +40,7 @@ namespace KSP_MOCR
 		private static string name;
 
 		public int updateRate = 1000;
+		public int timeWarning = 250;
 
 		public Dictionary<String, List<KeyValuePair<double, double?>>> chartData;
 
@@ -171,6 +173,14 @@ namespace KSP_MOCR
 				case 100:
 					scr = new Pilot1(form);
 					name = "";
+					break;
+				case 101:
+					scr = new FDAIScreen(form);
+					name = "FDAI";
+					break;
+				case 102:
+					scr = new DSKYScreen(form);
+					name = "DSKY/AGC";
 					break;
 				case 201:
 					scr = new StatusReport(form, "BOOSTER");

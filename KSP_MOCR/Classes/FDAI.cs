@@ -25,24 +25,41 @@ namespace KSP_MOCR
 		public double offsetR = 0;
 		public double offsetP = 0;
 		public double offsetY = 0;
-		
+
+		double errorR = 0;
+		double errorP = 0;
+		double errorY = 0;
+		double errorScale = 5; // Degrees at full deflection
+
+		double rollRateR = 0;
+		double rollRateP = 0;
+		double rollRateY = 0;
+		double rollRateScale = 5;
+
 		double zeroR = 0;
 		double zeroP = 0;
 		double zeroY = 0;
 
 		Tuple<double, double, double, double> rotation;
 		readonly Tuple<double, double, double, double> baseDirection = new Tuple<double, double, double, double>(0, 1, 0, 0); // w, x, y, z
-		
-		
-		int FDAI_size;
-		int FDAI_left;
-		int FDAI_top;
+
+		List<FDAILine> lineCollection = new List<FDAILine>();
+		List<FDAILine> numberCollection = new List<FDAILine>();
+		List<FDAIPolygon> polygonCollection = new List<FDAIPolygon>();
+		List<FDAIPolygon> shieldCollection = new List<FDAIPolygon>();
+		KeyValuePair<List<FDAILine>, List<FDAIPolygon>> comboCollection;
+
+
+		float FDAI_size;
+		float FDAI_left;
+		float FDAI_top;
 		double FDAI_centerX;
 		double FDAI_centerY;
 
 		readonly Pen borderPen = new Pen(Color.FromArgb(255, 96, 96, 96), 1.0f);
+		readonly Pen borderPenLight = new Pen(Color.FromArgb(200, 96, 96, 96), 1.0f);
 		readonly Pen FDAIPen = new Pen(Color.FromArgb(200, 255, 255, 255), 1.0f);
-		readonly Pen crosshairPen = new Pen(Color.FromArgb(255, 203, 147, 62), 1.75f);
+		
 		
 		readonly Pen grayCenterPen = new Pen(Color.FromArgb(255, 64, 64, 64), 10f);
 		readonly Pen blackCenterPen = new Pen(Color.FromArgb(255, 32, 32, 21), 8f);
@@ -55,19 +72,27 @@ namespace KSP_MOCR
 		
 		
 		readonly Brush whiteBrush = new SolidBrush(Color.FromArgb(255, 200, 204, 194));
+		readonly Brush pureWhiteBrush = new SolidBrush(Color.FromArgb(255, 255, 255, 255));
 		readonly Brush blackBrush = new SolidBrush(Color.FromArgb(255, 16, 16, 16));
 		readonly Brush redBrush = new SolidBrush(Color.FromArgb(255, 180, 28, 25));
 		
 		readonly Pen whiteNumberPen = new Pen(Color.FromArgb(200, 255, 255, 255), 1.0f);
 		readonly Pen blackNumberPen = new Pen(Color.FromArgb(200, 32, 32, 32), 1.0f);
 
-		
-		readonly Pen maskPen = new Pen(Color.FromArgb(255, 0, 0, 0), 200);
-		readonly Pen mask2Pen = new Pen(Color.FromArgb(255, 32, 32, 32), 200);
+		readonly static Color maskColor = Color.FromArgb(255, 16, 16, 16); // Inner "black" rings
+		readonly static Color mask2Color = Color.FromArgb(255, 32, 32, 32); // Outer grey panel
+		readonly Pen maskPen = new Pen(maskColor, 200);
+		readonly Pen mask2Pen = new Pen(mask2Color, 200);
 		
 		readonly Pen outerBorderPen = new Pen(Color.FromArgb(255, 96, 96, 96), 2.0f);
 
 		readonly Color yawNumbers = Color.FromArgb(200, 255, 255, 255);
+
+		readonly Pen ShadowPen1 = new Pen(Color.FromArgb(55, 0, 0, 0), 1.0f);
+		readonly Pen ShadowPen2 = new Pen(Color.FromArgb(45, 0, 0, 0), 1.0f);
+		readonly Pen ShadowPen3 = new Pen(Color.FromArgb(35, 0, 0, 0), 1.0f);
+		readonly Pen ShadowPen4 = new Pen(Color.FromArgb(25, 0, 0, 0), 1.0f);
+		readonly Pen ShadowPen5 = new Pen(Color.FromArgb(15, 0, 0, 0), 1.0f);
 
 		public FDAI()
 		{
@@ -87,11 +112,27 @@ namespace KSP_MOCR
 			this.rotation = q;
 		}
 
+		public void setError(double roll, double pitch, double yaw, double scale)
+		{
+			errorR = roll;
+			errorP = pitch;
+			errorY = yaw;
+			errorScale = scale;
+		}
+
+		public void setRates(double roll, double pitch, double yaw, double scale)
+		{
+			rollRateR = roll;
+			rollRateP = pitch;
+			rollRateY = yaw;
+			rollRateScale = scale;
+		}
+
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
 			if (this.rotation != null)
 			{
@@ -104,7 +145,6 @@ namespace KSP_MOCR
 				);*/
 
 			paintFDAI(e, g);
-			//paintPFD(e, g);
 		}
 
 		private void paintFDAI(PaintEventArgs e, Graphics g)
@@ -113,17 +153,17 @@ namespace KSP_MOCR
 			 * THIS IS THE FLIGHT DIRECTOR ATTITUDE INDICATOR (FDAI) TYPE
 			 **/
 
-			if (this.Width > this.Height)
+			if (this.Width >= this.Height)
 			{
-				FDAI_size = this.Height - 50;
-				FDAI_left = ((this.Width - this.Height) / 2) + 25;
-				FDAI_top = 25;
+				FDAI_size = this.Height * 0.6f;
+				FDAI_left = ((this.Width - FDAI_size) / 2);
+				FDAI_top = this.Height * 0.2f;
 			}
 			else
 			{
-				FDAI_size = this.Width - 50;
-				FDAI_left = ((this.Height - this.Height) / 2) + 25;
-				FDAI_top = 25;
+				FDAI_size = this.Width * 0.6f;
+				FDAI_top = ((this.Height - FDAI_size) / 2);
+				FDAI_left = this.Width * 0.2f;
 			}
 
 			int lowerLimit = (int)Math.Round(yaw - 40);
@@ -133,7 +173,7 @@ namespace KSP_MOCR
 			FDAI_centerY = ((FDAI_size / 2) + FDAI_top);
 			double bigLineLength = FDAI_size / 7;
 			double shortLineLength = FDAI_size / 14;
-			double crosshairLength = FDAI_size / 2;
+			
 
 			double rotX = -yaw - offsetY + zeroY;
 			double rotY = -pitch + offsetP + zeroP;
@@ -144,11 +184,11 @@ namespace KSP_MOCR
 			float midPointY = (float)FDAI_centerY;
 			double radius = FDAI_size / 1.7f;
 
-			List<FDAILine> lineCollection = new List<FDAILine>();
-			List<FDAILine> numberCollection = new List<FDAILine>();
-			List<FDAIPolygon> polygonCollection = new List<FDAIPolygon>();
-			List<FDAIPolygon> shieldCollection = new List<FDAIPolygon>();
-			KeyValuePair<List<FDAILine>, List<FDAIPolygon>> comboCollection = new KeyValuePair<List<FDAILine>, List<FDAIPolygon>>();
+			lineCollection.Clear();
+			numberCollection.Clear();
+			polygonCollection.Clear();
+			shieldCollection.Clear();
+			comboCollection = new KeyValuePair<List<FDAILine>, List<FDAIPolygon>>();
 
 			polygonCollection = addSphere(radius, polygonCollection);
 
@@ -159,6 +199,11 @@ namespace KSP_MOCR
 			numberCollection = comboCollection.Key;
 			shieldCollection = comboCollection.Value;
 
+			// BACKGROUND
+			g.FillRectangle(new SolidBrush(Color.FromArgb(255, 32, 32, 32)), 0, 0, Width, Height);
+
+
+
 			// DRAW THE FDAI BALL
 			drawPolygonCollection(g, polygonCollection, rotX, rotY, rotZ, midPointX, midPointY);
 			drawLineCollection(g, lineCollection, rotX, rotY, rotZ, midPointX, midPointY);
@@ -166,14 +211,16 @@ namespace KSP_MOCR
 			drawPolygonCollection(g, shieldCollection, rotX, rotY, rotZ, midPointX, midPointY);
 			drawLineCollection(g, numberCollection, rotX, rotY, rotZ, midPointX, midPointY);
 
-			
+
 
 			/*
 			 * DRAW FIXED STUFF
 			 */
 
+			
+
 			// HOLE SHADE
-			Rectangle mask = new Rectangle(FDAI_left, FDAI_top, FDAI_size, FDAI_size);
+			RectangleF mask = new RectangleF(FDAI_left, FDAI_top, FDAI_size, FDAI_size);
 			GraphicsPath ellipsePath = new GraphicsPath();
 			ellipsePath.AddEllipse(mask);
 
@@ -187,55 +234,53 @@ namespace KSP_MOCR
 				g.FillRectangle(maskBrush, mask);
 			}
 
+
 			// CrossHairs
-			Point[] line = new Point[2];
+			drawCrosshairs(g);
 
-			int x1 = (int)Math.Round(FDAI_centerX - (crosshairLength / 2));
-			int y1 = (int)Math.Round(FDAI_centerY);
 
-			int x2 = (int)Math.Round(FDAI_centerX + (crosshairLength / 2));
-			int y2 = (int)Math.Round(FDAI_centerY);
 
-			line[0] = new Point(x1, y1);
-			line[1] = new Point(x2, y2);
 
-			g.DrawLines(crosshairPen, line);
-
-			line = new Point[2];
-
-			x1 = (int)Math.Round(FDAI_centerX);
-			y1 = (int)Math.Round(FDAI_centerY - (crosshairLength / 2));
-
-			x2 = (int)Math.Round(FDAI_centerX);
-			y2 = (int)Math.Round(FDAI_centerY + (crosshairLength / 2));
-
-			line[0] = new Point(x1, y1);
-			line[1] = new Point(x2, y2);
-
-			g.DrawLines(crosshairPen, line);
 
 
 			// Draw mask and outline
-			g.DrawEllipse(maskPen, FDAI_left - 100, FDAI_top - 100, FDAI_size + 200, FDAI_size + 200);
+			float rimOffset = (maskPen.Width / 2f);
+			g.DrawEllipse(maskPen, FDAI_left - rimOffset, FDAI_top - rimOffset, FDAI_size + (2 * rimOffset), FDAI_size + (2 * rimOffset));
 			g.DrawEllipse(borderPen, FDAI_left, FDAI_top, FDAI_size, FDAI_size);
-
 
 			drawRollScale(g, radius);
 			drawRollIndicator(g, roll);
-			
-			// Draw 2nd mask and outline
-			g.DrawEllipse(mask2Pen, FDAI_left - 130, FDAI_top - 130, FDAI_size + 260, FDAI_size + 260);
-			g.DrawEllipse(borderPen, FDAI_left - 30, FDAI_top - 30, FDAI_size + 60, FDAI_size + 60);
 
-			
+			// Error Needles
+			drawErrorNeedles(g);
+
+			// Draw 2nd mask and outline
+			float rimSize = (FDAI_size * 0.08f) + (mask2Pen.Width / 2f);
+			g.DrawEllipse(maskPen, FDAI_left - rimSize, FDAI_top - rimSize, FDAI_size + (2 * rimSize), FDAI_size + (2 * rimSize));
+			rimSize = (FDAI_size * 0.08f);
+			g.DrawEllipse(borderPen, FDAI_left - rimSize, FDAI_top - rimSize, FDAI_size + (2 * rimSize), FDAI_size + (2 * rimSize));
+
+			// ERROR SCALES
+			drawErrorScales(g);
+
+			// Draw 3rd mask and outline
+			rimSize = (FDAI_size * 0.08f * 2) + (mask2Pen.Width / 2f);
+			g.DrawEllipse(mask2Pen, FDAI_left - rimSize, FDAI_top - rimSize, FDAI_size + (2 * rimSize), FDAI_size + (2 * rimSize));
+			rimSize = (FDAI_size * 0.08f * 2);
+			g.DrawEllipse(borderPen, FDAI_left - rimSize, FDAI_top - rimSize, FDAI_size + (2 * rimSize), FDAI_size + (2 * rimSize));
+
+
 			Point[] border = new Point[5];
-			border[0] = new Point(0, 0);
-			border[1] = new Point(0, this.Height);
-			border[2] = new Point(this.Width, this.Height);
-			border[3] = new Point(this.Width, 0);
-			border[4] = new Point(0, 0);
+			border[0] = new Point(1, 1);
+			border[1] = new Point(1, this.Height - 1);
+			border[2] = new Point(this.Width - 1, this.Height - 1);
+			border[3] = new Point(this.Width - 1, 1);
+			border[4] = new Point(1, 1);
 
 			g.DrawLines(outerBorderPen, border);
+
+			// ROLL RATES
+			drawRollRates(g);
 
 			//g.FillPath(whiteBrush, text);
 		}
@@ -280,12 +325,474 @@ namespace KSP_MOCR
 			}
 		}
 		
+		private void drawCrosshairs(Graphics g)
+		{
+			double crosshairLength = FDAI_size * 0.075;
+			double whiteHorizontalLength = FDAI_size * 0.173;
+			Pen crosshairPen = new Pen(Color.FromArgb(255, 203, 147, 62), 1.75f);
+			float whitePenThickness = FDAI_size * 0.020f;
+			Pen whitePen = new Pen(Color.FromArgb(255, 255, 255, 255), whitePenThickness);
+
+			// Horizontal Line
+			PointF[] line = new PointF[2];
+
+			float x1 = (float)(FDAI_centerX - crosshairLength);
+			float y1 = (float)(FDAI_centerY);
+
+			float x2 = (float)(FDAI_centerX + crosshairLength);
+			float y2 = (float)(FDAI_centerY);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(crosshairPen, line);
+
+			// Vertical Line
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX);
+			y2 = (float)(FDAI_centerY + crosshairLength);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(crosshairPen, line);
+
+
+			// WHITE BARS (HOLDER)
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - crosshairLength + (whitePenThickness / 2));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - crosshairLength - whiteHorizontalLength);
+			y2 = (float)(FDAI_centerY);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + crosshairLength - (whitePenThickness / 2));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + crosshairLength + whiteHorizontalLength);
+			y2 = (float)(FDAI_centerY);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// WHITE VERTICAL STUB
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY + crosshairLength);
+
+			x2 = (float)(FDAI_centerX);
+			y2 = (float)(FDAI_centerY + crosshairLength + whitePenThickness);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// WHITE SEMI-CIRCLE
+			float x = (float)(FDAI_centerX - crosshairLength);
+			float y = (float)(FDAI_centerY - crosshairLength);
+			float w = (float)(crosshairLength * 2);
+			float h = w;
+
+			g.DrawArc(whitePen, x, y, w, h, 0, 180);
+
+		}
+
+		private void drawErrorNeedles(Graphics g)
+		{
+			float length = FDAI_size * 0.75f;
+			float centerOffset = FDAI_size * 0.075f;
+			float maxDeflection = FDAI_size * 0.337f;
+
+			float deflectionR = (float)normalizeDeflection(errorR, errorScale);
+			float deflectionP = (float)normalizeDeflection(errorP, errorScale);
+			float deflectionY = (float)normalizeDeflection(errorY, errorScale);
+
+			float needleThickness = FDAI_size * 0.0125f;
+			Pen needlePen = new Pen(Color.FromArgb(255, 203, 147, 62), needleThickness);
+			Pen shadowPen = new Pen(Color.FromArgb(55, 0, 0, 0), needleThickness * 2);
+
+			// YAW NEEDLE (Bottom needle)
+			PointF[] line = new PointF[2];
+
+			float x1 = (float)(FDAI_centerX - (deflectionY * maxDeflection));
+			float y1 = (float)(FDAI_centerY + centerOffset);
+
+			float x2 = (float)(FDAI_centerX - (deflectionY * maxDeflection));
+			float y2 = (float)(FDAI_centerY + length);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(shadowPen, line);
+			g.DrawLines(needlePen, line);
+			
+
+			// ROLL NEEDLE (Top needle)
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - (deflectionR * maxDeflection));
+			y1 = (float)(FDAI_centerY - centerOffset);
+
+			x2 = (float)(FDAI_centerX - (deflectionR * maxDeflection));
+			y2 = (float)(FDAI_centerY - length);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(shadowPen, line);
+			g.DrawLines(needlePen, line);
+
+			// PITCH NEEDLE (Right needle)
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + centerOffset);
+			y1 = (float)(FDAI_centerY - (deflectionP * maxDeflection));
+
+			x2 = (float)(FDAI_centerX + length);
+			y2 = (float)(FDAI_centerY - (deflectionP * maxDeflection));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(shadowPen, line);
+			g.DrawLines(needlePen, line);
+		}
+
+		private double normalizeDeflection(double error, double scale)
+		{
+			double result = 0;
+			if (Math.Abs(error) > scale)
+			{
+				if (error > 0)
+				{
+					result = 1.0f;
+				}
+				else
+				{
+					result = -1.0f;
+				}
+			}
+			else
+			{
+				result = error / scale;
+			}
+
+			return result;
+		}
+
+		private void drawErrorScales(Graphics g)
+		{
+			float offset = (FDAI_size * 0.08f * 1);
+			float scaleWidth = FDAI_size * 0.337f; // Half Scale (0 to max deflection)
+			float whitePenThickness = FDAI_size * 0.020f;
+			Pen whitePen = new Pen(Color.FromArgb(255, 255, 255, 255), whitePenThickness);
+
+			float length1 = FDAI_size * 0.52f; // Full deflection
+			float length2 = FDAI_size * 0.56f; // 2/3 deflection
+			float length3 = FDAI_size * 0.595f; // 1/3 deflection
+			float length4 = FDAI_size * 0.635f; // 0 deflection
+			float length5 = FDAI_size * 0.58f; // 1/2 deflection
+
+			GraphicsPath clipPath = new GraphicsPath();
+			clipPath.AddEllipse(FDAI_left - offset, FDAI_top - offset, FDAI_size + (2 * offset), FDAI_size + (2 * offset));
+			g.SetClip(clipPath, CombineMode.Exclude);
+
+			// YAW SCALE (Bottom Scale)
+			// Full deflection
+			PointF[] line = new PointF[2];
+
+			float x1 = (float)(FDAI_centerX + (1 * scaleWidth));
+			float y1 = (float)(FDAI_centerY);
+
+			float x2 = (float)(FDAI_centerX + (1 * scaleWidth));
+			float y2 = (float)(FDAI_centerY + length1);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - (1 * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - (1 * scaleWidth));
+			y2 = (float)(FDAI_centerY + length1);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 2/3rds deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - ((2f/3f) * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - ((2f/3f) * scaleWidth));
+			y2 = (float)(FDAI_centerY + length2);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + ((2f / 3f) * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + ((2f / 3f) * scaleWidth));
+			y2 = (float)(FDAI_centerY + length2);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 1/3rds deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - ((1f / 3f) * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - ((1f / 3f) * scaleWidth));
+			y2 = (float)(FDAI_centerY + length3);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + ((1f / 3f) * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + ((1f / 3f) * scaleWidth));
+			y2 = (float)(FDAI_centerY + length3);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 0 deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX);
+			y2 = (float)(FDAI_centerY + length4);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+
+
+			// PITCH SCALE (Right Scale)
+			// Full deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY - (1 * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length1);
+			y2 = (float)(FDAI_centerY - (1 * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY + (1 * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length1);
+			y2 = (float)(FDAI_centerY + (1 * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 2/3rds deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY - ((2f / 3f) * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length2);
+			y2 = (float)(FDAI_centerY - ((2f / 3f) * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY + ((2f / 3f) * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length2);
+			y2 = (float)(FDAI_centerY + ((2f / 3f) * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 1/3rds deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY - ((1f / 3f) * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length3);
+			y2 = (float)(FDAI_centerY - ((1f / 3f) * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY + ((1f / 3f) * scaleWidth));
+
+			x2 = (float)(FDAI_centerX + length3);
+			y2 = (float)(FDAI_centerY + ((1f / 3f) * scaleWidth));
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 0 deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + length4);
+			y2 = (float)(FDAI_centerY);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+
+
+			// ROLL SCALE (Top Scale)
+			// Full deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - (1 * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - (1 * scaleWidth));
+			y2 = (float)(FDAI_centerY - length1);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + (1 * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + (1 * scaleWidth));
+			y2 = (float)(FDAI_centerY - length1);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 1/2 deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX - (0.5 * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX - (0.5 * scaleWidth));
+			y2 = (float)(FDAI_centerY - length5);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX + (0.5 * scaleWidth));
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX + (0.5 * scaleWidth));
+			y2 = (float)(FDAI_centerY - length5);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+			// 0 deflection
+			line = new PointF[2];
+
+			x1 = (float)(FDAI_centerX);
+			y1 = (float)(FDAI_centerY);
+
+			x2 = (float)(FDAI_centerX);
+			y2 = (float)(FDAI_centerY - length4);
+
+			line[0] = new PointF(x1, y1);
+			line[1] = new PointF(x2, y2);
+
+			g.DrawLines(whitePen, line);
+
+
+			g.ResetClip();
+		}
 		
 		private void drawRollScale(Graphics g, double radius)
 		{
 			float redPenWidth = (float)(2 * radius * Math.Sin(Helper.deg2rad(2.5f)));
-			Pen rollPen = new Pen(Color.White, 3f);
+			float rollPenWidth = (redPenWidth / 5);
+			Pen rollPen = new Pen(Color.White, rollPenWidth);
 			Pen redPen = new Pen(Color.FromArgb(255, 187, 0, 0), redPenWidth);
+
+			float longLength = FDAI_size * 0.06f;
+			float shortLength = FDAI_size * 0.04f;
+			float redLength = FDAI_size * 0.02f;
 			
 			for (int i = 0; i < 360; i += 5)
 			{
@@ -302,7 +809,7 @@ namespace KSP_MOCR
 					g.RotateTransform(2.5f);
 					
 					line[0] = new PointF(FDAI_size / 2f, 0);
-					line[1] = new PointF(FDAI_size / 2f + 5, 0);
+					line[1] = new PointF(FDAI_size / 2f + redLength, 0);
 					
 					g.DrawLines(redPen, line);
 					
@@ -313,15 +820,15 @@ namespace KSP_MOCR
 				line[0] = new PointF(FDAI_size / 2f, 0);
 				if (i % 30 == 0)
 				{
-					line[1] = new PointF((FDAI_size / 2f) + 15, 0);
+					line[1] = new PointF((FDAI_size / 2f) + longLength, 0);
 				}
 				else if (i % 10 == 0)
 				{
-					line[1] = new PointF((FDAI_size / 2f) + 10, 0);
+					line[1] = new PointF((FDAI_size / 2f) + shortLength, 0);
 				}
 				else
 				{
-					line[1] = new PointF((FDAI_size / 2f) + 5, 0);
+					line[1] = new PointF((FDAI_size / 2f) + redLength, 0);
 				}
 				
 				g.DrawLines(rollPen, line);
@@ -343,13 +850,202 @@ namespace KSP_MOCR
 			g.TranslateTransform((float)FDAI_centerX, (float)FDAI_centerY);
 			g.RotateTransform((float)(roll + 90 - offsetR));
 
-			Point[] arrow = new Point[4];
-			arrow[0] = new Point(0, 0 - (FDAI_size / 2));
-			arrow[1] = new Point((int)xOffset, (int)(0 - (FDAI_size / 2) + yOffset));
-			arrow[2] = new Point((int)(xOffset * -1), (int)(0 - (FDAI_size / 2) + yOffset));
-			arrow[3] = new Point(0, 0 - (FDAI_size / 2));
+			PointF[] arrow = new PointF[4];
+			arrow[0] = new PointF(0, 0 - (FDAI_size / 2));
+			arrow[1] = new PointF((int)xOffset, (int)(0 - (FDAI_size / 2) + yOffset));
+			arrow[2] = new PointF((int)(xOffset * -1), (int)(0 - (FDAI_size / 2) + yOffset));
+			arrow[3] = new PointF(0, 0 - (FDAI_size / 2));
 
 			g.FillPolygon(arrowPen, arrow);
+
+			g.Restore(state);
+		}
+
+		private void drawRollRates(Graphics g)
+		{
+			float length = FDAI_size;
+			float height = FDAI_size * 0.125f;
+			float maxDeflection = length * 0.4f;
+			float whitePenThickness = FDAI_size * 0.020f;
+			Pen whitePen = new Pen(Color.FromArgb(255, 255, 255, 255), whitePenThickness);
+
+			PointF[] line;
+			float x1, x2, y1, y2;
+
+			// Normalize the rates
+			float rR = (float)normalizeDeflection(rollRateR, rollRateScale);
+			float rP = (float)normalizeDeflection(rollRateP, rollRateScale);
+			float rY = (float)normalizeDeflection(rollRateY, rollRateScale);
+
+
+			// YAW RATES (Bottom indicator)
+			float x = (float)(FDAI_centerX - (length / 2f));
+			float center = x + (length / 2f);
+			float y = (float)(FDAI_centerY + (FDAI_size * 0.68f));
+			g.FillRectangle(new SolidBrush(maskColor), x, y, length, height); // Black background
+			g.FillRectangle(pureWhiteBrush, x, y + (0.4f * height), length, height * 0.6f); // White field
+
+			
+
+			for (int i = 5; i > 0; i--)
+			{
+				line = new PointF[2];
+				x1 = center - ((i / 5f) * maxDeflection);
+				y1 = y + height;
+				x2 = center - ((i / 5f) * maxDeflection);
+				y2 = y + (height * 0.3f);
+				if (i == 5) y2 = y + (height * 0.15f);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+
+				line = new PointF[2];
+				x1 = center + ((i / 5f) * maxDeflection);
+				x2 = center + ((i / 5f) * maxDeflection);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+			}
+
+			
+			line = new PointF[3];
+			line[0] = new PointF(center, y + (height * 0.20f));
+			line[1] = new PointF(center + (length * 0.03f), y + (height * 0.42f));
+			line[2] = new PointF(center - (length * 0.03f), y + (height * 0.42f));
+			GraphicsPath path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(pureWhiteBrush, path);
+
+			line = new PointF[8];
+			line[0] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.0075f)), y + (height * 0.42f));
+			line[1] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.04f)), y + (height * 0.85f));
+			line[2] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.01f)), y + (height * 0.85f));
+			line[3] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.01f)), y + (height * 1.00f));
+			line[4] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.01f)), y + (height * 1.00f));
+			line[5] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.01f)), y + (height * 0.85f));
+			line[6] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.04f)), y + (height * 0.85f));
+			line[7] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.0075f)), y + (height * 0.42f));
+			path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(blackBrush, path);
+
+			//BORDER
+			g.DrawRectangle(borderPenLight, x, y, length, height);
+
+
+			// ROLL RATES (Top Indicator)
+			x = (float)(FDAI_centerX - (length / 2f));
+			center = x + (length / 2f);
+			y = (float)(FDAI_centerY - (FDAI_size * 0.68f) - height);
+			g.FillRectangle(new SolidBrush(maskColor), x, y, length, height); // Black background
+			g.FillRectangle(pureWhiteBrush, x, y, length, height * 0.6f); // White field
+
+
+
+			for (int i = 5; i > 0; i--)
+			{
+				line = new PointF[2];
+				x1 = center - ((i / 5f) * maxDeflection);
+				y1 = y;
+				x2 = center - ((i / 5f) * maxDeflection);
+				y2 = y + (height * 0.7f);
+				if (i == 5) y2 = y + (height * 0.85f);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+
+				line = new PointF[2];
+				x1 = center + ((i / 5f) * maxDeflection);
+				x2 = center + ((i / 5f) * maxDeflection);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+			}
+
+
+			line = new PointF[3];
+			line[0] = new PointF(center, y + (height * 0.80f));
+			line[1] = new PointF(center + (length * 0.03f), y + (height * 0.58f));
+			line[2] = new PointF(center - (length * 0.03f), y + (height * 0.58f));
+			path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(pureWhiteBrush, path);
+
+			line = new PointF[8];
+			line[0] = new PointF((float)(center + (maxDeflection * rR) + (length * 0.0075f)), y + (height * 0.58f));
+			line[1] = new PointF((float)(center + (maxDeflection * rR) + (length * 0.04f)), y + (height * 0.15f));
+			line[2] = new PointF((float)(center + (maxDeflection * rR) + (length * 0.01f)), y + (height * 0.15f));
+			line[3] = new PointF((float)(center + (maxDeflection * rR) + (length * 0.01f)), y + (height * 0.00f));
+			line[4] = new PointF((float)(center + (maxDeflection * rR) - (length * 0.01f)), y + (height * 0.00f));
+			line[5] = new PointF((float)(center + (maxDeflection * rR) - (length * 0.01f)), y + (height * 0.15f));
+			line[6] = new PointF((float)(center + (maxDeflection * rR) - (length * 0.04f)), y + (height * 0.15f));
+			line[7] = new PointF((float)(center + (maxDeflection * rR) - (length * 0.0075f)), y + (height * 0.58f));
+			path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(blackBrush, path);
+
+			//BORDER
+			g.DrawRectangle(borderPenLight, x, y, length, height);
+
+
+			// PITCH RATE (Right Indicator)
+			GraphicsState state = g.Save();
+			g.TranslateTransform(Width / 2f, Height / 2f);
+			g.RotateTransform(90);
+			g.TranslateTransform(-Width / 2f, -Height / 2f);
+
+			x = (float)(FDAI_centerX - (length / 2f));
+			center = x + (length / 2f);
+			y = (float)(FDAI_centerY - (FDAI_size * 0.68f) - height);
+			g.FillRectangle(new SolidBrush(maskColor), x, y, length, height); // Black background
+			g.FillRectangle(pureWhiteBrush, x, y, length, height * 0.6f); // White field
+
+
+
+			for (int i = 5; i > 0; i--)
+			{
+				line = new PointF[2];
+				x1 = center - ((i / 5f) * maxDeflection);
+				y1 = y;
+				x2 = center - ((i / 5f) * maxDeflection);
+				y2 = y + (height * 0.7f);
+				if (i == 5) y2 = y + (height * 0.85f);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+
+				line = new PointF[2];
+				x1 = center + ((i / 5f) * maxDeflection);
+				x2 = center + ((i / 5f) * maxDeflection);
+				line[0] = new PointF(x1, y1);
+				line[1] = new PointF(x2, y2);
+				g.DrawLines(whitePen, line);
+			}
+
+
+			line = new PointF[3];
+			line[0] = new PointF(center, y + (height * 0.80f));
+			line[1] = new PointF(center + (length * 0.03f), y + (height * 0.58f));
+			line[2] = new PointF(center - (length * 0.03f), y + (height * 0.58f));
+			path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(pureWhiteBrush, path);
+
+			line = new PointF[8];
+			line[0] = new PointF((float)(center + (maxDeflection * rP) + (length * 0.0075f)), y + (height * 0.58f));
+			line[1] = new PointF((float)(center + (maxDeflection * rP) + (length * 0.04f)), y + (height * 0.15f));
+			line[2] = new PointF((float)(center + (maxDeflection * rP) + (length * 0.01f)), y + (height * 0.15f));
+			line[3] = new PointF((float)(center + (maxDeflection * rP) + (length * 0.01f)), y + (height * 0.00f));
+			line[4] = new PointF((float)(center + (maxDeflection * rP) - (length * 0.01f)), y + (height * 0.00f));
+			line[5] = new PointF((float)(center + (maxDeflection * rP) - (length * 0.01f)), y + (height * 0.15f));
+			line[6] = new PointF((float)(center + (maxDeflection * rP) - (length * 0.04f)), y + (height * 0.15f));
+			line[7] = new PointF((float)(center + (maxDeflection * rP) - (length * 0.0075f)), y + (height * 0.58f));
+			path = new GraphicsPath();
+			path.AddLines(line);
+			g.FillPath(blackBrush, path);
+
+			//BORDER
+			g.DrawRectangle(borderPenLight, x, y, length, height);
 
 			g.Restore(state);
 		}
@@ -952,294 +1648,6 @@ namespace KSP_MOCR
 			return point2D;
 		}
 		
-		private void paintPFD(PaintEventArgs e, Graphics g)
-		{
-			/**
-			 * THIS IS THE PRIMARY FLIGHT DISPLAY (PFD) TYPE 
-			 **/
-
-			bool horizon = false;
-			float horizonY = 0;
-
-			if (this.Width > this.Height)
-			{
-				FDAI_size = this.Height - 8;
-				FDAI_left = ((this.Width - this.Height) / 2) + 4;
-				FDAI_top = 4;
-			}
-			else
-			{
-				FDAI_size = this.Width - 8;
-				FDAI_left = ((this.Height - this.Height) / 2) + 4;
-				FDAI_top = 4;
-			}
-
-			int lowerLimit = (int)Math.Round(yaw - 40);
-			int upperLimit = (int)Math.Round(yaw + 40);
-			double oneDegSize = FDAI_size / 70;
-			double FDAI_centerX = ((FDAI_size / 2) + FDAI_left);
-			double FDAI_centerY = ((FDAI_size / 2) + FDAI_top);
-			double bigLineLength = FDAI_size / 7;
-			double shortLineLength = FDAI_size / 14;
-			double crosshairLength = FDAI_size / 2;
-
-			int x1, y1, x2, y2;
-			Point[] line;
-
-			Dictionary<Double, Point[]> yawBars = new Dictionary<Double, Point[]>();
-			Dictionary<Double, Point[]> pitchBars = new Dictionary<Double, Point[]>();
-
-			StringFormat stringFormat;
-
-
-			// Draw Yaw bars
-			for (int i = lowerLimit; i <= upperLimit; i++)
-			{
-				if (i % 10 == 0)
-				{
-					// Draw big line with numbers
-					line = new Point[2];
-
-					double diff = i - yaw;
-					double centerX = oneDegSize * diff;
-					double centerY = 0;
-
-					x1 = (int)Math.Round(centerX);
-					y1 = (int)Math.Round(centerY - (bigLineLength / 2));
-
-					x2 = (int)Math.Round(centerX);
-					y2 = (int)Math.Round(centerY + (bigLineLength / 2));
-
-					line[0] = new Point(x1, y1);
-					line[1] = new Point(x2, y2);
-
-					yawBars.Add(i, line);
-				}
-				else if(i % 5 == 0)
-				{
-					// Draw shot line
-					line = new Point[2];
-
-					double diff = i - yaw;
-					double centerX = oneDegSize * diff;
-					double centerY = 0;
-
-					x1 = (int)Math.Round(centerX);
-					y1 = (int)Math.Round(centerY - (shortLineLength / 2));
-
-					x2 = (int)Math.Round(centerX);
-					y2 = (int)Math.Round(centerY + (shortLineLength / 2));
-
-					line[0] = new Point(x1, y1);
-					line[1] = new Point(x2, y2);
-
-					yawBars.Add(i, line);
-
-					//g.DrawLines(FDAIPen, line);
-				}
-			}
-
-			/*
-			 * DRAW PITCH BARS
-			 */
-			lowerLimit = (int)Math.Round(pitch - 40);
-			upperLimit = (int)Math.Round(pitch + 40);
-			bigLineLength = FDAI_size / 5;
-			shortLineLength = FDAI_size / 10;
-
-			for (int i = lowerLimit; i <= upperLimit; i++)
-			{
-				if (i % 10 == 0)
-				{
-					// Draw big line with numbers
-					line = new Point[2];
-
-					double diff = i - pitch;
-					double centerX = 0;
-					double centerY = (oneDegSize * diff) * -1;
-
-					x1 = (int)Math.Round(centerX - (bigLineLength / 2));
-					y1 = (int)Math.Round(centerY);
-
-					x2 = (int)Math.Round(centerX + (bigLineLength / 2));
-					y2 = (int)Math.Round(centerY);
-
-					line[0] = new Point(x1, y1);
-					line[1] = new Point(x2, y2);
-
-					pitchBars.Add(i, line);
-
-					// DRAW SKY AND GROUND
-					if (i == 0)
-					{
-						horizon = true;
-						horizonY = (float)centerY;
-					}
-				}
-				else if(i % 5 == 0)
-				{
-					// Draw short line
-					line = new Point[2];
-
-					double diff = i - pitch;
-					double centerX = 0;
-					double centerY = (oneDegSize * diff) * -1;
-
-					x1 = (int)Math.Round(centerX - (shortLineLength / 2));
-					y1 = (int)Math.Round(centerY);
-
-					x2 = (int)Math.Round(centerX + (shortLineLength / 2));
-					y2 = (int)Math.Round(centerY);
-
-					line[0] = new Point(x1, y1);
-					line[1] = new Point(x2, y2);
-
-					pitchBars.Add(i, line);
-				}
-			}
-
-			/*
-			 * NOW, actually rotate the canvas, and draw stuff, in the right order, back to front
-			 */
-
-			// Rotate canvas
-			GraphicsState state = g.Save();
-			g.ResetTransform();
-			g.TranslateTransform((float)FDAI_centerX, (float)FDAI_centerY);
-			g.RotateTransform((float)-roll);
-
-			// If 0 degrees pitch was not found, draw either all sky or all ground.
-			if (!horizon)
-			{
-				if (lowerLimit > 0)
-				{
-					g.FillRectangle(skyPen, (float)(0 - (FDAI_size / 2)), (float)(0 - (FDAI_size / 2)), FDAI_size, FDAI_size);
-				}
-				else
-				{
-					g.FillRectangle(groundPen, (float)(0 - (FDAI_size / 2)), (float)(0 - (FDAI_size / 2)), FDAI_size, FDAI_size);
-				}
-			}
-			else
-			{
-				g.FillRectangle(skyPen, (float)(0 - (FDAI_size / 2)), (float)(horizonY - FDAI_size), FDAI_size, FDAI_size);
-
-				g.FillRectangle(groundPen, (float)(0 - (FDAI_size / 2)), (float)(horizonY), FDAI_size, FDAI_size);
-			}
-
-			// DRAW PITCH AND ROLL LINES
-			foreach(KeyValuePair<Double, Point[]> bar in pitchBars)
-			{
-				g.DrawLines(FDAIPen, bar.Value);
-
-				String s = "";
-				double i = bar.Key;
-				if (i > 90) { s = (i - ((i - 90) * 2)).ToString(); }
-				else if (i < -90) { s = (i - ((i + 90) * 2)).ToString(); }
-				else { s = i.ToString(); }
-
-				if (s.Substring(s.Length - 1, 1) == "5") { s = ""; }
-
-				stringFormat = new StringFormat();
-				stringFormat.Alignment = StringAlignment.Far;
-				stringFormat.LineAlignment = StringAlignment.Center;
-
-				g.DrawString(s, Font, new SolidBrush(yawNumbers), bar.Value[0], stringFormat);
-
-				stringFormat = new StringFormat();
-				stringFormat.Alignment = StringAlignment.Near;
-				stringFormat.LineAlignment = StringAlignment.Center;
-				g.DrawString(s, Font, new SolidBrush(yawNumbers), bar.Value[1], stringFormat);
-			}
-
-			foreach (KeyValuePair<Double, Point[]> bar in yawBars)
-			{
-				g.DrawLines(FDAIPen, bar.Value);
-
-				stringFormat = new StringFormat();
-				stringFormat.Alignment = StringAlignment.Center;
-				stringFormat.LineAlignment = StringAlignment.Far;
-
-				String s = "";
-				double i = bar.Key;
-				if (i >= 360) { s = (i - 360).ToString(); }
-				else if (i < 0) { s = (i + 360).ToString(); }
-				else { s = i.ToString(); }
-
-				if (s.Substring(s.Length - 1, 1) == "5") { s = "";}
-
-				g.DrawString(s, Font, new SolidBrush(yawNumbers), bar.Value[0], stringFormat);
-
-				stringFormat = new StringFormat();
-				stringFormat.Alignment = StringAlignment.Center;
-				stringFormat.LineAlignment = StringAlignment.Near;
-				g.DrawString(s, Font, new SolidBrush(yawNumbers), bar.Value[1], stringFormat);
-			}
-
-			// DRAW ROLL ARROW
-			int legAngle = 60;
-			double legAngleRad = (legAngle * Math.PI)/ 180;
-			double yOffset = Math.Round(FDAI_size / 12f);
-			double xOffset = Math.Round(yOffset / Math.Tan(legAngleRad));
-
-			Point[] arrow = new Point[4];
-			arrow[0] = new Point(0, 0 - (FDAI_size / 2));
-			arrow[1] = new Point((int)xOffset, (int)(0 - (FDAI_size / 2) + yOffset));
-			arrow[2] = new Point((int)(xOffset * -1), (int)(0 - (FDAI_size / 2) + yOffset));
-			arrow[3] = new Point(0, 0 - (FDAI_size / 2));
-
-			g.FillPolygon(arrowPen, arrow);
-
-
-			g.Restore(state);
-
-
-			/*
-			 * DRAW FIXED POINT
-			 */
-
-			// CrossHairs
-			line = new Point[2];
-
-			x1 = (int)Math.Round(FDAI_centerX - (crosshairLength / 2));
-			y1 = (int)Math.Round(FDAI_centerY);
-
-			x2 = (int)Math.Round(FDAI_centerX + (crosshairLength / 2));
-			y2 = (int)Math.Round(FDAI_centerY);
-
-			line[0] = new Point(x1, y1);
-			line[1] = new Point(x2, y2);
-
-			g.DrawLines(crosshairPen, line);
-
-			line = new Point[2];
-
-			x1 = (int)Math.Round(FDAI_centerX);
-			y1 = (int)Math.Round(FDAI_centerY - (crosshairLength / 2));
-
-			x2 = (int)Math.Round(FDAI_centerX);
-			y2 = (int)Math.Round(FDAI_centerY + (crosshairLength / 2));
-
-			line[0] = new Point(x1, y1);
-			line[1] = new Point(x2, y2);
-
-			g.DrawLines(crosshairPen, line);
-
-
-			// Draw mask and outline
-			g.DrawEllipse(maskPen, FDAI_left - 100, FDAI_top - 100, FDAI_size + 200, FDAI_size + 200);
-			g.DrawEllipse(borderPen, FDAI_left, FDAI_top, FDAI_size, FDAI_size);
-
-			Point[] border = new Point[5];
-			border[0] = new Point(1, 1);
-			border[1] = new Point(1, this.Height - 1);
-			border[2] = new Point(this.Width - 1, this.Height - 1);
-			border[3] = new Point(this.Width - 1, 1);
-			border[4] = new Point(1, 1);
-
-			g.DrawLines(borderPen, border);
-
-		}
 
 		private Tuple<double, double, double> Q2V(Tuple<double, double, double, double> q)
 		{

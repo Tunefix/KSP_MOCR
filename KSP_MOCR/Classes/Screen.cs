@@ -115,8 +115,8 @@ namespace KSP_MOCR
 			TimeSpan updateDuration = updateEnd - updateStart;
 			int remainTime = activeScreen.updateRate - (int)updateDuration.TotalMilliseconds;
 
-			if (remainTime < 50) {
-				remainTime = 50;
+			if (remainTime < activeScreen.timeWarning) {
+				remainTime = activeScreen.timeWarning;
 				Console.WriteLine("LOW REMAIN TIME: "
 					+ remainTime.ToString() + ", Time Spent: "
 					+ ((int)updateDuration.TotalMilliseconds).ToString()

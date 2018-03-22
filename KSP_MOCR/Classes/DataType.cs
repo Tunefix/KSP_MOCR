@@ -69,9 +69,21 @@ namespace KSP_MOCR
 		control_actionGroup9,
 
 		flight_gForce,
+		/// <summary>
+		/// The altitude above sea level, in meters.
+		/// </summary>
 		flight_meanAltitude,
+		/// <summary>
+		/// The altitude above the surface of the body or sea level, whichever is closer, in meters.
+		/// </summary>
 		flight_surfaceAltitude,
+		/// <summary>
+		/// The altitude above the surface of the body, in meters. When over water, this is the altitude above the sea floor.
+		/// </summary>
 		flight_bedrockAltitude,
+		/// <summary>
+		/// The elevation of the terrain under the vessel, in meters. This is the height of the terrain above sea level, and is negative when the vessel is over the sea.
+		/// </summary>
 		flight_elevation,
 		flight_latitude,
 		flight_longitude,
@@ -87,11 +99,29 @@ namespace KSP_MOCR
 		flight_pitch,
 		flight_heading,
 		flight_roll,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_prograde,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_retrograde,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_normal,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_antiNormal,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_radial,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
 		flight_antiRadial,
 		flight_atmosphereDensity,
 		flight_dynamicPressure,
@@ -119,45 +149,70 @@ namespace KSP_MOCR
 		flight_inertial_rotation,
 
 		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_prograde,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_retrograde,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_normal,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_antiNormal,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_radial,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// </summary>
+		flight_inertial_antiRadial,
+
+		/// <summary>
 		/// CelestialBody
 		/// </summary>
-		orbit_celestialBody, // CelestialBody
+		orbit_celestialBody,
+		/// <summary>
+		/// double, Gets the apoapsis of the orbit, in meters, from the center of mass of the body being orbited.
+		/// </summary>
+		orbit_apoapsis,
+		/// <summary>
+		/// double, The periapsis of the orbit, in meters, from the center of mass of the body being orbited.
+		/// </summary>
+		orbit_periapsis,
+		/// <summary>
+		/// double, The apoapsis of the orbit, in meters, above the sea level of the body being orbited.
+		/// </summary>
+		orbit_apoapsisAltitude,
+		/// <summary>
+		/// double, The periapsis of the orbit, in meters, above the sea level of the body being orbited.
+		/// </summary>
+		orbit_periapsisAltitude,
 		/// <summary>
 		/// double
 		/// </summary>
-		orbit_apoapsis, // double
+		orbit_semiMajorAxis,
 		/// <summary>
 		/// double
 		/// </summary>
-		orbit_periapsis, // double
+		orbit_semiMinorAxis,
 		/// <summary>
 		/// double
 		/// </summary>
-		orbit_apoapsisAltitude, // double
+		orbit_radius,
 		/// <summary>
 		/// double
 		/// </summary>
-		orbit_periapsisAltitude, // double
+		orbit_speed,
 		/// <summary>
 		/// double
 		/// </summary>
-		orbit_semiMajorAxis, // double
-		/// <summary>
-		/// double
-		/// </summary>
-		orbit_semiMinorAxis, // double
-		/// <summary>
-		/// double
-		/// </summary>
-		orbit_radius, // double
-		/// <summary>
-		/// double
-		/// </summary>
-		orbit_speed, // double
-		/// <summary>
-		/// double
-		/// </summary>
-		orbit_period, // double
+		orbit_period,
 		/// <summary>
 		/// double
 		/// </summary>
@@ -206,6 +261,10 @@ namespace KSP_MOCR
 		/// double
 		/// </summary>
 		orbit_orbitalSpeed, // double
+		/// <summary>
+		/// double
+		/// </summary>
+		orbit_timeToSOIChange,
 
 
 		resource_total_max_electricCharge,
@@ -257,8 +316,16 @@ namespace KSP_MOCR
 		vessel_orbitalReferenceFrame,
 		vessel_surfaceReferenceFrame,
 		vessel_surfaceVelocityReferenceFrame,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// The position of the center of mass of the vessel, in the given reference frame.
+		/// </summary>
 		vessel_position,
 		vessel_boundingBox,
+		/// <summary>
+		/// Tuple<double, double, double>
+		/// The velocity of the center of mass of the vessel, in the given reference frame.
+		/// </summary>
 		vessel_velocity,
 		vessel_rotation,
 		vessel_direction,

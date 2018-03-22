@@ -19,6 +19,10 @@ namespace KSP_MOCR
 			g.InterpolationMode = InterpolationMode.HighQualityBilinear;
 
 			float size = this.Width - 8;
+
+			GraphicsPath path = new GraphicsPath();
+			path.AddEllipse(0, 0, Width, Height);
+			g.SetClip(path,CombineMode.Replace);
 			
 			
 

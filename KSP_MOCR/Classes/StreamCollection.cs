@@ -87,7 +87,7 @@ namespace KSP_MOCR
 					if (force_reStream && streams.ContainsKey(type))
 					{
 						streams[type].Remove(); streams.Remove(type);
-						Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " REMOVED STREAM: " + type.ToString());
+						//Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " REMOVED STREAM: " + type.ToString());
 						// GIVE THE SERVER SOME TIME TO REACT
 						Thread.Sleep(1);
 					}
@@ -95,7 +95,7 @@ namespace KSP_MOCR
 					try
 					{
 						addStream(type);
-						Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " ADDED STREAM: " + type.ToString());
+						//Console.WriteLine(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond.ToString() + " ADDED STREAM: " + type.ToString());
 					}
 					catch (Exception e)
 					{
@@ -132,8 +132,25 @@ namespace KSP_MOCR
 				case DataType.vessel_referenceFrame:
 					return null;
 				case DataType.flight_inertial_direction:
+				case DataType.flight_direction:
+				case DataType.vessel_position:
+				case DataType.vessel_velocity:
+				case DataType.flight_inertial_prograde:
+				case DataType.flight_inertial_retrograde:
+				case DataType.flight_inertial_radial:
+				case DataType.flight_inertial_antiRadial:
+				case DataType.flight_inertial_normal:
+				case DataType.flight_inertial_antiNormal:
 				case DataType.flight_prograde:
+				case DataType.flight_retrograde:
+				case DataType.flight_radial:
+				case DataType.flight_antiRadial:
+				case DataType.flight_normal:
+				case DataType.flight_antiNormal:
 					return new Tuple<double, double, double>(1, 1, 1);
+				case DataType.flight_inertial_rotation:
+				case DataType.flight_rotation:
+					return new Tuple<double, double, double, double>(1, 1, 1, 0);
 				case DataType.body_name:
 					return "";
 				case DataType.control_SAS:
@@ -400,6 +417,26 @@ namespace KSP_MOCR
 					stream = new tuple3Stream(connection.AddStream(() => flight.Prograde));
 					break;
 
+				case DataType.flight_retrograde:
+					stream = new tuple3Stream(connection.AddStream(() => flight.Retrograde));
+					break;
+
+				case DataType.flight_radial:
+					stream = new tuple3Stream(connection.AddStream(() => flight.Radial));
+					break;
+
+				case DataType.flight_antiRadial:
+					stream = new tuple3Stream(connection.AddStream(() => flight.AntiRadial));
+					break;
+
+				case DataType.flight_normal:
+					stream = new tuple3Stream(connection.AddStream(() => flight.Normal));
+					break;
+
+				case DataType.flight_antiNormal:
+					stream = new tuple3Stream(connection.AddStream(() => flight.AntiNormal));
+					break;
+
 
 				///// INERTIAL FLIGHT DATA /////
 
@@ -420,6 +457,25 @@ namespace KSP_MOCR
 					break;
 				case DataType.flight_inertial_velocity:
 					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Velocity));
+					break;
+
+				case DataType.flight_inertial_prograde:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Prograde));
+					break;
+				case DataType.flight_inertial_retrograde:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Retrograde));
+					break;
+				case DataType.flight_inertial_radial:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Radial));
+					break;
+				case DataType.flight_inertial_antiRadial:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.AntiRadial));
+					break;
+				case DataType.flight_inertial_normal:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.Normal));
+					break;
+				case DataType.flight_inertial_antiNormal:
+					stream = new tuple3Stream(connection.AddStream(() => inertFlight.AntiNormal));
 					break;
 
 
@@ -491,6 +547,10 @@ namespace KSP_MOCR
 					
 				case DataType.orbit_period:
 					stream = new doubleStream(connection.AddStream(() => orbit.Period));
+					break;
+
+				case DataType.orbit_timeToSOIChange:
+					stream = new doubleStream(connection.AddStream(() => orbit.TimeToSOIChange));
 					break;
 
 

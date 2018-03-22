@@ -28,6 +28,8 @@ namespace KSP_MOCR
 		public PointF LocationF;
 		public SizeF SizeF;
 		public int CrtSize = 3; // Whitch size font to use for CRT-rendering. 1-5
+		public enum Alignment { LEFT, CENTER, RIGHT}
+		public Alignment align = Alignment.LEFT;
 
 		readonly Color blurColor = Color.FromArgb(10, 226, 241, 254);
 
@@ -139,7 +141,7 @@ namespace KSP_MOCR
 			e.Graphics.DrawLine(dBorder, 0f, Height - 2f, Width, Height - 2f); // Bottom
 
 			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-			drawCenterText(e);
+			drawCenterText(e, true);
 		}
 
 		void DrawNormal(PaintEventArgs e)
@@ -153,7 +155,14 @@ namespace KSP_MOCR
 				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 			}
 
-			drawText(e);
+			if (align == Alignment.CENTER)
+			{
+				drawCenterText(e, false);
+			}
+			else
+			{
+				drawText(e);
+			}
 		}
 
 		void drawText(PaintEventArgs e)
@@ -194,7 +203,7 @@ namespace KSP_MOCR
 			}
 		}
 
-		void drawCenterText(PaintEventArgs e)
+		void drawCenterText(PaintEventArgs e, bool blur)
 		{
 			// Find x-offset
 			double spaceReserve = Width - (Text.Length * charWidth);
@@ -202,7 +211,7 @@ namespace KSP_MOCR
 
 			// Find y-offset (Engraved are always 1 line)
 			spaceReserve = Height - lineHeight;
-			lineOffset = 1.5f;
+			if(lineOffset == 0) lineOffset = 1.5f;
 			float yPos = (float)(lineOffset + (spaceReserve / 2));
 
 
@@ -230,12 +239,14 @@ namespace KSP_MOCR
 				}
 				else
 				{
-					Brush blur = new SolidBrush(Color.FromArgb(128, ForeColor.R, ForeColor.G, ForeColor.B));
+					Brush blurBrush = new SolidBrush(Color.FromArgb(128, ForeColor.R, ForeColor.G, ForeColor.B));
 					float xPos = (float)(charOffset + (charWidth * i) - charsBack);
 					e.Graphics.DrawString(letter, Font, new SolidBrush(ForeColor), xPos, yPos);
-					e.Graphics.DrawString(letter, Font, blur, xPos + 1f, yPos);
-					e.Graphics.DrawString(letter, Font, blur, xPos - 1f, yPos);
-
+					if (blur)
+					{
+						e.Graphics.DrawString(letter, Font, blurBrush, xPos + 1f, yPos);
+						e.Graphics.DrawString(letter, Font, blurBrush, xPos - 1f, yPos);
+					}
 				}
 			}
 

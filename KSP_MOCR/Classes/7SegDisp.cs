@@ -16,6 +16,8 @@ namespace KSP_MOCR
 		SignState signState = SignState.AUTO; // Force state of sign (+/-)
 		bool pad = true;
 		Align align = Align.RIGHT;
+		public enum SegDispStyle { BORDER, NO_BORDER};
+		public SegDispStyle style = SegDispStyle.BORDER;
 
 		public float pxPrDigitW = 0;
 		public float pxPrDigitH = 0;
@@ -76,10 +78,13 @@ namespace KSP_MOCR
 			float marginLeft = 3;
 			
 			RectangleF rect;
-			
+
 			// Black background
 			Rectangle irect = new Rectangle(0, 0, Width, Height);
-			g.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 0, 0)), irect);
+			if (style == SegDispStyle.BORDER)
+			{
+				g.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 0, 0)), irect);
+			}
 
 			if (value == "" || off == true)
 			{
@@ -266,7 +271,10 @@ namespace KSP_MOCR
 			}
 
 			// Border Line
-			g.DrawRectangle(borderPen, irect);
+			if (style == SegDispStyle.BORDER)
+			{
+				g.DrawRectangle(borderPen, irect);
+			}
 		}
 
 		/**

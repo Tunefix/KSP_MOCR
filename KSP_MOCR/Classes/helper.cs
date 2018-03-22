@@ -17,6 +17,7 @@ namespace KSP_MOCR
 		static Screen form;
 
 		public enum Align { LEFT, RIGHT, CENTER };
+		public enum ButtonType { NORMAL, DSKY};
 
 		static Random gen = new Random(DateTime.Now.Millisecond);
 
@@ -223,11 +224,12 @@ namespace KSP_MOCR
 		}
 
 
-		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false); }
-		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false); }
-		static public MocrButton CreateButton(double x, double y, double w, double h) { return CreateButton(x, y, w, h, "", false); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, h, t, false); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels)
+		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false, ButtonType.NORMAL); }
+		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false, ButtonType.NORMAL); }
+		static public MocrButton CreateButton(double x, double y, double w, double h) { return CreateButton(x, y, w, h, "", false, ButtonType.NORMAL); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, h, t, false, ButtonType.NORMAL); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels) { return CreateButton(x, y, w, h, t, pixels, ButtonType.NORMAL); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels, ButtonType type)
 		{
 			int top, left, width, height;
 			if (pixels)
@@ -245,6 +247,8 @@ namespace KSP_MOCR
 				height = (int)Math.Ceiling(h * form.pxPrLine);
 			}
 
+			
+
 			MocrButton button = new MocrButton();
 			button.Location = new Point(left, top);
 			button.Size = new Size(width, height);
@@ -257,11 +261,15 @@ namespace KSP_MOCR
 			button.Font = form.smallFontB;
 			button.Text = t;
 			button.Padding = new Padding(0);
+
+			if (type == ButtonType.DSKY) button.buttonStyle = MocrButton.style.DSKY;
+
 			form.Controls.Add(button);
 			return button;
 		}
-		static public Screw CreateScrew(double x, double y) { return CreateScrew(x, y, false); }
-		static public Screw CreateScrew(double x, double y, bool pixels)
+		static public Screw CreateScrew(double x, double y) { return CreateScrew(x, y, 26, false); }
+		static public Screw CreateScrew(double x, double y, bool pixels) { return CreateScrew(x, y, 26, pixels); }
+		static public Screw CreateScrew(double x, double y, int size, bool pixels)
 		{
 			int top, left;
 			if (pixels)
@@ -277,7 +285,7 @@ namespace KSP_MOCR
 
 			Screw screw = new Screw();
 			screw.Location = new Point(left, top);
-			screw.Size = new Size(34, 34);
+			screw.Size = new Size(size + 8, size + 8);
 			screw.angle = Helper.random() * 180;
 
 			form.Controls.Add(screw);
@@ -559,24 +567,48 @@ namespace KSP_MOCR
 
 			return label;
 		}
-		
-		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed, String name)
+
+		static public SegDisp CreateSegDisp(double x, double y, int length, bool signed, String name) { return CreateSegDisp(x, y, 0, 0, length, signed, name, false); }
+		static public SegDisp CreateSegDisp(double x, double y, double pwidth, double pheight, int length, bool signed, String name, bool pixels)
 		{
-			int w;
-			if (signed)
+			int w, h, width, height, top, left;
+			float pxPrDigitW = 0, pxPrDigitH = 0;
+			if (pixels)
 			{
-				 w = (length + 1) * 3;
+				left = (int)Math.Round(x);
+				top = (int)Math.Round(y);
+				width = (int)Math.Round(pwidth);
+				height = (int)Math.Round(pheight);
+
+				if (signed)
+				{
+					pxPrDigitW = (float)(width / (length + 1f));
+				}
+				else
+				{
+					pxPrDigitW = (float)(width / length * 1f);
+				}
+				pxPrDigitH = height;
 			}
 			else
 			{
-				w = length * 3;
+				if (signed)
+				{
+					w = (length + 1) * 3;
+				}
+				else
+				{
+					w = length * 3;
+				}
+				h = 2;
+
+				width = (int)Math.Ceiling((w * form.pxPrChar));
+				height = (int)Math.Ceiling(h * form.pxPrLine);
+				top = (int)(y * form.pxPrLine) + form.padding_top;
+				left = (int)((x * form.pxPrChar) + form.padding_left);
+				pxPrDigitW = (float)(form.pxPrChar * 3);
+				pxPrDigitH = (float)(form.pxPrLine * 2);
 			}
-			int h = 2;
-			
-			int width = (int)Math.Ceiling((w * form.pxPrChar));
-			int height = (int)Math.Ceiling(h * form.pxPrLine);
-			int top = (int)(y * form.pxPrLine) + form.padding_top;
-			int left = (int)((x * form.pxPrChar) + form.padding_left);
 
 			Color fColor = form.foreColor;
 			SegDisp label = new SegDisp(length, signed, name);
@@ -586,8 +618,8 @@ namespace KSP_MOCR
 			label.Padding = new Padding(0);
 			label.Margin = new Padding(0);
 			label.ForeColor = Color.FromArgb(128, fColor.R, fColor.G, fColor.B);
-			label.pxPrDigitW = (float)(form.pxPrChar * 3);
-			label.pxPrDigitH = (float)(form.pxPrLine * 2);
+			label.pxPrDigitW = pxPrDigitW;
+			label.pxPrDigitH = pxPrDigitH;
 
 			form.Controls.Add(label);
 
@@ -704,8 +736,8 @@ namespace KSP_MOCR
 			return output;
 		}
 
-
-		static public String toFixed(double? d, int p)
+		static public String toFixed(double? d, int p) { return toFixed(d, p, false); }
+		static public String toFixed(double? d, int p, bool showPlus)
 		{
 			NumberFormatInfo format = new NumberFormatInfo();
 			format.NumberGroupSeparator = "";
@@ -732,6 +764,12 @@ namespace KSP_MOCR
 
 				int extraSigns = 1; // The decimal sign
 				//if (d2 < 0) { extraSigns++; } // The minus sign
+
+				if(showPlus && d2 > 0)
+				{
+					extraSigns++;
+					r = "+" + r;
+				}
 
 				while (r.Length < b.Length + extraSigns + p)
 				{
@@ -825,6 +863,64 @@ namespace KSP_MOCR
 		public static float random()
 		{
 			return gen.Next(0, 10000) / 10000f;
+		}
+
+		/// <summary>
+		/// Converts Quaterinion to Roll, Pitch, Yaw
+		/// </summary>
+		/// <param name="q"></param>
+		/// <returns></returns>
+		public static Tuple<double, double, double> RPYFromQuaternion(Tuple<double, double, double, double> q)
+		{
+			// 1:X, 2:Y, 3:Z, 4:W
+			/*
+			 * kRPC-angles are XYZW, but reference frame is different.
+			 * 
+			 *  Euler   kRPC
+			 *    X      Y
+			 *    Y      Z
+			 *    Z      X
+			 */
+			double x = q.Item2;
+			double y = q.Item3;
+			double z = q.Item1;
+			double w = q.Item4;
+
+			double roll, pitch, yaw;
+
+			double a = 0;
+			double b = 0;
+			double c = 0;
+			double d = 0;
+			double e = 0;
+
+
+			a = 2 * ((w * x) + (y * z));
+			b = 1 - (2 * ((x * x) + (y * y)));
+			c = 2 * ((w * y) - (z * x));
+			d = 2 * ((w * z) + (x * y));
+			e = 1 - (2 * ((y * y) + (z * z)));
+			
+
+			roll = Helper.rad2deg(Math.Atan2(a, b)); // X
+			pitch = Helper.rad2deg(Math.Asin(c)); // Y
+			yaw = Helper.rad2deg(Math.Atan2(d, e)); // Z
+													/**/
+
+			// CHECK FOR OUT OF BOUNDS PITCH
+			if (Double.IsNaN(pitch))
+			{
+				if (c < -1)
+				{
+					pitch = -90f;
+				}
+				else
+				{
+					pitch = 90f;
+				}
+			}
+
+			return new Tuple<double, double, double>(roll, pitch, yaw);
 		}
 	}
 }

@@ -15,6 +15,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <CodePage>65001</CodePage>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,10 +31,9 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <CodePage>65001</CodePage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -44,7 +44,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>
     </DebugType>
     <Optimize>true</Optimize>
@@ -120,6 +120,9 @@
     <Compile Include="Classes\CustomLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Classes\DSKYBackplate.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Classes\EventIndicator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -142,8 +145,10 @@
     <Compile Include="Screens\CrtTest.cs" />
     <Compile Include="Screens\CrtTest2.cs" />
     <Compile Include="Screens\DataStorageScreen.cs" />
+    <Compile Include="Screens\DSKYScreen.cs" />
     <Compile Include="Screens\Electrical.cs" />
     <Compile Include="Screens\EventPanelEECOM1.cs" />
+    <Compile Include="Screens\FDAIscreen.cs" />
     <Compile Include="Screens\FIDO_P5.cs" />
     <Compile Include="Screens\FIDO_P3.cs" />
     <Compile Include="Screens\FpaVel.cs" />

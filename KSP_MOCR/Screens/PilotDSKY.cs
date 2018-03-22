@@ -336,11 +336,11 @@ namespace KSP_MOCR
 					{
 						if (r1sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r1) * -1);
+							memory.Add(int.Parse(r1) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r1));
+							memory.Add(int.Parse(r1));
 						}
 						entrPress = false;
 						progStep++;
@@ -362,11 +362,11 @@ namespace KSP_MOCR
 					{
 						if (r2sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r2) * -1);
+							memory.Add(int.Parse(r2) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r2));
+							memory.Add(int.Parse(r2));
 						}
 						entrPress = false;
 						progStep++;
@@ -388,11 +388,11 @@ namespace KSP_MOCR
 					{
 						if (r3sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r3) * -1);
+							memory.Add(int.Parse(r3) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r3));
+							memory.Add(int.Parse(r3));
 						}
 						entrPress = false;
 						progStep++;
@@ -427,11 +427,11 @@ namespace KSP_MOCR
 					{
 						if (r1sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r1) * -1);
+							memory.Add(int.Parse(r1) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r1));
+							memory.Add(int.Parse(r1));
 						}
 						entrPress = false;
 						progStep++;
@@ -453,11 +453,11 @@ namespace KSP_MOCR
 					{
 						if (r2sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r2) * -1);
+							memory.Add(int.Parse(r2) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r2));
+							memory.Add(int.Parse(r2));
 						}
 						entrPress = false;
 						progStep++;
@@ -479,11 +479,11 @@ namespace KSP_MOCR
 					{
 						if (r3sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r3) * -1);
+							memory.Add(int.Parse(r3) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r3));
+							memory.Add(int.Parse(r3));
 						}
 						entrPress = false;
 						progStep++;
@@ -518,11 +518,11 @@ namespace KSP_MOCR
 					{
 						if (r1sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r1) * -1);
+							memory.Add(int.Parse(r1) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r1));
+							memory.Add(int.Parse(r1));
 						}
 						entrPress = false;
 						progStep++;
@@ -544,11 +544,11 @@ namespace KSP_MOCR
 					{
 						if (r2sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r2) * -1);
+							memory.Add(int.Parse(r2) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r2));
+							memory.Add(int.Parse(r2));
 						}
 						entrPress = false;
 						progStep++;
@@ -570,23 +570,23 @@ namespace KSP_MOCR
 					{
 						if (r3sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r3) * -1);
+							memory.Add(int.Parse(r3) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r3));
+							memory.Add(int.Parse(r3));
 						}
 
 						// Store all the data
-						screenFDAI.offsetR = dataStorage[0] / 100f;
-						screenFDAI.offsetP = dataStorage[1] / 100f;
-						screenFDAI.offsetY = dataStorage[2] / 100f;
+						screenFDAI.offsetR = memory[0] / 100f;
+						screenFDAI.offsetP = memory[1] / 100f;
+						screenFDAI.offsetY = memory[2] / 100f;
 
-						TIG = (dataStorage[3] * 3600) + (dataStorage[4] * 60) + (dataStorage[5] / 100f);
+						TIG = (memory[3] * 3600) + (memory[4] * 60) + (memory[5] / 100f);
 
-						deltaV = dataStorage[6] * 10f;
+						deltaV = memory[6] * 10f;
 
-						burnTime = (dataStorage[7] * 60) + (dataStorage[8] / 100f);
+						burnTime = (memory[7] * 60) + (memory[8] / 100f);
 
 						// Clear registers
 						r1 = "";
@@ -705,7 +705,7 @@ namespace KSP_MOCR
 			switch (progStep)
 			{
 				case 0:
-					dataStorage.Clear();
+					memory.Clear();
 					r1 = " ";
 					r2 = " ";
 					r3 = " ";
@@ -726,11 +726,11 @@ namespace KSP_MOCR
 					{
 						if (r1sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r1) * -1);
+							memory.Add(int.Parse(r1) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r1));
+							memory.Add(int.Parse(r1));
 						}
 						entrPress = false;
 						progStep++;
@@ -742,7 +742,7 @@ namespace KSP_MOCR
 					break;
 				case 2:
 					// STORE DATA IN NOUN AND CLEAR INPUTS
-					setNounData(noun, dataStorage);
+					setNounData(noun, memory);
 					r1 = "";
 					r2 = "";
 					r3 = "";
@@ -762,7 +762,7 @@ namespace KSP_MOCR
 			switch (progStep)
 			{
 				case 0:
-					dataStorage.Clear();
+					memory.Clear();
 					r1 = " ";
 					r2 = " ";
 					r3 = " ";
@@ -783,11 +783,11 @@ namespace KSP_MOCR
 					{
 						if (r1sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r1) * -1);
+							memory.Add(int.Parse(r1) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r1));
+							memory.Add(int.Parse(r1));
 						}
 						entrPress = false;
 						progStep++;
@@ -803,11 +803,11 @@ namespace KSP_MOCR
 					{
 						if (r2sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r2) * -1);
+							memory.Add(int.Parse(r2) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r2));
+							memory.Add(int.Parse(r2));
 						}
 						entrPress = false;
 						progStep++;
@@ -823,11 +823,11 @@ namespace KSP_MOCR
 					{
 						if (r3sign == SegDisp.SignState.MINUS)
 						{
-							dataStorage.Add(int.Parse(r3) * -1);
+							memory.Add(int.Parse(r3) * -1);
 						}
 						else
 						{
-							dataStorage.Add(int.Parse(r3));
+							memory.Add(int.Parse(r3));
 						}
 						entrPress = false;
 						progStep++;
@@ -839,7 +839,7 @@ namespace KSP_MOCR
 					break;
 				case 4:
 					// STORE DATA IN NOUN AND CLEAR INPUTS
-					setNounData(noun, dataStorage);
+					setNounData(noun, memory);
 					r1 = "";
 					r2 = "";
 					r3 = "";
@@ -870,8 +870,8 @@ namespace KSP_MOCR
 		{
 			activeProg = noun;
 			progStep = 0;
-			dataStorage.Clear();
-			dataStorage.TrimExcess();
+			memory.Clear();
+			memory.TrimExcess();
 			activeVerb = -1;
 			activeNoun = -1;
 		}
@@ -977,7 +977,7 @@ namespace KSP_MOCR
 					values[3] = values[4] = values[5] = 2;
 					break;
 
-				case 20: // FDAI angles
+				case 20: // FDAI offset angles
 					values[0] = (int)Math.Round(screenFDAI.offsetR * 100);
 					values[1] = (int)Math.Round(screenFDAI.offsetP * 100);
 					values[2] = (int)Math.Round(screenFDAI.offsetY * 100);
@@ -1001,7 +1001,7 @@ namespace KSP_MOCR
 					break;
 
 
-				case 23: // Autopilot target RPY
+				case 23: // Target RPY
 					values[0] = (int)Math.Round(tRoll * 100);
 					values[1] = (int)Math.Round(tPitch * 100);
 					values[2] = (int)Math.Round(tYaw * 100);

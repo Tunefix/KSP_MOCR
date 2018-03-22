@@ -72,7 +72,7 @@ namespace KSP_MOCR
 		float TIG = 0;
 		float deltaV = 0;
 		float burnTime = 0;
-		List<int> dataStorage = new List<int>();
+		List<int> memory = new List<int>();
 		double launchAzimuth = 90;
 
 		// FDAI PROPERTIES
@@ -151,6 +151,7 @@ namespace KSP_MOCR
 			this.form = form;
 			this.chartData = form.form.chartData;
 			this.screenStreams = form.streamCollection;
+			this.dataStorage = form.dataStorage;
 
 			this.updateRate = 500;
 
