@@ -1,100 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
 using KRPC.Client.Services.KRPC;
+using KRPC.Client.Services.SpaceCenter;
 
 namespace KSP_MOCR
 {
 	class ResourcesScreen : MocrScreen
 	{
+		Parts parts;
+		List<Tuple<int, string>> partStrings = new List<Tuple<int, string>>();
+
 		public ResourcesScreen(Screen form)
 		{
 			this.form = form;
-			this.chartData = form.form.chartData;
 
-			screenStreams = new StreamCollection(form.connection);
+			screenStreams = form.streamCollection;
 
-            this.updateRate = 1000;
-
-			this.width = 120;
-			this.height = 30;
+			this.charSize = false;
+			this.width = 656;
+			this.height = 494;
+			this.updateRate = 1000;
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
-
-			// Re-usable data variable for graph data
-			//List<Dictionary<int, double?>> data = new List<Dictionary<int, double?>>();
+			screenLabels[2].Text = "LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
 
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
 				double MET = screenStreams.GetData(DataType.vessel_MET);
-				float maxTotFuel = screenStreams.GetData(DataType.resource_total_max_liquidFuel);
-				float curTotFuel = screenStreams.GetData(DataType.resource_total_amount_liquidFuel);
-				float maxStgFuel = screenStreams.GetData(DataType.resource_stage_max_liquidFuel);
-				float curStgFuel = screenStreams.GetData(DataType.resource_stage_amount_liquidFuel);
-				
-				float maxTotOx = screenStreams.GetData(DataType.resource_total_max_oxidizer);
-				float curTotOx = screenStreams.GetData(DataType.resource_total_amount_oxidizer);
-				float maxStgOx = screenStreams.GetData(DataType.resource_stage_max_oxidizer);
-				float curStgOx = screenStreams.GetData(DataType.resource_stage_amount_oxidizer);
 
-				float maxTotMono = screenStreams.GetData(DataType.resource_total_max_monoPropellant);
-				float curTotMono = screenStreams.GetData(DataType.resource_total_amount_monoPropellant);
-				float maxStgMono = screenStreams.GetData(DataType.resource_stage_max_monoPropellant);
-				float curStgMono = screenStreams.GetData(DataType.resource_stage_amount_monoPropellant);
+				screenLabels[3].Text = "MET: " + Helper.timeString(MET, 3);
 
-				float maxTotElec = screenStreams.GetData(DataType.resource_total_max_electricCharge);
-				float curTotElec = screenStreams.GetData(DataType.resource_total_amount_electricCharge);
-				float maxStgElec = screenStreams.GetData(DataType.resource_stage_max_electricCharge);
-				float curStgElec = screenStreams.GetData(DataType.resource_stage_amount_electricCharge);
+				parts = screenStreams.GetData(DataType.vessel_parts);
 
-				screenLabels[1].Text = " LT: " + Helper.timeString(DateTime.Now.TimeOfDay.TotalSeconds);
-				screenLabels[2].Text = "MET: " + Helper.timeString(MET, 3);
+				partStrings.Clear();
 
-				String mTF = Helper.prtlen(Math.Round(maxTotFuel).ToString(), 7);
-				String cTF = Helper.prtlen(Math.Round(curTotFuel).ToString(), 7);
-				String pTF = Helper.prtlen(Math.Floor((curTotFuel / maxTotFuel) * 100).ToString(), 4) + "% ";
-				String mSF = Helper.prtlen(Math.Round(maxStgFuel).ToString(), 7);
-				String cSF = Helper.prtlen(Math.Round(curStgFuel).ToString(), 7);
-				String pSF = Helper.prtlen(Math.Floor((curStgFuel / maxStgFuel) * 100).ToString(), 4) + "% ";
-				String rF = "0";
-				
-				String mTO = Helper.prtlen(Math.Round(maxTotFuel).ToString(), 7);
-				String cTO = Helper.prtlen(Math.Round(curTotFuel).ToString(), 7);
-				String pTO = Helper.prtlen(Math.Floor((curTotFuel / maxTotFuel) * 100).ToString(), 4) + "% ";
-				String mSO = Helper.prtlen(Math.Round(maxStgFuel).ToString(), 7);
-				String cSO = Helper.prtlen(Math.Round(curStgFuel).ToString(), 7);
-				String pSO = Helper.prtlen(Math.Floor((curStgFuel / maxStgFuel) * 100).ToString(), 4) + "% ";
-				String rO = "0";
+				double totFuel = 0;
+				double totLox = 0;
+				double totMono = 0;
 
-				String mTM = Helper.prtlen(Helper.toFixed(maxTotMono,2), 7);
-				String cTM = Helper.prtlen(Helper.toFixed(curTotMono,2), 7);
-				String pTM = Helper.prtlen(Math.Floor((curTotMono / maxTotMono) * 100).ToString(), 4) + "% ";
-				String mSM = Helper.prtlen(Helper.toFixed(maxStgMono,2), 7);
-				String cSM = Helper.prtlen(Helper.toFixed(curStgMono,2), 7);
-				String pSM = Helper.prtlen(Math.Floor((curStgMono / maxStgMono) * 100).ToString(), 4) + "% ";
-				String rM = "0";
+				if (parts != null)
+				{
+					IList<Part> partList = parts.All;
+					foreach (Part p in partList)
+					{
+						Resources r = p.Resources;
 
-				String mTE = Helper.prtlen(Helper.toFixed(maxTotElec, 2), 7);
-				String cTE = Helper.prtlen(Helper.toFixed(curTotElec, 2), 7);
-				String pTE = Helper.prtlen(Math.Floor((curTotElec / maxTotElec) * 100).ToString(), 4) + "% ";
-				String mSE = Helper.prtlen(Helper.toFixed(maxStgElec, 2), 7);
-				String cSE = Helper.prtlen(Helper.toFixed(curStgElec, 2), 7);
-				String pSE = Helper.prtlen(Math.Floor((curStgElec / maxStgElec) * 100).ToString(), 4) + "% ";
-				String rE = "0";
+						if (r.HasResource("MonoPropellant") || r.HasResource("LiquidFuel") || r.HasResource("Oxidizer"))
+						{
+							float fuelA = r.Amount("LiquidFuel");
+							float loxA = r.Amount("Oxidizer");
+							float monoA = r.Amount("MonoPropellant");
 
+							totFuel += fuelA;
+							totLox += loxA;
+							totMono += monoA;
 
+							float fuelM = r.Max("LiquidFuel");
+							float loxM = r.Max("Oxidizer");
+							float monoM = r.Max("MonoPropellant");
 
-				screenLabels[6].Text = "       FUEL  ║" + mSF + "│" + cSF + "│" + pSF + "║" + mTF + "│" + cTF + "│" + pTF + "║" + rF;
-				screenLabels[7].Text = "   OXIDIZER  ║" + mSO + "│" + cSO + "│" + pSO + "║" + mTO + "│" + cTO + "│" + pTO + "║" + rO;
-				screenLabels[9].Text = "   MONOPROP  ║" + mSM + "│" + cSM + "│" + pSM + "║" + mTM + "│" + cTM + "│" + pTM + "║" + rM;
-				screenLabels[11].Text = "ELECTRICITY  ║" + mSE + "│" + cSE + "│" + pSE + "║" + mTE + "│" + cTE + "│" + pTE + "║" + rE;
+							string name = Helper.prtlen(p.Title, 40).ToUpper();
+							int stage = p.DecoupleStage;
+							string stageStr = Helper.prtlen(stage.ToString(), 3, Helper.Align.RIGHT);
+							string fuel = Helper.prtlen(Helper.toFixed(fuelA, 1), 8, Helper.Align.RIGHT);
+							string lox = Helper.prtlen(Helper.toFixed(loxA, 1), 8, Helper.Align.RIGHT);
+							string mono = Helper.prtlen(Helper.toFixed(monoA, 2), 7, Helper.Align.RIGHT);
 
-				/*
-				data = new List<Dictionary<int, double?>>();
-				data.Add(chartData["altitudeSpeed"]);
-				screenCharts[0].setData(data, false);
-				*/
+							float fuelP = (fuelA / fuelM) * 100f;
+							if (fuelM == 0) fuelP = 0;
+							float loxP = (loxA / loxM) * 100f;
+							if (loxM == 0) loxP = 0;
+							float monoP = (monoA / monoM) * 100f;
+							if (monoM == 0) monoP = 0;
+
+							string fuelS = Helper.prtlen(Helper.toFixed(fuelP, 2), 7, Helper.Align.RIGHT) + "%";
+							string loxS = Helper.prtlen(Helper.toFixed(loxP, 2), 7, Helper.Align.RIGHT) + "%";
+							string monoS = Helper.prtlen(Helper.toFixed(monoP, 2), 7, Helper.Align.RIGHT) + "%";
+
+							partStrings.Add(new Tuple<int, string>(stage, stageStr + " " + name + fuel + fuelS + lox + loxS + mono + monoS));
+						}
+					}
+				}
+
+				// SORT THE LIST
+				partStrings.Sort((x, y) => y.Item1.CompareTo(x.Item1));
+
+				for (int i = 5; i < 31; i++)
+				{
+					if (partStrings.Count > i - 5)
+					{
+						screenLabels[i].Text = partStrings[i - 5].Item2;
+					}
+					else
+					{
+						screenLabels[i].Text = "";
+					}
+				}
+
+				// PRINT TOTALS (123456.0   123456.0   12345.00)
+				string totF = Helper.prtlen(Helper.toFixed(totFuel, 1), 11, Helper.Align.RIGHT);
+				string totL = Helper.prtlen(Helper.toFixed(totLox, 1), 11, Helper.Align.RIGHT);
+				string totM = Helper.prtlen(Helper.toFixed(totMono, 2), 11, Helper.Align.RIGHT);
+				screenLabels[52].Text = totF + totL + totM;
+
+				screenLabels[55].Text = "CURRENT STAGE: " + screenStreams.GetData(DataType.control_currentStage).ToString();
+
 			}
 		}
 
@@ -107,22 +119,23 @@ namespace KSP_MOCR
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
 
-			screenLabels[0] = Helper.CreateLabel(39, 0, 42, 1, "========== SPACECRAFT RESOURCES ==========");
-			screenLabels[1] = Helper.CreateLabel(16, 1, 13); // Local Time
-			screenLabels[2] = Helper.CreateLabel(0, 1, 14); // MET Time
+			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 5, 1, "SCR 3");
+			screenLabels[1] = Helper.CreateCRTLabel(27, 0, 30, 1, "CONSUMABLES", 4);
+			screenLabels[2] = Helper.CreateCRTLabel(0, 1.5, 12, 1, "LT: XX:XX:XX");
+			screenLabels[3] = Helper.CreateCRTLabel(29, 1.5, 14, 1, "MET: XXX:XX:XX");
 
-			screenLabels[3] = Helper.CreateLabel(0, 3, 70, 1, "                       STAGE                  TOTAL         ");
-			screenLabels[4] = Helper.CreateLabel(0, 4, 70, 1, "             ║  MAX     CUR     %   ║  MAX     CUR     %   ║  RATE");
-			screenLabels[5] = Helper.CreateLabel(0, 5, 70, 1, "             ║       │       │      ║       │       │      ║ ");
-			screenLabels[6] = Helper.CreateLabel(0, 6, 70, 1, "       FUEL  ║XXXXXXX│XXXXXXX│ 100% ║XXXXXXX│XXXXXXX│ 100% ║±XXX.XX");
-			screenLabels[7] = Helper.CreateLabel(0, 7, 70, 1, "   OXIDIZER  ║XXXXXXX│XXXXXXX│ 100% ║XXXXXXX│XXXXXXX│ 100% ║±XXX.XX");
-			screenLabels[8] = Helper.CreateLabel(0, 8, 70, 1, "             ║       │       │      ║       │       │      ║ ");
-			screenLabels[9] = Helper.CreateLabel(0, 9, 70, 1, "   MONOPROP  ║XXXX.XX│XXXX.XX│ 100% ║XXXX.XX│XXXX.XX│ 100% ║±XXX.XX");
-			screenLabels[10] = Helper.CreateLabel(0, 10, 70, 1, "             ║       │       │      ║       │       │      ║ ");
-			screenLabels[11] = Helper.CreateLabel(0, 11, 70, 1, "ELECTRICITY  ║XXXX.XX│XXXX.XX│ 100% ║XXXX.XX│XXXX.XX│ 100% ║±XXX.XX");
+			screenLabels[4] = Helper.CreateCRTLabel(0, 3, 72, 1, " STG ──────────── PART ─────────────── FUEL ─────── LOX ─────── MONO ──");
 
-			// Altitude vs. Orbital Speed
-			//screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 0, 3000, 0, -1);
+			for(int i = 5; i < 37; i++)
+			{
+				screenLabels[i] = Helper.CreateCRTLabel(0, i + 0.5f, 96, 1, "", 2);
+			}
+
+			screenLabels[50] = Helper.CreateCRTLabel(0, 30, 72, 1, "─────────────────────────────────────── FUEL ────── LOX ──── MONO ─────");
+			screenLabels[51] = Helper.CreateCRTLabel(25, 32, 8, 1, "TOTALS:");
+			screenLabels[52] = Helper.CreateCRTLabel(34, 32, 38, 1, "");
+
+			screenLabels[55] = Helper.CreateCRTLabel(0, 32, 25, 1, "");
 		}
 
 		public override void resize() { }

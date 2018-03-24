@@ -19,7 +19,7 @@ namespace KSP_MOCR
 			this.screenStreams = form.streamCollection;
 
 			this.width = 60;
-			this.height = 30;
+			this.height = 35;
 		}
 
 		public override void updateLocalElements(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 			
-			screenLabels[4] = Helper.CreateLabel(0, 0, 60, 30); // Help text
+			screenLabels[4] = Helper.CreateLabel(0, 0, 60, 35); // Help text
 			screenLabels[4].Text = "╥─── HELP ───\n"
 									+ "║\n"
 									+ "║  To switch between the different screens,\n"
@@ -69,12 +69,12 @@ namespace KSP_MOCR
 									+ "║     0 - HELP\n"
 									+ "║     1 - ASCENT\n"
 									+ "║     2 - BOOSTER\n"
-									+ "║     3 - RESOURCES\n"
+									+ "║     3 - CONSUMABLES\n"
 									+ "║     4 - ORBIT VIEW\n"
 									+ "║     5 - ORBIT DATA\n"
 									+ "║     6 - ELECTRICAL SYSTEMS\n"
+									+ "║     7 - TEMPERATURE / ABLATORS / RADIATORS\n"
 									+ "║     8 - MAP VIEW\n"
-									+ "║     9 - FONT/ALIGNMENT TEST\n"
 									+ "║    12 - DATA STORAGE (PySSSMQ)\n"
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║    51 - ALTITUDE / INERTIAL VELOCITY - GRAPH\n"
@@ -83,12 +83,15 @@ namespace KSP_MOCR
 									+ "║    54 - ALTITUDE / RANGE - GRAPH\n"
 									+ "║    55 - ALTITUDE / VERTICAL SPEED (H / HDOT) - GRAPH\n"
 									+ "║    56 - FLIGHT PATH ANGLE / INERTIAL VELOCITY - GRAPH\n"
-									+ "║   100 - PILOT\n"
+									+ "║   101 - FDAI\n"
+									+ "║   102 - DSKY\n"
 									+ "║\n"
 									+ "║   201-215 - STATUS REPORT (Requires PySSSMQ connection)\n"
 									+ "║   220 - STATUS PANEL (Requires PySSSMQ connection)\n"
 									+ "║\n"
-									+ "║\n";
+									+ "║\n"
+									+ "║     9 - FONT/ALIGNMENT TEST\n"
+									+ "║    99 - CRT FONT/ALIGNMENT TEST\n";
 
 			screenLabels[5] = Helper.CreateLabel(0, 0, 60, 2, "──────────────────── CONNECTION DETAILS ────────────────────"); // Connection Header}
 

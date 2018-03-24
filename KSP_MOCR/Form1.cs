@@ -16,8 +16,6 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Net;
 using System.Threading;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
 using System.Diagnostics;
 using Microsoft.Win32;
 
@@ -32,7 +30,6 @@ namespace KSP_MOCR
 
 		public PySSSMQ_client pySSSMQ = new PySSSMQ_client();
 		public PySSSMQ_Handler pySSSMQ_handler;
-		public ScriptSource pySSSMQ_server;
 
 		public DataStorage dataStorage;
 

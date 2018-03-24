@@ -137,6 +137,7 @@
     <Compile Include="Screens\Pilot1.cs" />
     <Compile Include="Screens\StreamsScreen.cs" />
     <Compile Include="Screens\TApoVel.cs" />
+    <Compile Include="Screens\Temperature.cs" />
     <Compile Include="Screens\Terrain.cs" />
     <Compile Include="Screens\Test.cs" />
     <EmbeddedResource Include="Form1.resx">

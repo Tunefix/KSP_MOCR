@@ -752,7 +752,7 @@ namespace KSP_MOCR
 			else
 			{
 				double d2  = d.Value;
-				String b = Math.Round(d2).ToString(format);
+				String b = Math.Floor(d2).ToString(format);
 				r = Math.Round(d2, p).ToString(format);
 
 				// Check that d isn't whole number, if so; add '.'

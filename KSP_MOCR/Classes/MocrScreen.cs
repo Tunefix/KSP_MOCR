@@ -59,19 +59,19 @@ namespace KSP_MOCR
 			{
 				case 0:
 					scr = new ConnectionScreen(form);
-					name = "";
+					name = "HELP";
 					break;
 				case 1:
 					scr = new AscentScreen(form);
-					name = "";
+					name = "OVERVIEW";
 					break;
 				case 2:
 					scr = new BoosterScreen(form);
-					name = "";
+					name = "BOOSTER";
 					break;
 				case 3:
 					scr = new ResourcesScreen(form);
-					name = "";
+					name = "CONSUMABLES";
 					break;
 				case 4:
 					scr = new OrbitView(form);
@@ -79,32 +79,36 @@ namespace KSP_MOCR
 					break;
 				case 5:
 					scr = new SingleOrbit(form);
-					name = "";
+					name = "ORBITAL DATA";
 					break;
 				case 6:
 					scr = new Electrical(form);
 					name = "ELECTRICAL SYSTEMS";
 					break;
+				case 7:
+					scr = new Temperature(form);
+					name = "TEMPERATURE / ABLATORS / RADIATORS";
+					break;
 				case 8:
 					scr = new MapScreen(form);
-					name = "";
+					name = "MAP";
 					break;
 				case 9:
 					Console.WriteLine("MAKING TEST");
 					scr = new TestScreen(form);
-					name = "";
+					name = "TEST";
 					break;
 				case 11:
 					scr = new StreamsScreen(form);
-					name = "";
+					name = "CURRENT STREAMS FROM KRPC";
 					break;
 				case 12:
 					scr = new DataStorageScreen(form);
-					name = "";
+					name = "CURRENT DATA IN DATA-STORAGE (PySSSMQ)";
 					break;
 				case 40:
 					scr = new FDO(form);
-					name = "";
+					name = "FIDO";
 					break;
 				case 50:
 					scr = new Terrain(form);
@@ -170,10 +174,10 @@ namespace KSP_MOCR
 					scr = new CrtTest2(form, 5);
 					name = "CRT TEST SCREEN #2";
 					break;
-				case 100:
+				/*case 100:
 					scr = new Pilot1(form);
 					name = "";
-					break;
+					break;*/
 				case 101:
 					scr = new FDAIScreen(form);
 					name = "FDAI";
