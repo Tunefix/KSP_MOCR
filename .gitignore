@@ -1,4 +1,5 @@
 # Ignore build directories
+.vs/*
 KSP_MOCR/.vs/*
 KSP_MOCR/bin/*
 KSP_MOCR/obj/*
