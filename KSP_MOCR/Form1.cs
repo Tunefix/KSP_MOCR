@@ -182,7 +182,6 @@ namespace KSP_MOCR
 				lineOffset = -1;
 
 				// Load Images
-				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/Indicator.png");
 				logo = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources/logo.png");
 			}
 			else
@@ -214,8 +213,6 @@ namespace KSP_MOCR
 				catch (Exception ex) { Console.WriteLine(ex.GetType().ToString() + ":" + ex.Message + "\n" + ex.StackTrace); }
 
 				// Load Images
-				//Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
-				indicatorImage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Indicator.png");
 				logo = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\logo.png");
 			}
 
@@ -390,6 +387,7 @@ namespace KSP_MOCR
 			this.Controls.Add(gameScene);
 
 			// PySSSMQ BUTTON
+			/*
 			MocrButton pybutton = new MocrButton();
 			pybutton.Location = getPoint(1, 17);
 			pybutton.Size = getSize(24, 1);
@@ -425,6 +423,7 @@ namespace KSP_MOCR
 			pySSSMQStatus2.Margin = new Padding(0);
 			pySSSMQStatus2.ForeColor = foreColor;
 			this.Controls.Add(pySSSMQStatus2);
+			*/
 
 
 			// AGC STATUS AND CONTROL
@@ -495,7 +494,7 @@ namespace KSP_MOCR
 		public void statusCheckTick(object sender, EventArgs e)
 		{
 			//Process[] pname = Process.GetProcesses();
-
+			/*
 			Process[] pname = Process.GetProcessesByName("pythonw");
 			if (pname.Length > 0)
 			{
@@ -504,7 +503,7 @@ namespace KSP_MOCR
 			else
 			{
 				pySSSMQStatus2.Text = "PySSSMQ-Server: NOT RUNNING";
-			}
+			}*/
 
 			if (krpc != null)
 			{
@@ -622,22 +621,24 @@ namespace KSP_MOCR
 
 		public void StartPyServer(object sender, EventArgs e)
 		{
-			Process p = new Process();
+			/*Process p = new Process();
 			p.StartInfo.WorkingDirectory = System.Environment.CurrentDirectory;
 			p.StartInfo.FileName = "python\\pythonw.exe";
 			p.StartInfo.Arguments = " PySSSMQ_server.py";
-			p.StartInfo.UseShellExecute = false;
+			p.StartInfo.UseShellExecute = true;
 			p.Start();
+			*/
 		}
 
 		public void StopPyServer(object sender, EventArgs e)
 		{
-			Process p = new Process();
+			/*Process p = new Process();
 			p.StartInfo.WorkingDirectory = System.Environment.CurrentDirectory;
 			p.StartInfo.FileName = "python\\pythonw.exe";
 			p.StartInfo.Arguments = " PySSSMQ_server.py stop";
 			p.StartInfo.UseShellExecute = true;
 			p.Start();
+			*/
 		}
 
 		public void DisconnectFromServer(object sender, EventArgs e)

@@ -178,7 +178,25 @@ namespace KSP_MOCR
 			// VERB
 			VD1 = dataStorage.getData("AGC_VD1");
 			VD2 = dataStorage.getData("AGC_VD2");
-			screenSegDisps[3].setValue(VD1.ToString() + VD2.ToString());
+			
+
+			if(VFlash)
+			{
+				if(VFC < 1)
+				{
+					screenSegDisps[3].setValue(VD1.ToString() + VD2.ToString());
+					VFC++;
+				}
+				else if(VFC < 2)
+				{
+					screenSegDisps[3].setValue("");
+					VFC = 0;
+				}
+			}
+			else
+			{
+				screenSegDisps[3].setValue(VD1.ToString() + VD2.ToString());
+			}
 
 
 			// NOUN
@@ -212,6 +230,14 @@ namespace KSP_MOCR
 			R3D4 = dataStorage.getData("AGC_R3D4");
 			R3D5 = dataStorage.getData("AGC_R3D5");
 			screenSegDisps[2].setValue(R3D1.ToString() + R3D2.ToString() + R3D3.ToString() + R3D4.ToString() + R3D5.ToString());
+
+			// INDICATORS
+
+			if (dataStorage.getData("AGC_KEYREL") == "SET")
+			{
+				screenIndicators[53].setStatus(Indicator.status.WHITE);
+			}
+
 		}
 
 		public override void resize()
@@ -220,6 +246,7 @@ namespace KSP_MOCR
 		
 		private void verbPress(object sender, EventArgs e)
 		{
+			dataStorage.setData("AGC_KEY", "SET");
 			dataStorage.setData("AGC_VD1", " ");
 			dataStorage.setData("AGC_VD2", " ");
 			inputState = nextInput.V1;
@@ -227,6 +254,7 @@ namespace KSP_MOCR
 
 		private void nounPress(object sender, EventArgs e)
 		{
+			dataStorage.setData("AGC_KEY", "SET");
 			dataStorage.setData("AGC_ND1", " ");
 			dataStorage.setData("AGC_ND2", " ");
 			inputState = nextInput.N1;

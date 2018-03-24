@@ -30,6 +30,8 @@ namespace KSP_MOCR
 		string verb;
 		string noun;
 
+		string keyInterrupt = "";
+
 		public AGC(DataStorage ds, StreamCollection streamCollection)
 		{
 			dataStorage = ds;
@@ -62,12 +64,22 @@ namespace KSP_MOCR
 				{
 					updateStart = DateTime.Now;
 
+					// Check for key interrupt
+					keyInterrupt = dataStorage.getData("AGC_KEY");
+
 					prog = dataStorage.getData("AGC_MD1") + dataStorage.getData("AGC_MD2");
 					runProgram();
 
-					verb = dataStorage.getData("AGC_VD1") + dataStorage.getData("AGC_VD2");
-					noun = dataStorage.getData("AGC_ND1") + dataStorage.getData("AGC_ND2");
-					runVerb();
+					if (keyInterrupt == "")
+					{
+						verb = dataStorage.getData("AGC_VD1") + dataStorage.getData("AGC_VD2");
+						noun = dataStorage.getData("AGC_ND1") + dataStorage.getData("AGC_ND2");
+						runVerb();
+					}
+					else
+					{
+						dataStorage.setData("AGC_KEYREL", "SET");
+					}
 
 					updateEnd = DateTime.Now;
 
