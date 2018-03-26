@@ -663,7 +663,11 @@ namespace KSP_MOCR
 					throw (new Exception("DataType: " + type.ToString() + " not supported"));
 			}
 
-			streams.Add(type, stream);
+			// Safety check if type already exists in streams
+			if (!streams.ContainsKey(type))
+			{
+				streams.Add(type, stream);
+			}
 		}
 
 		private void getFlight()

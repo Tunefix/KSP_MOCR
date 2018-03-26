@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace KSP_MOCR
 {
@@ -55,37 +57,43 @@ namespace KSP_MOCR
 
 			// BUTTONS
 			screenButtons[0] = Helper.CreateButton(12, 300, 46, 46, "VERB", true);
-			screenButtons[0].Click += verbPress;
+			screenButtons[0].MouseDown += verbPress;
 			screenButtons[1] = Helper.CreateButton(12, 350, 46, 46, "NOUN", true);
-			screenButtons[1].Click += nounPress;
+			screenButtons[1].MouseDown += nounPress;
 			screenButtons[2] = Helper.CreateButton(62, 275, 46, 46, "+", true);
+			screenButtons[2].MouseDown += (sender, e) => keyPress(sender, e, "PLUS");
 			screenButtons[3] = Helper.CreateButton(62, 325, 46, 46, "-", true);
+			screenButtons[3].MouseDown += (sender, e) => keyPress(sender, e, "MINUS");
 			screenButtons[4] = Helper.CreateButton(62, 375, 46, 46, "0", true);
-			screenButtons[4].Click += (sender, e) => numPress(sender, e, 0);
+			screenButtons[4].MouseDown += (sender, e) => numPress(sender, e, 0);
 			screenButtons[5] = Helper.CreateButton(112, 275, 46, 46, "7", true);
-			screenButtons[5].Click += (sender, e) => numPress(sender, e, 7);
+			screenButtons[5].MouseDown += (sender, e) => numPress(sender, e, 7);
 			screenButtons[6] = Helper.CreateButton(112, 325, 46, 46, "4", true);
-			screenButtons[6].Click += (sender, e) => numPress(sender, e, 4);
+			screenButtons[6].MouseDown += (sender, e) => numPress(sender, e, 4);
 			screenButtons[7] = Helper.CreateButton(112, 375, 46, 46, "1", true);
-			screenButtons[7].Click += (sender, e) => numPress(sender, e, 1);
+			screenButtons[7].MouseDown += (sender, e) => numPress(sender, e, 1);
 			screenButtons[8] = Helper.CreateButton(162, 275, 46, 46, "8", true);
-			screenButtons[8].Click += (sender, e) => numPress(sender, e, 8);
+			screenButtons[8].MouseDown += (sender, e) => numPress(sender, e, 8);
 			screenButtons[9] = Helper.CreateButton(162, 325, 46, 46, "5", true);
-			screenButtons[9].Click += (sender, e) => numPress(sender, e, 5);
+			screenButtons[9].MouseDown += (sender, e) => numPress(sender, e, 5);
 			screenButtons[10] = Helper.CreateButton(162, 375, 46, 46, "2", true);
-			screenButtons[10].Click += (sender, e) => numPress(sender, e, 2);
+			screenButtons[10].MouseDown += (sender, e) => numPress(sender, e, 2);
 			screenButtons[11] = Helper.CreateButton(212, 275, 46, 46, "9", true);
-			screenButtons[11].Click += (sender, e) => numPress(sender, e, 9);
+			screenButtons[11].MouseDown += (sender, e) => numPress(sender, e, 9);
 			screenButtons[12] = Helper.CreateButton(212, 325, 46, 46, "6", true);
-			screenButtons[12].Click += (sender, e) => numPress(sender, e, 6);
+			screenButtons[12].MouseDown += (sender, e) => numPress(sender, e, 6);
 			screenButtons[13] = Helper.CreateButton(212, 375, 46, 46, "3", true);
-			screenButtons[13].Click += (sender, e) => numPress(sender, e, 3);
+			screenButtons[13].MouseDown += (sender, e) => numPress(sender, e, 3);
 			screenButtons[14] = Helper.CreateButton(262, 275, 46, 46, "CLR", true);
+			screenButtons[14].MouseDown += (sender, e) => keyPress(sender, e, "CLR");
 			screenButtons[15] = Helper.CreateButton(262, 325, 46, 46, "PRO", true);
+			screenButtons[15].MouseDown += (sender, e) => keyPress(sender, e, "PRO");
 			screenButtons[16] = Helper.CreateButton(262, 375, 46, 46, "KEY\nREL", true);
+			screenButtons[16].MouseDown += (sender, e) => keyPress(sender, e, "KEYREL");
 			screenButtons[17] = Helper.CreateButton(312, 300, 46, 46, "ENTR", true);
-			screenButtons[17].Click += entrPress;
+			screenButtons[17].MouseDown += entrPress;
 			screenButtons[18] = Helper.CreateButton(312, 350, 46, 46, "RSET", true);
+			screenButtons[18].MouseDown += (sender, e) => keyPress(sender, e, "RSET");
 
 			// 7-SEG DISPLAYS
 			screenSegDisps[0] = Helper.CreateSegDisp(202, 132, 148, 36, 5, true, "R1", true);
@@ -169,6 +177,10 @@ namespace KSP_MOCR
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
 
+			// SET FLASH
+			VFlash = dataStorage.getData("AGC_VFLSH") == "SET" ? true : false;
+			NFlash = dataStorage.getData("AGC_NFLSH") == "SET" ? true : false;
+
 			// PROGRAM
 			MD1 = dataStorage.getData("AGC_MD1");
 			MD2 = dataStorage.getData("AGC_MD2");
@@ -202,7 +214,24 @@ namespace KSP_MOCR
 			// NOUN
 			ND1 = dataStorage.getData("AGC_ND1");
 			ND2 = dataStorage.getData("AGC_ND2");
-			screenSegDisps[4].setValue(ND1.ToString() + ND2.ToString());
+
+			if (NFlash)
+			{
+				if (NFC < 1)
+				{
+					screenSegDisps[4].setValue(ND1.ToString() + ND2.ToString());
+					NFC++;
+				}
+				else if (NFC < 2)
+				{
+					screenSegDisps[4].setValue("");
+					NFC = 0;
+				}
+			}
+			else
+			{
+				screenSegDisps[4].setValue(ND1.ToString() + ND2.ToString());
+			}
 
 
 			// R1
@@ -211,7 +240,11 @@ namespace KSP_MOCR
 			R1D3 = dataStorage.getData("AGC_R1D3");
 			R1D4 = dataStorage.getData("AGC_R1D4");
 			R1D5 = dataStorage.getData("AGC_R1D5");
-			screenSegDisps[0].setValue(R1D1.ToString() + R1D2.ToString() + R1D3.ToString() + R1D4.ToString() + R1D5.ToString());
+			string sign = dataStorage.getData("AGC_R1S");
+			SegDisp.SignState signState = SegDisp.SignState.AUTO;
+			if(sign == "NEG") signState = SegDisp.SignState.MINUS;
+			int.TryParse(dataStorage.getData("AGC_R1P"), out int p);
+			screenSegDisps[0].setValue(R1D1.ToString() + R1D2.ToString() + R1D3.ToString() + R1D4.ToString() + R1D5.ToString(), p, signState);
 
 
 			// R2
@@ -220,7 +253,11 @@ namespace KSP_MOCR
 			R2D3 = dataStorage.getData("AGC_R2D3");
 			R2D4 = dataStorage.getData("AGC_R2D4");
 			R2D5 = dataStorage.getData("AGC_R2D5");
-			screenSegDisps[1].setValue(R2D1.ToString() + R2D2.ToString() + R2D3.ToString() + R2D4.ToString() + R2D5.ToString());
+			sign = dataStorage.getData("AGC_R2S");
+			signState = SegDisp.SignState.AUTO;
+			if (sign == "NEG") signState = SegDisp.SignState.MINUS;
+			int.TryParse(dataStorage.getData("AGC_R2P"), out p);
+			screenSegDisps[1].setValue(R2D1.ToString() + R2D2.ToString() + R2D3.ToString() + R2D4.ToString() + R2D5.ToString(), p, signState);
 
 
 			// R3
@@ -229,93 +266,182 @@ namespace KSP_MOCR
 			R3D3 = dataStorage.getData("AGC_R3D3");
 			R3D4 = dataStorage.getData("AGC_R3D4");
 			R3D5 = dataStorage.getData("AGC_R3D5");
-			screenSegDisps[2].setValue(R3D1.ToString() + R3D2.ToString() + R3D3.ToString() + R3D4.ToString() + R3D5.ToString());
+			sign = dataStorage.getData("AGC_R3S");
+			signState = SegDisp.SignState.AUTO;
+			if (sign == "NEG") signState = SegDisp.SignState.MINUS;
+			int.TryParse(dataStorage.getData("AGC_R3P"), out p);
+			screenSegDisps[2].setValue(R3D1.ToString() + R3D2.ToString() + R3D3.ToString() + R3D4.ToString() + R3D5.ToString(), p, signState);
 
 			// INDICATORS
+			screenIndicators[53].setStatus(dataStorage.getData("AGC_KEYREL") == "SET" ? Indicator.status.WHITE : Indicator.status.OFF);
+			screenIndicators[54].setStatus(dataStorage.getData("AGC_OPRERR") == "SET" ? Indicator.status.WHITE : Indicator.status.OFF);
 
-			if (dataStorage.getData("AGC_KEYREL") == "SET")
-			{
-				screenIndicators[53].setStatus(Indicator.status.WHITE);
-			}
 
 		}
 
 		public override void resize()
 		{
 		}
-		
+
+		private void keyPress(object sender, EventArgs e, string key)
+		{
+			//Console.WriteLine("KEY" + key);
+			dataStorage.setData("AGC_KEY", key);
+		}
+
 		private void verbPress(object sender, EventArgs e)
 		{
-			dataStorage.setData("AGC_KEY", "SET");
-			dataStorage.setData("AGC_VD1", " ");
-			dataStorage.setData("AGC_VD2", " ");
-			inputState = nextInput.V1;
+			dataStorage.setData("AGC_KEY", "VERB");
 		}
 
 		private void nounPress(object sender, EventArgs e)
 		{
-			dataStorage.setData("AGC_KEY", "SET");
-			dataStorage.setData("AGC_ND1", " ");
-			dataStorage.setData("AGC_ND2", " ");
-			inputState = nextInput.N1;
+			dataStorage.setData("AGC_KEY", "NOUN");
 		}
 
 		private void entrPress(object sender, EventArgs e)
 		{
-			switch(VD1 + VD2)
-			{
-				case "37":
-					if (VFlash)
-					{
-						if(ND1 == " " || ND2 == " ")
-						{
-							dataStorage.setData("AGC_OPRERROR", "1");
-
-							dataStorage.setData("AGC_ND1", " ");
-							dataStorage.setData("AGC_ND2", " ");
-							inputState = nextInput.N1;
-						}
-						else
-						{
-							dataStorage.setData("AGC_R00", ND1 + ND2);
-							dataStorage.setData("AGC_ND1", " ");
-							dataStorage.setData("AGC_ND2", " ");
-						}
-					}
-					else
-					{
-						// Blank noun display
-						dataStorage.setData("AGC_ND1", " ");
-						dataStorage.setData("AGC_ND2", " ");
-
-						VFlash = true;
-						inputState = nextInput.N1;
-					}
-					break;
-
-			}
+			dataStorage.setData("AGC_KEY", "ENTR");
 		}
 
 		private void numPress(object sender, EventArgs e, int num)
 		{
-			switch(inputState)
+			dataStorage.setData("AGC_KEY", num.ToString());
+			//Console.WriteLine("KEY" + num.ToString());
+		}
+
+		public override bool keyDown(object sender, KeyEventArgs e)
+		{
+			switch(e.KeyCode)
 			{
-				case nextInput.V1:
-					dataStorage.setData("AGC_VD1", num.ToString());
-					inputState = nextInput.V2;
-					break;
-				case nextInput.V2:
-					dataStorage.setData("AGC_VD2", num.ToString());
-					inputState = nextInput.NONE;
-					break;
-				case nextInput.N1:
-					dataStorage.setData("AGC_ND1", num.ToString());
-					inputState = nextInput.N2;
-					break;
-				case nextInput.N2:
-					dataStorage.setData("AGC_ND2", num.ToString());
-					inputState = nextInput.NONE;
-					break;
+				case Keys.V:
+					screenButtons[0].setPressedState(true);
+					verbPress(null, null);
+					Thread.Sleep(100); // Duration of pressed state
+					screenButtons[0].setPressedState(false);
+					return true;
+				case Keys.N:
+					screenButtons[1].setPressedState(true);
+					nounPress(null, null);
+					Thread.Sleep(100);
+					screenButtons[1].setPressedState(false);
+					return true;
+				case Keys.D0:
+				case Keys.NumPad0:
+					screenButtons[4].setPressedState(true);
+					numPress(null, null, 0);
+					Thread.Sleep(100);
+					screenButtons[4].setPressedState(false);
+					return true;
+				case Keys.D1:
+				case Keys.NumPad1:
+					screenButtons[7].setPressedState(true);
+					numPress(null, null, 1);
+					Thread.Sleep(100);
+					screenButtons[7].setPressedState(false);
+					return true;
+				case Keys.D2:
+				case Keys.NumPad2:
+					screenButtons[10].setPressedState(true);
+					numPress(null, null, 2);
+					Thread.Sleep(100);
+					screenButtons[10].setPressedState(false);
+					return true;
+				case Keys.D3:
+				case Keys.NumPad3:
+					screenButtons[13].setPressedState(true);
+					numPress(null, null, 3);
+					Thread.Sleep(100);
+					screenButtons[13].setPressedState(false);
+					return true;
+				case Keys.D4:
+				case Keys.NumPad4:
+					screenButtons[6].setPressedState(true);
+					numPress(null, null, 4);
+					Thread.Sleep(100);
+					screenButtons[6].setPressedState(false);
+					return true;
+				case Keys.D5:
+				case Keys.NumPad5:
+					screenButtons[9].setPressedState(true);
+					numPress(null, null, 5);
+					Thread.Sleep(100);
+					screenButtons[9].setPressedState(false);
+					return true;
+				case Keys.D6:
+				case Keys.NumPad6:
+					screenButtons[12].setPressedState(true);
+					numPress(null, null, 6);
+					Thread.Sleep(100);
+					screenButtons[12].setPressedState(false);
+					return true;
+				case Keys.D7:
+				case Keys.NumPad7:
+					screenButtons[5].setPressedState(true);
+					numPress(null, null, 7);
+					Thread.Sleep(100);
+					screenButtons[5].setPressedState(false);
+					return true;
+				case Keys.D8:
+				case Keys.NumPad8:
+					screenButtons[8].setPressedState(true);
+					numPress(null, null, 8);
+					Thread.Sleep(100);
+					screenButtons[8].setPressedState(false);
+					return true;
+				case Keys.D9:
+				case Keys.NumPad9:
+					screenButtons[11].setPressedState(true);
+					numPress(null, null, 9);
+					Thread.Sleep(100);
+					screenButtons[11].setPressedState(false);
+					return true;
+				case Keys.Enter:
+					screenButtons[17].setPressedState(true);
+					keyPress(null, null, "ENTR");
+					Thread.Sleep(100);
+					screenButtons[17].setPressedState(false);
+					return true;
+				case Keys.Add:
+				case Keys.Oemplus:
+					screenButtons[2].setPressedState(true);
+					keyPress(null, null, "PLUS");
+					Thread.Sleep(100);
+					screenButtons[2].setPressedState(false);
+					return true;
+				case Keys.Subtract:
+				case Keys.OemMinus:
+					screenButtons[3].setPressedState(true);
+					keyPress(null, null, "MINUS");
+					Thread.Sleep(100);
+					screenButtons[3].setPressedState(false);
+					return true;
+				case Keys.C:
+					screenButtons[14].setPressedState(true);
+					keyPress(null, null, "CLR");
+					Thread.Sleep(100);
+					screenButtons[14].setPressedState(false);
+					return true;
+				case Keys.P:
+					screenButtons[15].setPressedState(true);
+					keyPress(null, null, "PRO");
+					Thread.Sleep(100);
+					screenButtons[15].setPressedState(false);
+					return true;
+				case Keys.K:
+					screenButtons[16].setPressedState(true);
+					keyPress(null, null, "KEYREL");
+					Thread.Sleep(100);
+					screenButtons[16].setPressedState(false);
+					return true;
+				case Keys.R:
+					screenButtons[18].setPressedState(true);
+					keyPress(null, null, "RSET");
+					Thread.Sleep(100);
+					screenButtons[18].setPressedState(false);
+					return true;
+				default:
+					return false;
 			}
 		}
 	}

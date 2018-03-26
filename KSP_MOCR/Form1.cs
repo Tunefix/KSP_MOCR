@@ -224,7 +224,7 @@ namespace KSP_MOCR
 			pySSSMQ_handler.storage = dataStorage;
 
 			// Setup AGC
-			agc = new AGC(dataStorage, streamCollection);
+			agc = new AGC(dataStorage, streamCollection, this);
 
 			// Enable key preview
 			this.KeyPreview = true;
@@ -653,6 +653,12 @@ namespace KSP_MOCR
 				StopPyServer(null, null);
 			}
 
+			// If the AGC is running, stop it.
+			if (agc.isRunning())
+			{
+				agc.Stop();
+			}
+
 			flushLog();
 			Application.Exit();
 		}
@@ -771,6 +777,11 @@ namespace KSP_MOCR
 		private void flushLog()
 		{
 			Console.WriteLine("=== Program ended normally " + DateTime.Now + " === ");
+		}
+
+		public void writeToLog(string s)
+		{
+			Console.WriteLine(s);
 		}
 	}
 }

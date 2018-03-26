@@ -67,6 +67,8 @@ namespace KSP_MOCR
 			chartData.Add("hhdot", new List<KeyValuePair<double, double?>>());
 
 			chartData.Add("FlightangleVelocity", new List<KeyValuePair<double, double?>>());
+
+			chartData.Add("geeVel", new List<KeyValuePair<double, double?>>());
 		}
 
 		public void updateChartData(object sender, EventArgs e)
@@ -148,7 +150,7 @@ namespace KSP_MOCR
 				}
 				addValueToChart(chartData["FlightangleVelocity"], speed, fpa, 3000);
 
-
+				addValueToChart(chartData["geeVel"], speed, gee, 3000);
 
 				addValueToChart(chartData["altitudeTime"], MET, altitude);
 				addValueToChart(chartData["apoapsisTime"], MET, apoapsis);

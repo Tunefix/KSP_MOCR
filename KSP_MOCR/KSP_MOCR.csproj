@@ -97,6 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AGC.cs" />
+    <Compile Include="Classes\AGC_Noun.cs" />
+    <Compile Include="Classes\AGC_Pinball.cs" />
+    <Compile Include="Classes\AGC_Programs.cs" />
+    <Compile Include="Classes\AGC_Verb.cs" />
     <Compile Include="Classes\CustomLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -107,10 +111,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Classes\Logger.cs" />
+    <Compile Include="Classes\Noun.cs" />
     <Compile Include="Classes\Screw.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Screens\AltRange.cs" />
+    <Compile Include="Screens\ApoPeriAlt.cs" />
     <Compile Include="Screens\AscentScreen.cs" />
     <Compile Include="Screens\BoosterScreen.cs" />
     <Compile Include="Screens\ConnectionScreen.cs" />
@@ -132,6 +138,7 @@
     <Compile Include="Screens\FIDO_P5.cs" />
     <Compile Include="Screens\FIDO_P3.cs" />
     <Compile Include="Screens\FpaVel.cs" />
+    <Compile Include="Screens\GeeVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
     <Compile Include="Screens\OrbitView.cs" />
     <Compile Include="Screens\Pilot1.cs" />

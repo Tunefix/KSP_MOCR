@@ -104,6 +104,9 @@ namespace KSP_MOCR
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
+			bool invX = false;
+			bool invY = false;
+
 			if (series != null)
 			{
 				axisPen = new Pen(gridColor, 2.0f);
@@ -148,7 +151,9 @@ namespace KSP_MOCR
 					plotWidth = plotRight - plotLeft;
 					plotHeight = plotBottom - plotTop;
 
-					YAxisWidth = maxY.ToString().Length * 8;
+					
+					YAxisWidth = maxY.ToString().Length * 9;
+					if (minY > maxY) YAxisWidth = minY.ToString().Length * 9;
 
 					// Draw YAxis With Labels
 					// Determine best grid-size
@@ -166,7 +171,15 @@ namespace KSP_MOCR
 						stringFormat = new StringFormat();
 						stringFormat.Alignment = StringAlignment.Far;
 						stringFormat.LineAlignment = StringAlignment.Center;
-						g.DrawString(((i * axisData[0]) + minY).ToString(), Font, labelBrush, plotLeft, y, stringFormat);
+						if (axisData[4] == 1)
+						{
+							g.DrawString((minY - (i * axisData[0])).ToString(), Font, labelBrush, plotLeft, y, stringFormat);
+							invY = true;
+						}
+						else
+						{
+							g.DrawString(((i * axisData[0]) + minY).ToString(), Font, labelBrush, plotLeft, y, stringFormat);
+						}
 					}
 				}
 				else
@@ -194,7 +207,15 @@ namespace KSP_MOCR
 					stringFormat = new StringFormat();
 					stringFormat.Alignment = StringAlignment.Center;
 					stringFormat.LineAlignment = StringAlignment.Near;
-					g.DrawString(((i * axisData[0]) + minX).ToString(), Font, labelBrush, x, plotBottom, stringFormat);
+					if (axisData[4] == 1)
+					{
+						g.DrawString((minX - (i * axisData[0])).ToString(), Font, labelBrush, x, plotBottom, stringFormat);
+						invX = true;
+					}
+					else
+					{
+						g.DrawString(((i * axisData[0]) + minX).ToString(), Font, labelBrush, x, plotBottom, stringFormat);
+					}
 				}
 
 
@@ -229,18 +250,19 @@ namespace KSP_MOCR
 
 					if (seriesType[n] == Type.CROSS)
 					{
-						drawCross(g, n, serie);
+						drawCross(g, n, serie, invX, invY);
 					}
 					else
 					{
-						drawLine(g, n, serie);
+						drawLine(g, n, serie, invX, invY);
 					}
 					n++;
 				}
 			}
 		}
 
-		private void drawCross(Graphics g, int n, List<KeyValuePair<double, double?>> serie)
+		private void drawCross(Graphics g, int n, List<KeyValuePair<double, double?>> serie) { drawLine(g, n, serie, false, false); }
+		private void drawCross(Graphics g, int n, List<KeyValuePair<double, double?>> serie, bool invX, bool invY)
 		{
 			/**
 			 * DRAW CROSSES
@@ -248,16 +270,34 @@ namespace KSP_MOCR
 			linePen = new Pen(chartLineColors[n], 2.0f);
 			double? value;
 			double i;
+			float x, y;
 
 			foreach (KeyValuePair<double, double?> p in serie)
 			{
 				if (p.Value != null && !double.IsInfinity((double)p.Value) && !double.IsNaN(p.Key) && xScaler != 0 && yScaler != 0)
 				{
+
 					i = p.Key;
 					value = p.Value;
 
-					float x = (float)((i / xScaler) + plotLeft + (Math.Abs(minX) / xScaler));
-					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					if (invX)
+					{
+						x = (float)((minX / xScaler) - (i / xScaler) + plotLeft);
+					}
+					else
+					{
+						x = (float)((i / xScaler) + plotLeft - (minX / xScaler));
+					}
+
+					if (invY)
+					{
+						y = (float)((value / yScaler) - (maxY / yScaler) + Margin.Top);
+					}
+					else
+					{
+						y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					}
+
 					line[0] = new PointF(x - 4, y - 4);
 					line[1] = new PointF(x + 4, y + 4);
 					g.DrawLines(linePen, line);
@@ -268,7 +308,8 @@ namespace KSP_MOCR
 			}
 		}
 
-		private void drawLine(Graphics g, int n, List<KeyValuePair<double, double?>> serie)
+		private void drawLine(Graphics g, int n, List<KeyValuePair<double, double?>> serie) { drawLine(g, n, serie, false, false); }
+		private void drawLine(Graphics g, int n, List<KeyValuePair<double, double?>> serie, bool invX, bool invY)
 		{
 			/*
 			 * DRAW THE LINE
@@ -278,26 +319,46 @@ namespace KSP_MOCR
 
 			double? value;
 			double i;
+			float x, y;
 
 			foreach (KeyValuePair<double, double?> p in serie)
 			{
 				i = p.Key;
 				value = p.Value;
+				if (value != null && yScaler != 0 && xScaler != 0)
+				{
+					if (invX)
+					{
+						x = (float)((minX / xScaler) - (i / xScaler) + plotLeft);
+					}
+					else
+					{
+						x = (float)((i / xScaler) + plotLeft - (minX / xScaler));
+					}
 
-				if (value != null && !started && yScaler != 0 && xScaler != 0)
-				{
-					started = true;
-					int x = (int)Math.Round((i / xScaler) + plotLeft - (minX / xScaler));
-					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
-					line[0] = new PointF(x, y);
-				}
-				else if (value != null && started && yScaler != 0 && xScaler != 0)
-				{
-					int x = (int)Math.Round((i / xScaler) + plotLeft - (minX / xScaler));
-					float y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
-					line[1] = new PointF(x, y);
-					g.DrawLines(linePen, line);
-					line[0] = line[1];
+					if (invY)
+					{
+						y = (float)((value / yScaler) - (maxY / yScaler) + Margin.Top);
+					}
+					else
+					{
+						y = (float)(plotBottom - (value / yScaler) + (minY / yScaler));
+					}
+
+
+					if (!started)
+					{
+						started = true;
+
+						line[0] = new PointF(x, y);
+					}
+					else
+					{
+
+						line[1] = new PointF(x, y);
+						g.DrawLines(linePen, line);
+						line[0] = line[1];
+					}
 				}
 			}
 		}
@@ -313,12 +374,13 @@ namespace KSP_MOCR
 		/// [3] - xSclaer</returns>
 		private double[] getAxisData(String a)
 		{
-			double[] ret = new double[4];
+			double[] ret = new double[5];
 			if (a == "X")
 			{
-				int split = maxX - minX;
+				int split = Math.Abs(maxX - minX);
 				double xPrPx = split / (double)plotWidth;
 				int xLabelMaxWidth = maxX.ToString().Length * 12;
+				if(minX > maxX) xLabelMaxWidth = minX.ToString().Length * 12;
 				int maxLabels = (int)Math.Floor((double)(plotWidth / xLabelMaxWidth));
 				double minStep = (split / (double)maxLabels);
 				int minStepInt = (int)minStep;
@@ -326,14 +388,19 @@ namespace KSP_MOCR
 				int gridLines = (int)Math.Floor(split / gridStep);
 				double gridStepPx = gridStep / xPrPx;
 
+				// CHECK FOR INVERTED AXIS (highest value towards origin)
+				double inv = 0;
+				if (minX > maxX) inv = 1; 
+
 				ret[0] = gridStep;
 				ret[1] = gridStepPx;
 				ret[2] = gridLines;
 				ret[3] = xPrPx;
+				ret[4] = inv;
 			}
 			else
 			{
-				int split = maxY - minY;
+				int split = Math.Abs(maxY - minY);
 				double xPrPx = split / (double)plotHeight;
 				int xLabelMaxWidth = 16;
 				int maxLabels = (int)Math.Floor((double)(plotHeight / xLabelMaxWidth));
@@ -343,10 +410,15 @@ namespace KSP_MOCR
 				int gridLines = (int)Math.Floor(split / gridStep);
 				double gridStepPx = gridStep / xPrPx;
 
+				// CHECK FOR INVERTED AXIS (highest value towards origin)
+				double inv = 0;
+				if (minY > maxY) inv = 1;
+
 				ret[0] = gridStep;
 				ret[1] = gridStepPx;
 				ret[2] = gridLines;
 				ret[3] = xPrPx;
+				ret[4] = inv;
 			}
 			return ret;
 		}

@@ -89,10 +89,25 @@ namespace KSP_MOCR
 
 		public override void updateLocalElements(object sender, EventArgs e)
 		{
+			// GET AND SET OFFSET ANGLES
+			double.TryParse(dataStorage.getData("AGC_N20R1"), out double or);
+			string ors = dataStorage.getData("AGC_N20R1S"); // NEG if negative
+			if (ors == "NEG") or = or * -1;
+
+			double.TryParse(dataStorage.getData("AGC_N20R2"), out double op);
+			string ops = dataStorage.getData("AGC_N20R2S");
+			if (ops == "NEG") op = op * -1;
+
+			double.TryParse(dataStorage.getData("AGC_N20R3"), out double oy);
+			string oys = dataStorage.getData("AGC_N20R3S");
+			if (oys == "NEG") oy = oy * -1;
+
+			screenFDAI.setOffset(or / 100.0, op / 100.0, oy / 100.0);
+
+
+			// UPDATE ROTATION, ERRORS, AND RATES
 			if (screenFDAI != null && form.form.connected)
 			{
-				
-
 				if (FDAImode == FDAIMode.SURF)
 				{
 					rot = screenStreams.GetData(DataType.flight_rotation);
@@ -108,9 +123,19 @@ namespace KSP_MOCR
 					Yaw = screenStreams.GetData(DataType.flight_inertial_yaw);
 				}
 
-				double.TryParse(dataStorage.getData("N23R1"), out double tr);
-				double.TryParse(dataStorage.getData("N23R2"), out double tp);
-				double.TryParse(dataStorage.getData("N23R3"), out double ty);
+
+				// GET TARGET ANGLES
+				double.TryParse(dataStorage.getData("AGC_N23R1"), out double tr);
+				string trs = dataStorage.getData("AGC_N23R1S");
+				if (trs == "NEG") tr = tr * -1;
+
+				double.TryParse(dataStorage.getData("AGC_N23R2"), out double tp);
+				string tps = dataStorage.getData("AGC_N23R2S");
+				if (tps == "NEG") tp = tp * -1;
+
+				double.TryParse(dataStorage.getData("AGC_N23R3"), out double ty);
+				string tys = dataStorage.getData("AGC_N23R3S");
+				if (tys == "NEG") ty = ty * -1;
 
 
 				RPY = Helper.RPYFromQuaternion(rot);
@@ -129,6 +154,7 @@ namespace KSP_MOCR
 				hPr[4] = (RPY.Item2 - lastPitch[4]) / (this.updateRate / 1000f);
 				hYr[4] = (RPY.Item3 - lastYaw[4]) / (this.updateRate / 1000f);
 
+
 				// SUM AND AVERAGE RATES
 				double r = 0;
 				double p = 0;
@@ -143,6 +169,7 @@ namespace KSP_MOCR
 				r = r / 5.0;
 				p = p / 5.0;
 				y = y / 5.0;
+
 
 				// Insert new value into rate arrays
 				for(int i = 0; i < 4; i++)
@@ -160,46 +187,59 @@ namespace KSP_MOCR
 
 				screenFDAI.setRates(r, p, y, rateScale);
 
-				double rollError = findError(tr, Roll, "ROLL");
-				double pitchError = findError(tp, Pitch, "PITCH");
-				double yawError = findError(ty, Yaw, "YAW");
+				
+
+				double rollError = findError(tr / 100f, Roll, "ROLL");
+				double pitchError = findError(tp / 100f, Pitch, "PITCH");
+				double yawError = findError(ty / 100f, Yaw, "YAW");
 
 				screenFDAI.setError(rollError, pitchError, yawError, errorScale);
 
 				screenFDAI.setRotation(rot);
-
-				// UPDATE INDICATORS
-				if (rateScale == 1) { screenIndicators[2].setStatus(Indicator.status.AMBER); } else { screenIndicators[2].setStatus(Indicator.status.OFF); }
-				if (rateScale == 5) { screenIndicators[3].setStatus(Indicator.status.AMBER); } else { screenIndicators[3].setStatus(Indicator.status.OFF); }
-				if (rateScale == 10) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); }
-
-				if(FDAImode == FDAIMode.SURF)
-				{
-					screenIndicators[0].setStatus(Indicator.status.AMBER);
-					screenIndicators[1].setStatus(Indicator.status.OFF);
-				}
-				else
-				{
-					screenIndicators[0].setStatus(Indicator.status.OFF);
-					screenIndicators[1].setStatus(Indicator.status.AMBER);
-				}
-
-				screenFDAI.Invalidate();
 			}
+
+			// UPDATE INDICATORS
+			if (rateScale == 1) { screenIndicators[2].setStatus(Indicator.status.AMBER); } else { screenIndicators[2].setStatus(Indicator.status.OFF); }
+			if (rateScale == 5) { screenIndicators[3].setStatus(Indicator.status.AMBER); } else { screenIndicators[3].setStatus(Indicator.status.OFF); }
+			if (rateScale == 10) { screenIndicators[4].setStatus(Indicator.status.AMBER); } else { screenIndicators[4].setStatus(Indicator.status.OFF); }
+
+			if (FDAImode == FDAIMode.SURF)
+			{
+				screenIndicators[0].setStatus(Indicator.status.AMBER);
+				screenIndicators[1].setStatus(Indicator.status.OFF);
+			}
+			else
+			{
+				screenIndicators[0].setStatus(Indicator.status.OFF);
+				screenIndicators[1].setStatus(Indicator.status.AMBER);
+			}
+
+			screenFDAI.Invalidate();
 		}
 
 		private void loadPySSSMQData()
 		{
-			if (form.form.pySSSMQ.IsConnected())
-			{
-				// Load data
-				int.TryParse(form.dataStorage.getData("N20R1"), out int oR);
-				int.TryParse(form.dataStorage.getData("N20R1"), out int oP);
-				int.TryParse(form.dataStorage.getData("N20R1"), out int oY);
+			// Load data
+			int.TryParse(form.dataStorage.getData("N20R1"), out int oR);
+			int.TryParse(form.dataStorage.getData("N20R2"), out int oP);
+			int.TryParse(form.dataStorage.getData("N20R3"), out int oY);
 
-				screenFDAI.offsetR = oR / 100f;
-				screenFDAI.offsetP = oP / 100f;
-				screenFDAI.offsetY = oY / 100f;
+			screenFDAI.offsetR = oR / 100f;
+			screenFDAI.offsetP = oP / 100f;
+			screenFDAI.offsetY = oY / 100f;
+
+			string mode = dataStorage.getData("FDAI_MODE");
+			switch(mode)
+			{
+				case "SURF":
+					FDAImode = FDAIMode.SURF;
+					break;
+				case "INER":
+					FDAImode = FDAIMode.INER;
+					break;
+				default:
+					setMode(FDAIMode.SURF);
+					break;
 			}
 		}
 
@@ -224,6 +264,14 @@ namespace KSP_MOCR
 		private void setMode(FDAIMode mode)
 		{
 			FDAImode = mode;
+			if(mode == FDAIMode.SURF)
+			{
+				dataStorage.setData("FDAI_MODE", "SURF");
+			}
+			else
+			{
+				dataStorage.setData("FDAI_MODE", "INER");
+			}
 		}
 
 		private void setScale(double error, double rate)

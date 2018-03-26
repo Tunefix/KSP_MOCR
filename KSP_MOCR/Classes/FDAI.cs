@@ -128,6 +128,13 @@ namespace KSP_MOCR
 			rollRateScale = scale;
 		}
 
+		public void setOffset(double roll, double pitch, double yaw)
+		{
+			offsetR = roll;
+			offsetP = pitch;
+			offsetY = yaw;
+		}
+
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -917,14 +924,14 @@ namespace KSP_MOCR
 			g.FillPath(pureWhiteBrush, path);
 
 			line = new PointF[8];
-			line[0] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.0075f)), y + (height * 0.42f));
-			line[1] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.04f)), y + (height * 0.85f));
-			line[2] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.01f)), y + (height * 0.85f));
-			line[3] = new PointF((float)(center + (maxDeflection * rY) + (length * 0.01f)), y + (height * 1.00f));
-			line[4] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.01f)), y + (height * 1.00f));
-			line[5] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.01f)), y + (height * 0.85f));
-			line[6] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.04f)), y + (height * 0.85f));
-			line[7] = new PointF((float)(center + (maxDeflection * rY) - (length * 0.0075f)), y + (height * 0.42f));
+			line[0] = new PointF((float)(center - (maxDeflection * rY) + (length * 0.0075f)), y + (height * 0.42f));
+			line[1] = new PointF((float)(center - (maxDeflection * rY) + (length * 0.04f)), y + (height * 0.85f));
+			line[2] = new PointF((float)(center - (maxDeflection * rY) + (length * 0.01f)), y + (height * 0.85f));
+			line[3] = new PointF((float)(center - (maxDeflection * rY) + (length * 0.01f)), y + (height * 1.00f));
+			line[4] = new PointF((float)(center - (maxDeflection * rY) - (length * 0.01f)), y + (height * 1.00f));
+			line[5] = new PointF((float)(center - (maxDeflection * rY) - (length * 0.01f)), y + (height * 0.85f));
+			line[6] = new PointF((float)(center - (maxDeflection * rY) - (length * 0.04f)), y + (height * 0.85f));
+			line[7] = new PointF((float)(center - (maxDeflection * rY) - (length * 0.0075f)), y + (height * 0.42f));
 			path = new GraphicsPath();
 			path.AddLines(line);
 			g.FillPath(blackBrush, path);

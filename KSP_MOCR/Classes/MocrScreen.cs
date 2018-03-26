@@ -138,6 +138,14 @@ namespace KSP_MOCR
 					scr = new FpaVel(form);
 					name = "";
 					break;
+				case 57:
+					scr = new GeeVel(form);
+					name = "";
+					break;
+				case 58:
+					scr = new ApoPeriAlt(form);
+					name = "";
+					break;
 				case 60:
 					scr = new FIDO_P5(form);
 					name = "FIDO - EVENT INDICATOR #1";

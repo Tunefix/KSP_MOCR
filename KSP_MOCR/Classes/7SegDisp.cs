@@ -122,9 +122,10 @@ namespace KSP_MOCR
 				{
 					// Print Sign
 					rect = new RectangleF(marginLeft, marginTop, charWidth, charHeight);
-					try
+
+					bool isNumber = int.TryParse(value, out int number);
+					if (isNumber)
 					{
-						int number = int.Parse(value);
 						if ((signState == SignState.AUTO && number < 0) || signState == SignState.MINUS)
 						{
 							drawMinus(g, rect);
@@ -138,7 +139,7 @@ namespace KSP_MOCR
 							drawSignBlank(g, rect);
 						}
 					}
-					catch (Exception)
+					else
 					{
 						if (signState == SignState.MINUS)
 						{
