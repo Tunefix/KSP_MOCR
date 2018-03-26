@@ -57,7 +57,7 @@ namespace KSP_MOCR
 			screenLabels[0] = Helper.CreateLabel(39, 0, 42, 1, "======= G-FORCE / INERTIAL VELOCITY =======");
 
 			// Altitude vs. Orbital Speed
-			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 3000, 0, 12, 0);
+			screenCharts[0] = Helper.CreatePlot(0, 1, 120, 30, 3000, 0, 10, 0);
 			screenCharts[0].setSeriesColor(0, Color.FromArgb(100, 251, 251, 251));
 			screenCharts[0].setSeriesColor(1, Color.FromArgb(100, 251, 0, 0));
 			screenCharts[0].setSeriesColor(2, Color.FromArgb(100, 0, 251, 0));
