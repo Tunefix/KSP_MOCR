@@ -14,5 +14,8 @@ i.e. To open the Ascent module, press and hold [CTRL] and type [1], then release
 
 For a list of available screens: [CTRL] + [0]
 
-Ascent screen:
+Ascent screen: (This is a simple all-in-one view)
 ![alt tag](http://i.imgur.com/KO8Et8M.png)
+
+Obital data:
+![alt tag](https://i.imgur.com/vBOetv3.png)
