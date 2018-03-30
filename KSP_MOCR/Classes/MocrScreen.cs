@@ -25,6 +25,9 @@ namespace KSP_MOCR
 		public List<Map> screenMaps = new List<Map>();
 		public List<Screw> screenScrews = new List<Screw>();
 		public List<EventIndicator> screenEventIndicators = new List<EventIndicator>();
+		public List<ConsoleDigit> screenDigits = new List<ConsoleDigit>();
+
+		public List<Control> screenControls = new List<Control>();
 		public FDAI screenFDAI;
 		public OrbitGraph screenOrbit;
 
@@ -193,6 +196,10 @@ namespace KSP_MOCR
 				case 102:
 					scr = new DSKYScreen(form);
 					name = "DSKY/AGC";
+					break;
+				case 110:
+					scr = new Node(form);
+					name = "";
 					break;
 				case 201:
 					scr = new StatusReport(form, "BOOSTER");
@@ -378,6 +385,16 @@ namespace KSP_MOCR
 				foreach (EventIndicator indicator in screenEventIndicators) { if (indicator != null) { indicator.Dispose(); } }
 				screenEventIndicators.Clear();
 				screenEventIndicators.TrimExcess();
+
+				// Clear ConsoleDigits
+				foreach (ConsoleDigit digit in screenDigits) { if (digit != null) { digit.Dispose(); } }
+				screenDigits.Clear();
+				screenDigits.TrimExcess();
+
+				// Clear misc controls
+				foreach (Control control in screenControls) { if (control != null) { control.Dispose(); } }
+				screenControls.Clear();
+				screenControls.TrimExcess();
 
 				// Clear old FDAI
 				if (screenFDAI != null)

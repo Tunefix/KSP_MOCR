@@ -130,6 +130,7 @@ namespace KSP_MOCR
 				case DataType.orbit_celestialBody:
 				case DataType.vessel_parts:
 				case DataType.vessel_referenceFrame:
+				case DataType.control_nodes:
 					return null;
 				case DataType.flight_inertial_direction:
 				case DataType.flight_direction:
@@ -317,6 +318,10 @@ namespace KSP_MOCR
 
 				case DataType.control_currentStage:
 					stream = new intStream(connection.AddStream(() => control.CurrentStage));
+					break;
+
+				case DataType.control_nodes:
+					stream = new IListNodeStream(connection.AddStream(() => control.Nodes));
 					break;
 
 				///// FLIGHT DATA /////

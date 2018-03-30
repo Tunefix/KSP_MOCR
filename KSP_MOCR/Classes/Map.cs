@@ -206,7 +206,7 @@ namespace KSP_MOCR
 			{
 				case VesselType.Probe:
 					// TODO: DRAW SATTELLITE HERE
-					break;
+					//break;
 					
 				case VesselType.Ship:
 				default:

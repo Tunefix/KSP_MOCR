@@ -8,7 +8,7 @@ namespace KSP_MOCR
 {
 	public class MocrButton : Control
 	{
-		public enum style {LIGHT, THIN_BORDER_LIGHT, PUSH, DSKY}
+		public enum style {LIGHT, THIN_BORDER_LIGHT, PUSH, DSKY, TINY_PUSH}
 		public style buttonStyle { get; set; }
 
 		private bool pressed = false;
@@ -18,12 +18,16 @@ namespace KSP_MOCR
 		readonly private Pen SpacecraftButtonBorderPenDark = new Pen(Color.FromArgb(255, 26, 26, 26), 1f);
 		readonly private Pen SpacecraftButtonBorderPenLight = new Pen(Color.FromArgb(255, 42, 42, 42), 1f);
 
+		readonly Pen DarkBorderPen = new Pen(Color.FromArgb(255, 16, 16, 16), 2f);
 		readonly Pen ControlOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 4f);
 		readonly Pen ControlInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 2f);
 		readonly Pen ControlBorderShadowPen = new Pen(Color.FromArgb(55, 0, 0, 0), 1f);
 		
 		readonly Pen ThinOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 1f);
 		readonly Pen ThinInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 1f);
+
+		readonly Pen ThinSoftBlackPen = new Pen(Color.FromArgb(128, 0, 0, 0), 1f);
+		readonly Pen ThinSoftWhitePen = new Pen(Color.FromArgb(128, 255, 255, 255), 1f);
 
 		readonly Brush textBrushPush = new SolidBrush(Color.FromArgb(200, 255, 255, 255));
 		readonly Brush textBrushLight = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
@@ -36,6 +40,16 @@ namespace KSP_MOCR
 		readonly Brush backgroundColorAmberLit = new SolidBrush(Color.FromArgb(255, 255, 255, 0));
 		readonly Brush backgroundColorGreenDim = new SolidBrush(Color.FromArgb(255, 0, 100, 0));
 		readonly Brush backgroundColorGreenLit = new SolidBrush(Color.FromArgb(255, 0, 255, 0));
+
+		readonly static Color OffWhite = Color.FromArgb(255, 200, 204, 194);
+		readonly static Brush WhiteBrush = new SolidBrush(OffWhite);
+
+		readonly static Color Shadow = Color.FromArgb(55, 0, 0, 0);
+		readonly static Brush ShadowBrush = new SolidBrush(Shadow);
+
+		readonly static Color SoftText = Color.FromArgb(200, 0, 0, 0);
+		readonly static Brush SoftTextBrush = new SolidBrush(SoftText);
+
 
 		Brush litBrush;
 		Brush dimBrush;
@@ -101,6 +115,10 @@ namespace KSP_MOCR
 			if (buttonStyle == style.LIGHT || buttonStyle == style.THIN_BORDER_LIGHT)
 			{
 				DrawControlButton(g);
+			}
+			else if(buttonStyle == style.TINY_PUSH)
+			{
+				DrawTinyPush(g);
 			}
 			else
 			{
@@ -190,6 +208,42 @@ namespace KSP_MOCR
 
 			// Border
 			g.DrawRectangle(outerBorderPen, outerBorderWidth / 2f, outerBorderWidth / 2f, this.Width - outerBorderWidth, this.Height - outerBorderWidth);
+		}
+
+		private void DrawTinyPush(Graphics g)
+		{
+			// FITTING
+			g.FillEllipse(SpacecraftButtonBrush, 2f, 2f, Width - 4f, Height - 4f);
+			g.DrawEllipse(ThinInnerBorderPen, 2f, 2f, Width - 4f, Height - 4f);
+
+			// BUTTON SHADOW
+			if (this.pressed)
+			{
+				g.FillEllipse(ShadowBrush, 6f, 6f, Width - 14f, Height - 14f);
+			}
+			else
+			{
+				g.FillEllipse(ShadowBrush, 8f, 8f, Width - 14f, Height - 14f);
+			}
+
+			// BUTTON
+			g.FillEllipse(WhiteBrush, 7f, 7f, Width - 14f, Height - 14f);
+
+			// BEVELS
+			if (this.pressed)
+			{
+				
+				g.DrawArc(ThinSoftBlackPen, 7f, 7f, Width - 14f, Height - 14f, 160, 340);
+				g.DrawArc(ThinSoftWhitePen, 7f, 7f, Width - 14f, Height - 14f, 340, 160);
+			}
+			else
+			{
+				g.DrawArc(ThinSoftWhitePen, 7f, 7f, Width - 14f, Height - 14f, 160, 340);
+				g.DrawArc(ThinSoftBlackPen, 7f, 7f, Width - 14f, Height - 14f, 340, 160);
+			}
+
+			// TEXT
+			g.DrawString(Text, Font, SoftTextBrush, (Width / 2f) - 5f, (Height / 2f) - 6f);
 		}
 
 		private void DrawSpacecraftButton(Graphics g)

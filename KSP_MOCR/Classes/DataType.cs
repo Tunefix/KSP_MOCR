@@ -67,6 +67,10 @@ namespace KSP_MOCR
 		control_actionGroup7,
 		control_actionGroup8,
 		control_actionGroup9,
+		/// <summary>
+		/// Returns a list of all existing maneuver nodes, ordered by time from first to last.
+		/// </summary>
+		control_nodes,
 
 		flight_gForce,
 		/// <summary>

@@ -55,10 +55,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>73FD375E25F8D93CB1BA6B5079865FF8CDD2667E</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>EF93FF74CDF6E42961E9EB9B67851228C05ABE2B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>KPRC_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>KSP_MOCR_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -78,6 +78,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>MOCR.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="KRPC.Client, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -101,6 +104,9 @@
     <Compile Include="Classes\AGC_Pinball.cs" />
     <Compile Include="Classes\AGC_Programs.cs" />
     <Compile Include="Classes\AGC_Verb.cs" />
+    <Compile Include="Classes\ConsoleDigit.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Classes\CustomLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -140,6 +146,7 @@
     <Compile Include="Screens\FpaVel.cs" />
     <Compile Include="Screens\GeeVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
+    <Compile Include="Screens\Node.cs" />
     <Compile Include="Screens\OrbitView.cs" />
     <Compile Include="Screens\Pilot1.cs" />
     <Compile Include="Screens\StreamsScreen.cs" />
@@ -151,6 +158,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="KPRC_TemporaryKey.pfx" />
+    <None Include="KSP_MOCR_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">

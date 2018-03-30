@@ -17,7 +17,7 @@ namespace KSP_MOCR
 		static Screen form;
 
 		public enum Align { LEFT, RIGHT, CENTER };
-		public enum ButtonType { NORMAL, DSKY};
+		public enum ButtonType { NORMAL, DSKY, TINY_PUSH};
 
 		static Random gen = new Random(DateTime.Now.Millisecond);
 
@@ -263,6 +263,7 @@ namespace KSP_MOCR
 			button.Padding = new Padding(0);
 
 			if (type == ButtonType.DSKY) button.buttonStyle = MocrButton.style.DSKY;
+			if (type == ButtonType.TINY_PUSH) button.buttonStyle = MocrButton.style.TINY_PUSH; 
 
 			form.Controls.Add(button);
 			return button;
@@ -523,6 +524,30 @@ namespace KSP_MOCR
 			form.Controls.Add(label);
 
 			return label;
+		}
+
+		static public ConsoleDigit CreateConsoleDigit(int x, int y, string[] d, bool pixels)
+		{
+			int top, left;
+			if (pixels)
+			{
+				top = (int)y;
+				left = (int)x;
+			}
+			else
+			{
+				top = (int)(y * form.pxPrLine) + form.padding_top;
+				left = (int)((x * form.pxPrChar) + form.padding_left);
+			}
+
+			ConsoleDigit digit = new ConsoleDigit(d);
+			digit.Location = new Point(left, top);
+			digit.Size = new Size(24, 38);
+			digit.Font = form.font;
+
+			form.Controls.Add(digit);
+
+			return digit;
 		}
 
 		static public VerticalMeter CreateVMeter(int x, int y){return CreateVMeter(x, y, false, 0);}
