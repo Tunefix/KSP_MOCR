@@ -310,6 +310,31 @@ namespace KSP_MOCR
 		public override void Remove() { stream.Remove(); }
 	}
 
+	class OrbitStream : Kstream
+	{
+		KRPC.Client.Stream<Orbit> stream { get; set; }
+
+		public OrbitStream(KRPC.Client.Stream<Orbit> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return null;
+			}
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
+
 	class IListNodeStream : Kstream
 	{
 		KRPC.Client.Stream<IList<KRPC.Client.Services.SpaceCenter.Node>> stream { get; set; }

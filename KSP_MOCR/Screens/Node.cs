@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace KSP_MOCR
 {
-	class Node : MocrScreen
+	class Nodes : MocrScreen
 	{
 		IList<KRPC.Client.Services.SpaceCenter.Node> nodes;
 		int activeNode = -1; // -1 for no node
 
-		public Node(Screen form)
+		public Nodes(Screen form)
 		{
 
 			this.form = form;
@@ -265,6 +265,10 @@ namespace KSP_MOCR
 				else if(nodes == null || nodes.Count == 0)
 				{
 					activeNode = -1;
+				}
+				else if(activeNode >= nodes.Count)
+				{
+					activeNode = nodes.Count - 1;
 				}
 
 

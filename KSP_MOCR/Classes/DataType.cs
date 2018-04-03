@@ -143,6 +143,7 @@ namespace KSP_MOCR
 		flight_sideslipAngle,
 		flight_totalAirTemperature,
 		flight_staticAirTemperature,
+		
 
 		flight_inertial_roll,
 		flight_inertial_pitch,
@@ -337,6 +338,10 @@ namespace KSP_MOCR
 		/// <summary>
 		/// Parts
 		/// </summary>
-		vessel_parts
+		vessel_parts,
+		/// <summary>
+		/// Orbit, The current orbit of the vessel.
+		/// </summary>
+		vessel_orbit
 	}
 }

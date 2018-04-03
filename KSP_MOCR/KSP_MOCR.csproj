@@ -144,6 +144,7 @@
     <Compile Include="Screens\FIDO_P5.cs" />
     <Compile Include="Screens\FIDO_P3.cs" />
     <Compile Include="Screens\FpaVel.cs" />
+    <Compile Include="Screens\FutureOrbits.cs" />
     <Compile Include="Screens\GeeVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
     <Compile Include="Screens\Node.cs" />

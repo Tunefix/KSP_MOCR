@@ -131,6 +131,7 @@ namespace KSP_MOCR
 				case DataType.vessel_parts:
 				case DataType.vessel_referenceFrame:
 				case DataType.control_nodes:
+				case DataType.vessel_orbit:
 					return null;
 				case DataType.flight_inertial_direction:
 				case DataType.flight_direction:
@@ -663,6 +664,10 @@ namespace KSP_MOCR
 					stream = new referenceFrameStream(connection.AddStream(() => vessel.ReferenceFrame));
 					break;
 
+				case DataType.vessel_orbit:
+					stream = new OrbitStream(connection.AddStream(() => vessel.Orbit));
+					break;
+
 
 				default:
 					throw (new Exception("DataType: " + type.ToString() + " not supported"));
@@ -718,7 +723,7 @@ namespace KSP_MOCR
 
 		public string getStatus()
 		{
-			string output = "STREAMS\n";
+			string output = "";
 
 			foreach(KeyValuePair<DataType, Kstream> stream in streams)
 			{

@@ -109,6 +109,10 @@ namespace KSP_MOCR
 					scr = new DataStorageScreen(form);
 					name = "CURRENT DATA IN DATA-STORAGE (PySSSMQ)";
 					break;
+				case 13:
+					scr = new FutureOrbits(form);
+					name = "FUTURE ORBITS";
+					break;
 				case 40:
 					scr = new FDO(form);
 					name = "FIDO";
@@ -198,7 +202,7 @@ namespace KSP_MOCR
 					name = "DSKY/AGC";
 					break;
 				case 110:
-					scr = new Node(form);
+					scr = new Nodes(form);
 					name = "";
 					break;
 				case 201:
@@ -276,6 +280,8 @@ namespace KSP_MOCR
 			{
 				form.Text = idstr;
 			}
+
+			form.Icon = form.form.Icon;
 
 			if(scr != null)
 			{
