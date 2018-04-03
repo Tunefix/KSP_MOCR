@@ -78,7 +78,7 @@ namespace KSP_MOCR
 					break;
 				case 4:
 					scr = new OrbitView(form);
-					name = "SPACECRAFT ORBIT (INCLINATION NOT INCLUDED)";
+					name = "SPACECRAFT ORBIT (INCLINATION NOW INCLUDED!)";
 					break;
 				case 5:
 					scr = new SingleOrbit(form);

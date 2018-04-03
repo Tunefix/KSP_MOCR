@@ -316,7 +316,7 @@ namespace KSP_MOCR
 				screenLabels[12].Text = "      INCLINATION: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(Inclination), 3), 11, Helper.Align.RIGHT);
 				screenLabels[13].Text = "LONGITUDE OF NODE: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(LongitudeOfNode), 3), 11, Helper.Align.RIGHT);
 				screenLabels[14].Text = "ARG. OF PERIAPSIS: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(ArgumentOfPeriapsis), 3), 11, Helper.Align.RIGHT);
-				screenLabels[15].Text = "     TRUE ANOMALY: " + Helper.prtlen(Helper.toFixed(TrueAnomaly, 3), 11, Helper.Align.RIGHT);
+				screenLabels[15].Text = "     TRUE ANOMALY: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(TrueAnomaly), 3), 11, Helper.Align.RIGHT);
 				screenLabels[16].Text = "       ORB PERIOD: " + Helper.prtlen(Helper.timeString(OrbitPeriod, true, 2), 11, Helper.Align.RIGHT);
 				screenLabels[17].Text = "       SOI CHANGE: " + Helper.prtlen(Helper.timeString(SOIChange, true, 2), 11, Helper.Align.RIGHT);
 				screenLabels[18].Text = "        ORB SPEED: " + Helper.prtlen(Helper.toFixed(OrbitalSpeed, 3), 11, Helper.Align.RIGHT);

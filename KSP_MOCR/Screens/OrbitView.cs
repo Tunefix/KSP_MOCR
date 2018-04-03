@@ -29,6 +29,9 @@ namespace KSP_MOCR
 		double timeToAp;
 		double period;
 
+		IList<Node> nodes;
+		ReferenceFrame inerFrame;
+
 		public OrbitView(Screen form)
 		{
 			this.form = form;
@@ -66,14 +69,27 @@ namespace KSP_MOCR
 				radius = screenStreams.GetData(DataType.orbit_radius);
 				trueAnomaly = screenStreams.GetData(DataType.orbit_trueAnomaly);
 
-				body = form.connection.SpaceCenter().ActiveVessel.Orbit.Body;
-				bodyRadius = body.EquatorialRadius;
-				bodyName = body.Name;
+				nodes = screenStreams.GetData(DataType.control_nodes);
 
-				IList<CelestialBody> bodySatellites = body.Satellites;
-				screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
-				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly);
+				body = screenStreams.GetData(DataType.orbit_celestialBody);
+				if (body != null)
+				{
+					bodyRadius = body.EquatorialRadius;
+					bodyName = body.Name;
 
+					IList<CelestialBody> bodySatellites = body.Satellites;
+					screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
+					screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly, inclination);
+
+					if (nodes != null && nodes.Count > 0)
+					{
+						inerFrame = body.NonRotatingReferenceFrame;
+						Node node = nodes[0];
+						Tuple<double, double, double> burnPos = node.Position(inerFrame);
+						Tuple<double, double, double> burnVel = node.BurnVector(inerFrame);
+						screenOrbit.setBurnData(burnVel, burnPos);
+					}
+				}
 				screenOrbit.Invalidate();
 			}
 		}

@@ -225,7 +225,7 @@ namespace KSP_MOCR
 
 				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
-				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly);
+				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly, inclination);
 
 				// Make positionalBurnData
 				List<Tuple<List<Tuple<double?, double?>>, Color>> burnPos = new List<Tuple<List<Tuple<double?, double?>>, Color>>();
