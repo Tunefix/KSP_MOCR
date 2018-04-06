@@ -223,9 +223,9 @@ namespace KSP_MOCR
 				}
 				screenLabels[22].Text = "│ FDAI OFFSET: " + Helper.prtlen(Helper.toFixed(0, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(-pitch, 2), 6) + "  " + Helper.prtlen(Helper.toFixed(yawOffset, 2), 6);
 
-				screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
+				//screenOrbit.setBurnData(TAAUT, velocityVector,positionVector,my);
 
-				screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly, inclination);
+				//screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly, inclination);
 
 				// Make positionalBurnData
 				List<Tuple<List<Tuple<double?, double?>>, Color>> burnPos = new List<Tuple<List<Tuple<double?, double?>>, Color>>();

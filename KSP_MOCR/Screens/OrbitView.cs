@@ -28,6 +28,7 @@ namespace KSP_MOCR
 		double timeToPe;
 		double timeToAp;
 		double period;
+		Orbit orbit;
 
 		IList<Node> nodes;
 		ReferenceFrame inerFrame;
@@ -40,7 +41,7 @@ namespace KSP_MOCR
 			this.charSize = false;
 			this.width = 674;
 			this.height = 508;
-			this.updateRate = 1000;
+			this.updateRate = 500;
 
 			
 		}
@@ -57,17 +58,7 @@ namespace KSP_MOCR
 		{
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				period = screenStreams.GetData(DataType.orbit_period);
-				apopapsis = screenStreams.GetData(DataType.orbit_apoapsis);
-				periapsis = screenStreams.GetData(DataType.orbit_periapsis);
-				sMa = screenStreams.GetData(DataType.orbit_semiMajorAxis);
-				sma = screenStreams.GetData(DataType.orbit_semiMinorAxis);
-				argOP = screenStreams.GetData(DataType.orbit_argumentOfPeriapsis);
-				lOAN = screenStreams.GetData(DataType.orbit_longitudeOfAscendingNode);
-				eccentricity = screenStreams.GetData(DataType.orbit_eccentricity);
-				inclination = screenStreams.GetData(DataType.orbit_inclination);
-				radius = screenStreams.GetData(DataType.orbit_radius);
-				trueAnomaly = screenStreams.GetData(DataType.orbit_trueAnomaly);
+				orbit = screenStreams.GetData(DataType.vessel_orbit);
 
 				nodes = screenStreams.GetData(DataType.control_nodes);
 
@@ -79,15 +70,17 @@ namespace KSP_MOCR
 
 					IList<CelestialBody> bodySatellites = body.Satellites;
 					screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
-					screenOrbit.setOrbit(apopapsis, periapsis, sMa, sma, argOP, lOAN, radius, trueAnomaly, inclination);
+					screenOrbit.setOrbit(orbit);
 
 					if (nodes != null && nodes.Count > 0)
 					{
 						inerFrame = body.NonRotatingReferenceFrame;
 						Node node = nodes[0];
-						Tuple<double, double, double> burnPos = node.Position(inerFrame);
-						Tuple<double, double, double> burnVel = node.BurnVector(inerFrame);
-						screenOrbit.setBurnData(burnVel, burnPos);
+						screenOrbit.setBurnNode(node);
+					}
+					else
+					{
+						screenOrbit.setBurnNode(null);
 					}
 				}
 				screenOrbit.Invalidate();
