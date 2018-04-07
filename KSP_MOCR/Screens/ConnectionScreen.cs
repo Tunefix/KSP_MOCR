@@ -76,6 +76,7 @@ namespace KSP_MOCR
 									+ "║     7 - TEMPERATURE / ABLATORS / RADIATORS\n"
 									+ "║     8 - MAP VIEW\n"
 									+ "║    12 - DATA STORAGE (PySSSMQ)\n"
+									+ "║    13 - FUTURE ORBITS\n"
 									+ "║    50 - TERRAIN GRAPH\n"
 									+ "║    51 - ALTITUDE / INERTIAL VELOCITY - GRAPH\n"
 									+ "║    52 - ATTITUDE - GRAPHS (R,P,Y)\n"

@@ -108,7 +108,6 @@ namespace KSP_MOCR
 					{
 						TreeNode<Orbit> child = futOrb.AddChild(node.Orbit, node.UT, "NODE");
 						addAllOrbits(node.Orbit, child);
-						break;
 					}
 				}
 
@@ -124,34 +123,53 @@ namespace KSP_MOCR
 				// PRINT FIRST THREE NEXT ORBITS
 				if (currentOrbit != null)
 				{
-					TreeNode<Orbit> parent = futOrb;
-					string body = currentOrbit.Body.Name;
-					int n = 0;
-
-					for (int i = 1; i <= 3; i++)
-					{
-						if (parent != null && parent.Children.Count > 0)
-						{
-							TreeNode<Orbit> child = parent.Children.ElementAt(0);
-
-							if (child.Data.Body.Name != body) // NEW SOI
-							{
-								updateOrbit(i, child.Data, parent.Data.TimeToSOIChange + MET,"─────────── SOI CHANGE ────────────");
-							}
-							else
-							{
-								updateOrbit(i, child.Data, nodes[n].UT - UT + MET, "────────── MANEOUVER NODE ─────────");
-								n++;
-							}
-
-							parent = child;
-						}
-						else
-						{
-							updateOrbit(i, null, 0);
-						}
-					}
+					getNextOrbit(futOrb, currentOrbit.Body.Name, 1, 0, 0);
 				}
+			}
+		}
+
+		private void getNextOrbit(TreeNode<Orbit> node, string body, int i, int n, int e)
+		{
+			
+			if (node != null && node.Children.Count > 0 && (e < node.Children.Count || n < nodes.Count))
+			{
+				TreeNode<Orbit> child = node.Children.ElementAt(e);
+
+				if (child.Data.Body.Name != body) // NEW SOI
+				{
+					updateOrbit(i, child.Data, node.Data.TimeToSOIChange + MET, "─────────── SOI CHANGE ────────────");
+					body = child.Data.Body.Name;
+				}
+				else if(n < nodes.Count)
+				{
+					updateOrbit(i, child.Data, nodes[n].UT - UT + MET, "────────── MANEOUVER NODE ─────────");
+					n++;
+				}
+				else
+				{
+					updateOrbit(i, null, 0);
+				}
+
+				if (child.Children.Count > 0)
+				{
+					node = child;
+					e = 0;
+				}
+				else if (node.Children.Count == n && node.Parent != null)
+				{
+					node = node.Parent;
+					e++;
+				}
+			}
+			else
+			{
+				updateOrbit(i, null, 0);
+			}
+
+			if(i < 3)
+			{
+				i++;
+				getNextOrbit(node, body, i, n, e);
 			}
 		}
 

@@ -15,48 +15,23 @@ namespace KSP_MOCR
 		float bodyRadius;
 		String bodyName;
 		IList<CelestialBody> bodySatellites;
-		//ReferenceFrame refsmmat;
-		double orbitApoapsis;
-		double orbitPeriapsis;
-		double currentRadius;
-		double semiMajorAxis;
-		double semiMinorAxis;
-		double argumentOfPeriapsis;
-		
-		double longitudeOfAscendingNode;
-		
 
 		Orbit currentOrbit;
+		double UT;
 
 		double scaler = 1;
-		double zoom = 1;
 
 		float graphCenterX;
 		float graphCenterY;
 
-		// BURN ORBIT
-		float gravParam;
-		double burn_trueAnomalyAtTIG;
-		double burn_radiusAtTIG;
-		double burn_velocityAtTIG;
-		//Tuple<double, double, double> burnVector;
-		Tuple<double, double, double> burnVelocityVector;
-		Tuple<double, double, double> burnPositionVector;
-		//Tuple<double, double, double> burnAnglularMomentumVector;
-		//Tuple<double, double, double> burnEccentricityVector;
-		//Tuple<double, double, double> burnNVector;
-		//double burn_eccentricity;
-		//double burn_longitudeOfAscendingNode;
-		//double burn_argumentOfPeriapsis;
-		//double burn_trueAnomaly;
-
-
 		static Color orbitColor = Color.FromArgb(200, 255, 255, 255);
+		static Color orbitColor3 = Color.FromArgb(128, 255, 255, 255);
 		static Color orbitColor2 = Color.FromArgb(128, 0, 128, 255);
 		static Color bodyColor = Color.FromArgb(200, 0, 0, 200);
 		static Pen orbitPen = new Pen(orbitColor, 1.0f);
 		static Pen orbitPen2 = new Pen(orbitColor2, 2.0f);
-		static Pen orbitPenBurn = new Pen(Color.FromArgb(200, 200, 0, 0), 2.0f);
+		static Pen orbitPen3 = new Pen(orbitColor3, 1.0f);
+
 		static Pen bodyPen = new Pen(bodyColor, 1.0f);
 		static Pen burnPen = new Pen(Color.FromArgb(200, 200, 0, 0), 1.0f);
 		static Brush apoBrush = new SolidBrush(Color.FromArgb(200, 0, 87, 91));
@@ -65,6 +40,13 @@ namespace KSP_MOCR
 		static Brush burnBrush = new SolidBrush(Color.FromArgb(200, 200, 0, 0));
 		static Brush bodyBrush = new SolidBrush(bodyColor);
 		static Brush NodeBrush = new SolidBrush(Color.FromArgb(200, 109, 167, 3));
+
+		static Pen[] orbitPenBurn = new Pen[]
+			{
+		new Pen(Color.FromArgb(200, 200, 0, 0), 2.0f),
+		new Pen(Color.FromArgb(200, 0, 200, 0), 2.0f),
+		new Pen(Color.FromArgb(200, 0, 0, 200), 2.0f)
+		};
 
 		readonly Font font;
 
@@ -83,7 +65,18 @@ namespace KSP_MOCR
 		PointF P1;
 		PointF P2;
 
-		Node burnNode;
+
+		IList<Node> burnNodes;
+
+		double satX = 0;
+		double satY = 0;
+
+		// Manual offset/zoom
+		double slideX = 0;
+		double slideY = 0;
+		double slideXtmp = 0;
+		double slideYtmp = 0;
+		double zoom = 1;
 
 		public OrbitGraph(Font f)
 		{
@@ -91,9 +84,20 @@ namespace KSP_MOCR
 			font = f;
 		}
 
+		public void setUT(double ut)
+		{
+			UT = ut;
+		}
+
 		public void setZoom(double zoomFactor)
 		{
 			this.zoom = zoomFactor;
+		}
+
+		public void addZoom(double zoomFactor)
+		{
+			zoom = zoom * Math.Pow(1.2, zoomFactor);
+			Console.WriteLine(zoom.ToString());
 		}
 		
 		public double getZoom()
@@ -101,12 +105,30 @@ namespace KSP_MOCR
 			return this.zoom;
 		}
 
-		public void setBody(CelestialBody b, float br, String n, IList<CelestialBody> bodySatellites)
+		public void setSlideXY(double x, double y)
+		{
+			slideX = x;
+			slideY = y;
+		}
+
+		public void setSlideTmpXY(double x, double y)
+		{
+			slideXtmp = x;
+			slideYtmp = y;
+		}
+
+		public void addSlideXY(double x, double y)
+		{
+			slideX += x;
+			slideY += y;
+		}
+
+		public void setBody(CelestialBody b)
 		{
 			body = b;
-			bodyRadius = br;
-			bodyName = n;
-			this.bodySatellites = bodySatellites;
+			bodyRadius = b.EquatorialRadius;
+			bodyName = b.Name;
+			bodySatellites = b.Satellites;
 		}
 
 		public void setOrbit(Orbit orbit)
@@ -114,9 +136,9 @@ namespace KSP_MOCR
 			currentOrbit = orbit;
 		}
 
-		public void setBurnNode(Node node)
+		public void setBurnNodes(IList<Node> nodes)
 		{
-			burnNode = node;
+			burnNodes = nodes;
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -144,16 +166,6 @@ namespace KSP_MOCR
 
 				// Get biggest apopapsis of satellites
 				double satMaxApo = 0;
-				/*lock(bodySatellites)
-				{
-					foreach (CelestialBody sat in bodySatellites)
-					{
-						if (sat.Orbit.Apoapsis > satMaxApo)
-						{
-							satMaxApo = sat.Orbit.Apoapsis;
-						}
-					}
-				}*/
 
 				// Check of vessel orbit is biggest
 				if (currentOrbit.Apoapsis > satMaxApo)
@@ -167,8 +179,12 @@ namespace KSP_MOCR
 				}
 
 				// Set Center of graph
-				graphCenterX = Width / 2;
-				graphCenterY = Height / 2;
+				graphCenterX = (Width / 2);
+				graphCenterY = (Height / 2);
+
+				// Add manual offset
+				graphCenterX += (float)(slideX + slideXtmp);
+				graphCenterY += (float)(slideY + slideYtmp);
 
 				// Draw Body
 				float left = graphCenterX - (float)(currentOrbit.Body.EquatorialRadius * scaler);
@@ -177,39 +193,18 @@ namespace KSP_MOCR
 				float height = (float)(currentOrbit.Body.EquatorialRadius * 2 * scaler);
 				RectangleF rect = new RectangleF(left, top, width, height);
 				g.FillEllipse(bodyBrush, rect);
-				
-				GraphicsState state = g.Save();
-				g.TranslateTransform((float)graphCenterX, (float)graphCenterY);
 								
 				// Draw satellites
-				lock(bodySatellites)
+				foreach (CelestialBody sat in bodySatellites)
 				{
-					foreach (CelestialBody sat in bodySatellites)
-					{
-						Orbit orbit = sat.Orbit;
-						drawOrbit(g,
-							orbit.SemiMajorAxis,
-							orbit.SemiMinorAxis,
-							orbit.Periapsis,
-							orbit.LongitudeOfAscendingNode,
-							orbit.ArgumentOfPeriapsis,
-							orbit.TrueAnomaly,
-							orbit.Radius,
-							sat.EquatorialRadius,
-							sat.Name);
-					}
+					Orbit orbit = sat.Orbit;
+					MakeOrbitConstants(orbit);
+					drawPatchedConic(g, orbit, 0, 360, orbitPen);
+					drawCurrentPosition(g, orbit);
 				}
-				g.Restore(state);
-
-
-
-
-				//drawBurnOrbit(g, scaler);
-
-				//drawCurrentOrbit(g, scaler);
 
 				MakeOrbitConstants(currentOrbit);
-				drawPatchedConic(g, currentOrbit, 0, orbitPen2);
+				drawPatchedConic(g, currentOrbit, 0, 360, orbitPen2);
 
 				drawPeriapse(g, currentOrbit);
 				drawApoapse(g, currentOrbit);
@@ -218,16 +213,91 @@ namespace KSP_MOCR
 
 				drawCurrentPosition(g, currentOrbit);
 
-				if (burnNode != null)
+				if (burnNodes != null)
 				{
-					drawBurnPoint(g, burnNode);
-					MakeOrbitConstants(burnNode.Orbit);
-					drawPatchedConic(g, burnNode.Orbit, 0, orbitPenBurn);
+					int s = 0;
+					for (int i = 0; i < burnNodes.Count; i++)
+					{
+						Node burnNode = burnNodes[i];
 
-					drawPeriapse(g, burnNode.Orbit);
-					drawApoapse(g, burnNode.Orbit);
+						drawBurnPoint(g, burnNode);
 
-					drawAscDescNodes(g, burnNode.Orbit);
+						if (!double.IsNaN(burnNode.Orbit.TimeToSOIChange))
+						{
+							double SOIUT = burnNode.Orbit.TimeToSOIChange + UT;
+							double TAatSOI = burnNode.Orbit.TrueAnomalyAtUT(SOIUT);
+							double burnTA = burnNode.Orbit.TrueAnomalyAtUT(burnNode.UT);
+
+							MakeOrbitConstants(burnNode.Orbit);
+							drawPatchedConic(g, burnNode.Orbit, Helper.rad2deg(burnTA) + 180, Helper.rad2deg(TAatSOI) + 180, orbitPenBurn[i + s % 3]);
+
+							Orbit SOIorbit = burnNode.Orbit.NextOrbit;
+							while(SOIorbit != null)
+							{
+								s++;
+								double entryTA = SOIorbit.TrueAnomalyAtUT(SOIUT);
+								SOIUT = SOIorbit.TimeToSOIChange + UT;
+								if (!double.IsNaN(SOIUT))
+								{
+									TAatSOI = SOIorbit.TrueAnomalyAtUT(SOIUT);
+								}
+								else
+								{
+									TAatSOI = Helper.deg2rad(360);
+									entryTA = 0;
+								}
+
+								// Swap thetaStart and thetaEnd is orbit is retrograde
+								if(SOIorbit.Inclination > Helper.deg2rad(90) && SOIorbit.Inclination <= Helper.deg2rad(275))
+								{
+									double tmp = entryTA;
+									entryTA = TAatSOI;
+									TAatSOI = tmp;
+								}
+
+								satX = 0;
+								satY = 0;
+
+								if (SOIorbit.Body.Name != body.Name && SOIorbit.Body.Name != "Sun")
+								{
+									// ORBIT AROUND ANTOHER BODY
+									double CloseTime = SOIorbit.TimeToPeriapsis + UT;
+									satX = SOIorbit.Body.Orbit.PositionAt(CloseTime, body.NonRotatingReferenceFrame).Item1 * scaler;
+									satY = SOIorbit.Body.Orbit.PositionAt(CloseTime, body.NonRotatingReferenceFrame).Item3 * scaler;
+									MakeOrbitConstants(SOIorbit.Body.Orbit); // FIXME: Wrong position of satellite at periapse of passing orbit
+									drawBlob(g, SOIorbit.Body.Orbit, CloseTime);
+								}
+
+								MakeOrbitConstants(SOIorbit);
+								drawPatchedConic(g, SOIorbit, Helper.rad2deg(entryTA) + 180, Helper.rad2deg(TAatSOI) + 180, orbitPenBurn[(i + s) % 3]);
+
+								drawPeriapse(g, SOIorbit);
+								if (SOIorbit.Eccentricity < 1)
+								{
+									drawApoapse(g, SOIorbit);
+									drawAscDescNodes(g, SOIorbit);
+								}
+
+								SOIorbit = SOIorbit.NextOrbit;
+							}
+
+						}
+						else
+						{
+							MakeOrbitConstants(burnNode.Orbit);
+							drawPatchedConic(g, burnNode.Orbit, 0, 360, orbitPenBurn[(i + s) % 3]);
+
+							drawPeriapse(g, burnNode.Orbit);
+							drawApoapse(g, burnNode.Orbit);
+
+							drawAscDescNodes(g, burnNode.Orbit);
+						}
+
+						
+						
+
+						
+					}
 				}
 			}
 		}
@@ -235,14 +305,10 @@ namespace KSP_MOCR
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="g"></param>
-		/// <param name="scaler"></param>
-		/// <param name="orbit"></param>
-		/// <param name="thetaLimit">Where to start drawing the orbit, in degrees counter-clockwise from the apoapse direction. Set to 0 if orbit eccentricity is < 1. Else set to 180 - true Anomaly at SOI.</param>
-		private void drawPatchedConic(Graphics g, Orbit orbit, double thetaLimit, Pen orbitPen2)
+		private void drawPatchedConic(Graphics g, Orbit orbit, double thetaStart, double thetaEnd, Pen orbitPen2)
 		{
 			int steps = 360; // Number of line segments
-			double totTheta = 360 - (2 * thetaLimit);
+			double totTheta = thetaEnd - thetaStart;
 			double thetaStep = totTheta / steps;
 
 			double theta;
@@ -253,15 +319,16 @@ namespace KSP_MOCR
 
 			for (int i = 0; i <= steps; i++)
 			{
-				theta = Helper.deg2rad(180 - ((i * thetaStep) + thetaLimit)) + thetaZero;
+				theta = Helper.deg2rad(180 - ((i * thetaStep) + thetaStart)) + thetaZero;
 				Tuple<double, double> XY = getXYfromTheta(theta, orbit);
 
 				point = new PointF((float)XY.Item1, (float)XY.Item2);
 
 				if (lastPoint != null)
 				{
-					g.DrawLine(orbitPen, (PointF)lastPoint, (PointF)point);
+					
 					g.DrawLine(orbitPen2, (PointF)lastPoint, (PointF)point);
+					g.DrawLine(orbitPen3, (PointF)lastPoint, (PointF)point);
 					lastPoint = point;
 				}
 				else
@@ -281,25 +348,40 @@ namespace KSP_MOCR
 			inclination = orbit.Inclination;
 			trueAnomaly = orbit.TrueAnomaly;
 
-			thetaZero = 0 - orbit.LongitudeOfAscendingNode - orbit.ArgumentOfPeriapsis; // Rotation clockwise from x-direction (Right) of Apoapse
-			alphaZero = 0 - orbit.LongitudeOfAscendingNode; // Decending Node
-			directrix = (orbit.Periapsis / eccentricity) + orbit.Periapsis;
+			if (eccentricity == 0)
+			{
+				// SET EVERYTHING TO 0
+				thetaZero = 0;
+				alphaZero = 0;
+				directrix = orbit.Periapsis;
 
-			//Inclination point 1
-			alpha = alphaZero;
-			r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(alpha - thetaZero)));
-			x = (float)(r * Math.Cos(alpha) * scaler) + graphCenterX;
-			y = (float)(r * Math.Sin(alpha) * scaler) + graphCenterY;
-			P1 = new PointF(x, y);
-			//g.FillEllipse(burnBrush, x - 5, y - 5, 10, 10);
+				x = (float)((orbit.Periapsis * scaler) + graphCenterX);
+				P1 = new PointF(x, graphCenterY);
+				P2 = new PointF(-x, graphCenterY);
+			}
+			else
+			{
+				thetaZero = 0 - orbit.LongitudeOfAscendingNode - orbit.ArgumentOfPeriapsis; // Rotation clockwise from x-direction (Right) of Apoapse
+				alphaZero = 0 - orbit.LongitudeOfAscendingNode; // Decending Node
+				directrix = (orbit.Periapsis / eccentricity) + orbit.Periapsis;
+			
 
-			//Inclination point 2
-			alpha = Helper.deg2rad(180) + alphaZero;
-			r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(alpha - thetaZero)));
-			x = (float)(r * Math.Cos(alpha) * scaler) + graphCenterX;
-			y = (float)(r * Math.Sin(alpha) * scaler) + graphCenterY;
-			P2 = new PointF(x, y);
-			//g.FillEllipse(burnBrush, x - 5, y - 5, 10, 10);
+				//Inclination point 1
+				alpha = alphaZero;
+				r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(alpha - thetaZero)));
+				x = (float)(r * Math.Cos(alpha) * scaler) + graphCenterX;
+				y = (float)(r * Math.Sin(alpha) * scaler) + graphCenterY;
+				P1 = new PointF(x, y);
+				//g.FillEllipse(burnBrush, x - 5, y - 5, 10, 10);
+
+				//Inclination point 2
+				alpha = Helper.deg2rad(180) + alphaZero;
+				r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(alpha - thetaZero)));
+				x = (float)(r * Math.Cos(alpha) * scaler) + graphCenterX;
+				y = (float)(r * Math.Sin(alpha) * scaler) + graphCenterY;
+				P2 = new PointF(x, y);
+				//g.FillEllipse(burnBrush, x - 5, y - 5, 10, 10);
+			}
 		}
 
 		private Tuple<double, double> getXYfromTheta(double theta, Orbit orbit)
@@ -312,7 +394,14 @@ namespace KSP_MOCR
 
 			alpha = alphaZero - theta;
 
-			r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(theta - thetaZero)));
+			if (eccentricity == 0)
+			{
+				r = directrix; // Periapse is stored here for ecc = 0
+			}
+			else
+			{
+				r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(theta - thetaZero)));
+			}
 
 
 			// Get Point coordinates
@@ -344,10 +433,21 @@ namespace KSP_MOCR
 			dy = dy * Math.Sin(inclination);
 
 			// Get Point coordinates
-			x = (float)((x * scaler) + graphCenterX + dx);
-			y = (float)((y * scaler) + graphCenterY - dy);
+			x = (float)((x * scaler) + graphCenterX + satX + dx);
+			y = (float)((y * scaler) + graphCenterY - satY - dy);
 
 			return new Tuple<double, double>(x, y);
+		}
+
+		private void drawBlob(Graphics g, Orbit orbit, double time)
+		{
+			float x, y;
+			double ta = orbit.TrueAnomalyAtUT(time);
+			Tuple<double, double> XY = getXYfromTheta(thetaZero - ta, orbit);
+			x = (float)XY.Item1;
+			y = (float)XY.Item2;
+
+			g.FillEllipse(textBrush, x - 5, y - 5, 10, 10);
 		}
 
 		private void drawCurrentPosition(Graphics g, Orbit orbit)
@@ -398,87 +498,12 @@ namespace KSP_MOCR
 			g.FillEllipse(NodeBrush, x - 5, y - 5, 10, 10);
 		}
 
-		
-
 		private void drawBurnPoint(Graphics g, Node node)
 		{
 			float x = (float)(graphCenterX + (node.Position(body.NonRotatingReferenceFrame).Item1 * scaler));
 			float y = (float)(graphCenterY - (node.Position(body.NonRotatingReferenceFrame).Item3 * scaler));
 
 			g.FillEllipse(burnBrush, x - 5, y - 5, 10, 10);
-		}
-
-		private PointF sphericalCoordinate(double radius, double inclination, double asimuth, double scaler, PointF offset)
-		{
-			double x = radius * Math.Cos(inclination) * Math.Cos(asimuth) * scaler;
-			double y = radius * Math.Cos(inclination) * Math.Sin(asimuth) * scaler * -1; // -1 because screenY is inverted
-			double z = radius * Math.Sin(inclination) * scaler;
-
-			return new PointF((float)x + graphCenterX + offset.X, (float)y + graphCenterY + offset.Y);
-		}
-
-		
-
-		private void drawOrbit(Graphics g,
-				double semiMajorAxis,
-				double semiMinorAxis,
-				double orbitPeriapsis,
-				double longitudeOfAscendingNode,
-				double argumentOfPeriapsis,
-				double trueAnomaly,
-				double currentRadius,
-				double radius,
-				String name)
-		{
-			// PROPERITES
-			float left, top, width, height;
-			RectangleF rect;
-			
-			GraphicsState state = g.Save();
-			
-			// Draw Orbit
-			float xOffset = (float)(semiMajorAxis - orbitPeriapsis);
-			double orbitRotation = Helper.rad2deg(longitudeOfAscendingNode + argumentOfPeriapsis);
-			double totRot = longitudeOfAscendingNode + argumentOfPeriapsis + trueAnomaly;
-
-			StringFormat stringFormat = new StringFormat();
-			stringFormat.Alignment = StringAlignment.Near;
-			stringFormat.LineAlignment = StringAlignment.Near;
-
-			g.RotateTransform(-(float)Helper.rad2deg(longitudeOfAscendingNode));
-			g.RotateTransform(-(float)Helper.rad2deg(argumentOfPeriapsis));
-
-			left = 0 - (float)(((semiMajorAxis * 2) - orbitPeriapsis) * scaler);
-			top = 0 - (float)(semiMinorAxis * scaler);
-			width = (float)((semiMajorAxis * 2) * scaler);
-			height = (float)((semiMinorAxis * 2) * scaler);
-
-			rect = new RectangleF(left, top, width, height);
-			g.DrawEllipse(orbitPen, rect);
-
-			//Console.WriteLine("TA: " + trueAnomaly.ToString());
-
-			// Draw position of vessel
-			width = (float)(scaler * radius);
-			height = (float)(scaler * radius);
-			left = 0 + ((float)(currentRadius * Math.Cos(trueAnomaly) * scaler));
-			top = 0 - ((float)(currentRadius * Math.Sin(trueAnomaly) * scaler));
-
-			rect = new RectangleF(left - (width / 2), top - (height / 2), width, height);
-			g.FillEllipse(new SolidBrush(orbitColor), rect);
-
-			// Draw Name
-			GraphicsState stateT = g.Save();
-			g.TranslateTransform((float)left, (float)top);
-			g.RotateTransform((float)Helper.rad2deg(longitudeOfAscendingNode + argumentOfPeriapsis));
-
-			stringFormat = new StringFormat();
-			stringFormat.Alignment = StringAlignment.Center;
-			stringFormat.LineAlignment = StringAlignment.Near;
-			g.DrawString(name, font, textBrush, 0, 2);
-
-			g.Restore(stateT);
-			g.Restore(state);
 		}
 	}
 }

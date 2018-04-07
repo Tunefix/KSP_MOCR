@@ -464,7 +464,7 @@ namespace KSP_MOCR
 			// OrbitGraph
 			screenOrbit = Helper.CreateOrbit(62, 3, 58, 23);
 			IList<CelestialBody> bodySatellites = body.Satellites;
-			screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
+			//screenOrbit.setBody(body, bodyRadius, bodyName, bodySatellites);
 			
 			// Closest approach chart
 			screenCharts[0] = Helper.CreatePlot(0, 26, 62, 14);
