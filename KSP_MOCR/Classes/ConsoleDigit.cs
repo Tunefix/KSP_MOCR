@@ -61,6 +61,11 @@ namespace KSP_MOCR
 			this.Invalidate();
 		}
 
+		public string getCurrentDigit()
+		{
+			return digits[curDig];
+		}
+
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;

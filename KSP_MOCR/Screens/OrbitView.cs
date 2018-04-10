@@ -44,7 +44,8 @@ namespace KSP_MOCR
 		public OrbitView(Screen form)
 		{
 			this.form = form;
-			this.screenStreams = form.streamCollection;
+			screenStreams = form.streamCollection;
+			dataStorage = form.dataStorage;
 
 			this.charSize = false;
 			this.width = 674;
@@ -93,10 +94,24 @@ namespace KSP_MOCR
 					{
 						screenOrbit.setBurnNodes(null);
 					}
+
+					if(dataStorage.getData("target") != "")
+					{
+						IDictionary<string, CelestialBody> bodies = form.form.spaceCenter.Bodies;
+						if(bodies.TryGetValue(dataStorage.getData("target"), out CelestialBody tgt))
+						{
+							screenOrbit.setBodyTarget(tgt);
+						}
+						else
+						{
+							screenOrbit.setBodyTarget(null);
+						}
+					}
 				}
 				else
 				{
 					screenOrbit.setBody(null);
+					screenOrbit.setBodyTarget(null);
 				}
 				screenOrbit.Invalidate();
 			}

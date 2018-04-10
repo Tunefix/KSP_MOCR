@@ -947,5 +947,15 @@ namespace KSP_MOCR
 
 			return new Tuple<double, double, double>(roll, pitch, yaw);
 		}
+
+		public static double dotProduct(Tuple<double, double> a, Tuple<double, double> b)
+		{
+			return (a.Item1 * b.Item1) + (a.Item2 * b.Item2);
+		}
+
+		public static double vectorMagnitude(Tuple<double, double> v)
+		{
+			return Math.Sqrt(Math.Pow(v.Item1, 2) + Math.Pow(v.Item2, 2));
+		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using KRPC.Client.Services.KRPC;
+using KRPC.Client.Services.SpaceCenter;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,7 +19,8 @@ namespace KSP_MOCR
 
 			this.form = form;
 			this.form.BackColor = Color.FromArgb(255, 62, 64, 68);
-			this.screenStreams = form.streamCollection;
+			screenStreams = form.streamCollection;
+			dataStorage = form.dataStorage;
 
 			Image myimage = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Resources\\darknoise.png");
 			this.form.BackgroundImage = myimage;
@@ -233,13 +235,25 @@ namespace KSP_MOCR
 			screenButtons[45].MouseDown += (sender, e) => changeV(-0.1, "NORM");
 
 
-			// ADD/DELETE NOE
+			// ADD/DELETE NODE
 			screenButtons[50] = Helper.CreateButton(130, 65, 84, 38, "ADD NODE", true);
 			screenButtons[50].buttonStyle = MocrButton.style.LIGHT;
 			screenButtons[50].Click += (sender, e) => addNode(600);
 			screenButtons[51] = Helper.CreateButton(130, 105, 84, 38, "REM NODE", true);
 			screenButtons[51].buttonStyle = MocrButton.style.LIGHT;
 			screenButtons[51].Click += (sender, e) => remNode();
+
+
+			// SELECT TARGET
+			/*
+			string[] targets = getTargetList(true);
+			screenDigits[28] = Helper.CreateConsoleDigit(78, 333, targets, true);
+			screenDigits[28].setDigID(0);
+			screenButtons[50] = Helper.CreateButton(223, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[50].MouseDown += (sender, e) => changeTarget(1);
+			screenButtons[51] = Helper.CreateButton(223, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[51].MouseDown += (sender, e) => changeTarget(-1);
+			/**/
 
 
 			screenScrews[0] = Helper.CreateScrew(4, 71, true);
@@ -443,6 +457,22 @@ namespace KSP_MOCR
 			}
 		}
 
+		private void changeTarget(int dir)
+		{
+			if(dir == 1)
+			{
+				// UP
+				screenDigits[28].digInc();
+			}
+			else if(dir == -1)
+			{
+				// DOWN
+				screenDigits[28].digDec();
+			}
+			dataStorage.setData("target", screenDigits[28].getCurrentDigit());
+		}
+
+
 		private void changeV(double vs, string dir)
 		{
 			if (activeNode != -1)
@@ -461,6 +491,37 @@ namespace KSP_MOCR
 				}
 				updateLocalElements(null, null);
 			}
+		}
+
+		private string[] getTargetList(bool withBlankAtIndex0)
+		{
+			// The possible targets are somewhat simplified to:
+			//  * Satellites around the current body being orbited (Planets/Moons)
+			//  * The parent of the body currently being orbited
+
+			List<string> targets = new List<string>();
+
+			CelestialBody body = screenStreams.GetData(DataType.orbit_celestialBody);
+
+			// Blank index 0
+			if (withBlankAtIndex0)
+			{
+				targets.Add(" ");
+			}
+
+			// Satellites
+			foreach (CelestialBody sat in body.Satellites)
+			{
+				targets.Add(sat.Name);
+			}
+
+			// Parent
+			if(body.Orbit.Body != null)
+			{
+				targets.Add(body.Orbit.Body.Name);
+			}
+
+			return targets.ToArray();
 		}
 	}
 }
