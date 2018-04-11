@@ -543,7 +543,7 @@ namespace KSP_MOCR
 			ConsoleDigit digit = new ConsoleDigit(d);
 			digit.Location = new Point(left, top);
 			digit.Size = new Size(24, 38);
-			digit.Font = form.font;
+			digit.Font = form.fontB;
 
 			form.Controls.Add(digit);
 

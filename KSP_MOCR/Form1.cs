@@ -46,6 +46,7 @@ namespace KSP_MOCR
 
 		static private List<PrivateFontCollection> _fontCollections;
 		public Font font;
+		public Font fontB;
 		public Font buttonFont;
 		public Font smallFont;
 		public Font smallFontB;
@@ -162,6 +163,8 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO UNIX");
 
 				font = new Font("Ubuntu Mono", 12, FontStyle.Regular);
+				fontB = new Font("Ubuntu Mono", 12, FontStyle.Bold);
+
 				buttonFont = new Font("Ubuntu Mono", 10, FontStyle.Regular);
 				smallFont = new Font("Ubuntu Mono", 8, FontStyle.Regular);
 				smallFontB = new Font("Ubuntu Mono", 8, FontStyle.Bold);
@@ -187,6 +190,8 @@ namespace KSP_MOCR
 				Console.WriteLine("SYSTEM SET TO WINDOWS");
 
 				font = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Regular);
+				fontB = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 12, FontStyle.Bold);
+
 				buttonFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 10, FontStyle.Regular);
 				smallFont = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Regular);
 				smallFontB = GetCustomFont(GetBytesFromFile(AppDomain.CurrentDomain.BaseDirectory + "Resources\\consola.ttf"), 8, FontStyle.Bold);

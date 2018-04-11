@@ -22,6 +22,7 @@ namespace KSP_MOCR
 		public int padding_bottom;
 		public int padding_right;
 		public Font font;
+		public Font fontB;
 		public Font buttonFont;
 		public Font smallFont;
 		public Font smallFontB;
@@ -61,7 +62,10 @@ namespace KSP_MOCR
 			this.padding_left = form.padding_left;
 			this.padding_right = form.padding_right;
 			this.padding_bottom = form.padding_bottom;
+
 			this.font = form.font;
+			this.fontB = form.fontB;
+
 			this.buttonFont = form.buttonFont;
 			this.smallFont = form.smallFont;
 			this.smallFontB = form.smallFontB;
