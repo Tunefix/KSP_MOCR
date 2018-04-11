@@ -69,6 +69,7 @@ namespace KSP_MOCR
 		public Tuple<double, double> point2;
 
 		// Orbit Constants
+		double thetaZeroNoREF;
 		double thetaZero;
 		double alphaZero;
 		double directrix;
@@ -78,6 +79,10 @@ namespace KSP_MOCR
 		PointF P1;
 		PointF P2;
 		Orbit bodyOrbit;
+
+		double relPeriapse = -1;
+		float relPeriapseX;
+		float relPeriapseY;
 
 
 		IList<Node> burnNodes;
@@ -91,6 +96,11 @@ namespace KSP_MOCR
 		double slideXtmp = 0;
 		double slideYtmp = 0;
 		double zoom = 1;
+
+		/**
+		 * SINGLE PLACE TO TURN ALL DEBUG LINES/TEXT ON/OFF
+		 **/
+		bool debug = false;
 
 		public OrbitGraph(Font f)
 		{
@@ -139,10 +149,13 @@ namespace KSP_MOCR
 		public void setBody(CelestialBody b)
 		{
 			body = b;
-			bodyRadius = b.EquatorialRadius;
-			bodyName = b.Name;
-			bodySatellites = b.Satellites;
-			bodyNonRotFrame = b.NonRotatingReferenceFrame;
+			if (b != null)
+			{
+				bodyRadius = b.EquatorialRadius;
+				bodyName = b.Name;
+				bodySatellites = b.Satellites;
+				bodyNonRotFrame = b.NonRotatingReferenceFrame;
+			}
 		}
 
 		public void setBodyTarget(CelestialBody t)
@@ -275,7 +288,7 @@ namespace KSP_MOCR
 								}
 
 								// Swap thetaStart and thetaEnd is orbit is retrograde
-								if(SOIorbit.Inclination > Helper.deg2rad(90) && SOIorbit.Inclination <= Helper.deg2rad(275))
+								if (SOIorbit.Inclination > Helper.deg2rad(90) && SOIorbit.Inclination <= Helper.deg2rad(275))
 								{
 									double tmp = entryTA;
 									entryTA = TAatSOI;
@@ -301,9 +314,10 @@ namespace KSP_MOCR
 									// Main body relative orbit
 									satX = SOIorbit.Body.Orbit.PositionAt(CloseTime, bodyNonRotFrame).Item1 * scaler;
 									satY = SOIorbit.Body.Orbit.PositionAt(CloseTime, bodyNonRotFrame).Item3 * scaler;
+									relPeriapse = -1;
 									MakeOrbitConstants(g, SOIorbit, true, CloseTime, "SOI Orbit Relative", true);
 									drawPatchedConic(g, SOIorbit, Helper.rad2deg(entryTA) + 180, Helper.rad2deg(TAatSOI) + 180, burnOrbitColor[(i + s) % 3], true);
-									drawPeriapse(g, SOIorbit, true);
+									drawPeriapse(g, relPeriapseX, relPeriapseY);
 								}
 								else
 								{
@@ -359,11 +373,32 @@ namespace KSP_MOCR
 			PointF? lastPoint = null;
 			PointF? point = null;
 
+			PointF center;
+
 			Pen localPen = new Pen(orbitColor, 2f);
 			Brush localBrush = new SolidBrush(orbitColor);
 
 			for (int i = 0; i <= steps; i++)
 			{
+				// IF relativeToParent, recalculate satX/Y and thetaZero each time.
+				if (relativeToParent)
+				{
+					theta = Helper.deg2rad(180 - ((i * thetaStep) + thetaStart)) + thetaZeroNoREF;
+					double time = orbit.UTAtTrueAnomaly(theta - thetaZeroNoREF);
+					Tuple<double, double, double> pos = bodyOrbit.PositionAt(time, bodyNonRotFrame);
+					satX = pos.Item1 * scaler;
+					satY = pos.Item3 * scaler;
+
+					if(pos.Item3 <= 0)
+					{
+						thetaZero = Math.Acos(pos.Item1 / Math.Sqrt(Math.Pow(pos.Item1, 2) + Math.Pow(pos.Item3, 2))) + thetaZeroNoREF;
+					}
+					else
+					{
+						thetaZero = (Helper.deg2rad(360) - Math.Acos(pos.Item1 / Math.Sqrt(Math.Pow(pos.Item1, 2) + Math.Pow(pos.Item3, 2)))) + thetaZeroNoREF;
+					}
+				}
+
 				theta = Helper.deg2rad(180 - ((i * thetaStep) + thetaStart)) + thetaZero;
 				Tuple<double, double> XY = getXYfromTheta(theta, orbit, relativeToParent);
 
@@ -375,22 +410,27 @@ namespace KSP_MOCR
 					g.DrawLine(localPen, (PointF)lastPoint, (PointF)point);
 					g.DrawLine(orbitPen3, (PointF)lastPoint, (PointF)point);
 					lastPoint = point;
-
-					/*
-					if(i % 10 == 0)
-					{
-						g.DrawLine(orbitPen, (PointF)point, center);
-					}*/
 				}
 				else
 				{
 					lastPoint = point;
 				}
 
+				if (i % 10 == 0 && debug)
+				{
+					center = new PointF((float)(graphCenterX + satX), (float)(graphCenterY - satY));
+					g.DrawLine(orbitPen, (PointF)point, center);
+
+					float x = (float)((300 * Math.Cos(thetaZero)) + center.X);
+					float y = (float)((300 * Math.Sin(thetaZero)) + center.Y);
+					g.DrawLine(burnPen, center, new PointF(x, y));
+					g.DrawString("ThetaZero ", font, textBrush, x, y);
+				}
+
 				if (i == 0 && eccentricity >= 1)
 				{
 					float size = 10;
-					PointF center = (PointF)point;
+					center = (PointF)point;
 					PointF[] shape = new PointF[3];
 					shape[0] = new PointF(center.X + (size * -1f), center.Y + (size * -1.0f));
 					shape[1] = new PointF(center.X + (size * 1f), center.Y + (size * -1.0f));
@@ -401,7 +441,7 @@ namespace KSP_MOCR
 				else if(i == steps && !double.IsNaN(orbit.TimeToSOIChange))
 				{
 					float size = 10;
-					PointF center = (PointF)point;
+					center = (PointF)point;
 					PointF[] shape = new PointF[3];
 					shape[0] = new PointF(center.X + (size * -1f), center.Y + (size * 1f));
 					shape[1] = new PointF(center.X + (size * 1f), center.Y + (size * 1f));
@@ -417,7 +457,7 @@ namespace KSP_MOCR
 		private void MakeOrbitConstants(Graphics g, Orbit orbit) { MakeOrbitConstants(g, orbit, false, ""); }
 		private void MakeOrbitConstants(Graphics g, Orbit orbit, bool relativeToParent) { MakeOrbitConstants(g, orbit, relativeToParent, ""); }
 		private void MakeOrbitConstants(Graphics g, Orbit orbit, bool relativeToParent, string debug) { MakeOrbitConstants(g, orbit, relativeToParent, -1, debug, false); }
-		private void MakeOrbitConstants(Graphics g, Orbit orbit, bool relativeToParent, double time, string debug, bool relativeREF)
+		private void MakeOrbitConstants(Graphics g, Orbit orbit, bool relativeToParent, double time, string debugstr, bool relativeREF)
 		{
 			float x, y;
 			double alpha;
@@ -440,22 +480,22 @@ namespace KSP_MOCR
 					{
 						if (bodyInc > Helper.deg2rad(90) && bodyInc <= Helper.deg2rad(270))
 						{
-							REF = Helper.deg2rad(180) + orbit.Body.Orbit.LongitudeOfAscendingNode + orbit.Body.Orbit.ArgumentOfPeriapsis + orbit.Body.Orbit.TrueAnomalyAtUT(time);
+							REF = 0 - orbit.Body.Orbit.LongitudeOfAscendingNode + orbit.Body.Orbit.ArgumentOfPeriapsis + orbit.Body.Orbit.TrueAnomalyAtUT(time);
 						}
 						else
 						{
-							REF = Helper.deg2rad(180) - orbit.Body.Orbit.LongitudeOfAscendingNode - orbit.Body.Orbit.ArgumentOfPeriapsis - orbit.Body.Orbit.TrueAnomalyAtUT(time);
+							REF = 0 - orbit.Body.Orbit.LongitudeOfAscendingNode - orbit.Body.Orbit.ArgumentOfPeriapsis - orbit.Body.Orbit.TrueAnomalyAtUT(time);
 						}
 					}
 					else
 					{
 						if (bodyInc > Helper.deg2rad(90) && bodyInc <= Helper.deg2rad(270))
 						{
-							REF = Helper.deg2rad(180) + orbit.Body.Orbit.LongitudeOfAscendingNode + orbit.Body.Orbit.ArgumentOfPeriapsis + orbit.Body.Orbit.TrueAnomaly;
+							REF = 0 - orbit.Body.Orbit.LongitudeOfAscendingNode + orbit.Body.Orbit.ArgumentOfPeriapsis + orbit.Body.Orbit.TrueAnomaly;
 						}
 						else
 						{
-							REF = Helper.deg2rad(180) - orbit.Body.Orbit.LongitudeOfAscendingNode - orbit.Body.Orbit.ArgumentOfPeriapsis - orbit.Body.Orbit.TrueAnomaly;
+							REF = 0 - orbit.Body.Orbit.LongitudeOfAscendingNode - orbit.Body.Orbit.ArgumentOfPeriapsis - orbit.Body.Orbit.TrueAnomaly;
 						}
 					}
 				}
@@ -470,6 +510,7 @@ namespace KSP_MOCR
 			{
 				// SET EVERYTHING TO 0
 				thetaZero = 0;
+				thetaZeroNoREF = 0;
 				alphaZero = 0;
 				directrix = orbit.Periapsis;
 
@@ -481,12 +522,14 @@ namespace KSP_MOCR
 			{
 				if (inclination > Helper.deg2rad(90) && inclination <= Helper.deg2rad(270))
 				{
-					thetaZero = REF + orbit.LongitudeOfAscendingNode + orbit.ArgumentOfPeriapsis; // Rotation clockwise from x-direction (Right) of Apoapse
-					alphaZero = REF + orbit.LongitudeOfAscendingNode; // Decending Node
+					thetaZeroNoREF =  0 - orbit.LongitudeOfAscendingNode + orbit.ArgumentOfPeriapsis; // Rotation clockwise from x-direction (Right) of Apoapse
+					thetaZero = REF + thetaZeroNoREF;
+					alphaZero = REF - orbit.LongitudeOfAscendingNode; // Decending Node
 				}
 				else
 				{
-					thetaZero = REF - orbit.LongitudeOfAscendingNode - orbit.ArgumentOfPeriapsis; // Rotation counterclockwise from x-direction (Right) of Apoapse
+					thetaZeroNoREF = 0 - orbit.LongitudeOfAscendingNode - orbit.ArgumentOfPeriapsis; // Rotation counterclockwise from x-direction (Right) of Apoapse
+					thetaZero = REF + thetaZeroNoREF; 
 					alphaZero = REF - orbit.LongitudeOfAscendingNode; // Decending Node
 				}
 
@@ -511,26 +554,27 @@ namespace KSP_MOCR
 			}
 
 			// DEBUG LINES
-			/**/
-			PointF center = new PointF((float)(graphCenterX + satX), (float)(graphCenterY - satY));
-			x = (float)((200 * Math.Cos(thetaZero)) + center.X);
-			y = (float)((200 * Math.Sin(thetaZero)) + center.Y);
-			g.DrawLine(burnPen, center, new PointF(x, y));
-			g.DrawString("ThetaZero " + debug, font, textBrush, x, y);
+			if (debug)
+			{
+				PointF center = new PointF((float)(graphCenterX + satX), (float)(graphCenterY - satY));
+				x = (float)((200 * Math.Cos(thetaZero)) + center.X);
+				y = (float)((200 * Math.Sin(thetaZero)) + center.Y);
+				g.DrawLine(burnPen, center, new PointF(x, y));
+				g.DrawString("ThetaZero " + debugstr, font, textBrush, x, y);
 
-			x = (float)((200 * Math.Cos(alphaZero)) + center.X);
-			y = (float)((200 * Math.Sin(alphaZero)) + center.Y);
-			g.DrawLine(burnPen, center, new PointF(x, y));
-			g.DrawString("AlphaZero " + debug, font, textBrush, x, y);
+				x = (float)((200 * Math.Cos(alphaZero)) + center.X);
+				y = (float)((200 * Math.Sin(alphaZero)) + center.Y);
+				g.DrawLine(burnPen, center, new PointF(x, y));
+				g.DrawString("AlphaZero " + debugstr, font, textBrush, x, y);
 
-			x = (float)((200 * Math.Cos(REF)) + center.X);
-			y = (float)((200 * Math.Sin(REF)) + center.Y);
-			g.DrawLine(burnPen, center, new PointF(x, y));
-			g.DrawString("REF " + debug, font, textBrush, x, y);
+				x = (float)((200 * Math.Cos(REF)) + center.X);
+				y = (float)((200 * Math.Sin(REF)) + center.Y);
+				g.DrawLine(burnPen, center, new PointF(x, y));
+				g.DrawString("REF " + debugstr, font, textBrush, x, y);
 
-			g.DrawArc(burnPen, center.X - 180, center.Y - 180, 360, 360, (float)Helper.rad2deg(REF), (float)Helper.rad2deg(alphaZero - REF));
-			g.DrawArc(burnPen, center.X - 160, center.Y - 160, 320, 320, (float)Helper.rad2deg(alphaZero), (float)Helper.rad2deg(thetaZero - alphaZero));
-			/**/
+				g.DrawArc(burnPen, center.X - 180, center.Y - 180, 360, 360, (float)Helper.rad2deg(REF), (float)Helper.rad2deg(alphaZero - REF));
+				g.DrawArc(burnPen, center.X - 160, center.Y - 160, 320, 320, (float)Helper.rad2deg(alphaZero), (float)Helper.rad2deg(thetaZero - alphaZero));
+			}
 
 		}
 
@@ -543,7 +587,6 @@ namespace KSP_MOCR
 			double dx = 0;
 			double dy = 0;
 
-
 			alpha = alphaZero - theta;
 
 			if (eccentricity == 0)
@@ -554,7 +597,6 @@ namespace KSP_MOCR
 			{
 				r = (eccentricity * directrix) / (1 + (eccentricity * Math.Cos(theta - thetaZero)));
 			}
-
 
 			// Get Point coordinates
 			x = (float)(r * Math.Cos(theta));
@@ -587,18 +629,17 @@ namespace KSP_MOCR
 				dy = dy * Math.Abs(Math.Sin(inclination));
 			}
 
-			// IF relativeToParent, recalculate satX/Y each time.
-			if(relativeToParent)
-			{
-				double time = orbit.UTAtTrueAnomaly(theta - thetaZero);
-				Tuple<double, double, double> pos = bodyOrbit.PositionAt(time, bodyNonRotFrame);
-				satX = pos.Item1 * scaler;
-				satY = pos.Item3 * scaler;
-			}
-
 			// Get Point coordinates
 			x = (x * scaler) + graphCenterX + satX + dx;
 			y = (y * scaler) + graphCenterY - satY - dy;
+
+			// Store location for Relative Periapse
+			if(r < relPeriapse || relPeriapse == -1)
+			{
+				relPeriapse = r;
+				relPeriapseX = (float)x;
+				relPeriapseY = (float)y;
+			}
 
 			return new Tuple<double, double>(x, y);
 		}
@@ -635,6 +676,12 @@ namespace KSP_MOCR
 
 			g.FillEllipse(apoBrush, x - 5, y - 5, 10, 10);
 			g.DrawString(Math.Round(orbit.PeriapsisAltitude).ToString(), font, textBrush, x, y);
+		}
+
+		private void drawPeriapse(Graphics g, float x, float y)
+		{
+			g.FillEllipse(apoBrush, x - 5, y - 5, 10, 10);
+			g.DrawString(Math.Round(relPeriapse).ToString(), font, textBrush, x, y);
 		}
 
 		private void drawApoapse(Graphics g, Orbit orbit)
