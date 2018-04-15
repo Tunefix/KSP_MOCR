@@ -209,7 +209,7 @@ namespace KSP_MOCR
 				inertDirection = screenStreams.GetData(DataType.flight_inertial_direction);
 				inertRoll = screenStreams.GetData(DataType.flight_inertial_roll);
 				inertPitch = (float)Helper.rad2deg(Math.Asin(inertDirection.Item2));
-				inertYaw = (float)Helper.rad2deg(Math.Atan(inertDirection.Item3 / inertDirection.Item1));
+				inertYaw = (float)Helper.rad2deg(Math.Atan2(inertDirection.Item1, inertDirection.Item3));
 				MET = screenStreams.GetData(DataType.vessel_MET);
 				MeanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
 				SurfaceAltitude = screenStreams.GetData(DataType.flight_surfaceAltitude);

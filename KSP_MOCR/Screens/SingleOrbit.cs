@@ -201,9 +201,20 @@ namespace KSP_MOCR
 				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
 
 				// ROTATION
-				rR = 0;
-				rP = 0;
-				rY = 0;
+				// Ref (AGC NOUN 20)
+				double ds;
+				if(double.TryParse(dataStorage.getData("AGC_N20R1"), out ds))
+				{ rR = ds / 100d; }
+				else { rR = 0; }
+
+				if (double.TryParse(dataStorage.getData("AGC_N20R2"), out ds))
+				{ rP = ds / 100d; }
+				else { rP = 0; }
+
+				if (double.TryParse(dataStorage.getData("AGC_N20R3"), out ds))
+				{ rY = ds / 100d; }
+				else { rY = 0; }
+				
 
 				iR = screenStreams.GetData(DataType.flight_inertial_roll);
 				iP = screenStreams.GetData(DataType.flight_inertial_pitch);
@@ -215,14 +226,6 @@ namespace KSP_MOCR
 				sR = screenStreams.GetData(DataType.flight_roll);
 				sP = screenStreams.GetData(DataType.flight_pitch);
 				sY = screenStreams.GetData(DataType.flight_heading);
-
-				double.TryParse(dataStorage.getData("N20R1"), out rR);
-				double.TryParse(dataStorage.getData("N20R2"), out rP);
-				double.TryParse(dataStorage.getData("N20R3"), out rY);
-
-				rR = rR / 100f;
-				rP = rP / 100f;
-				rY = rY / 100f;
 
 				// DIRECTION VECTORS
 				inerPrograde = screenStreams.GetData(DataType.flight_inertial_prograde);

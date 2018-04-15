@@ -100,6 +100,8 @@ namespace KSP_MOCR
 			screenLabels[30] = Helper.CreateLabel(85, 6, 10, 1, "432.67", false);
 			screenLabels[31] = Helper.CreateLabel(85, 9, 10, 1, "432.67", true);
 
+			screenLabels[31] = Helper.CreateLabel(55, 14, 55, 1, "GREEK LETTERS: ΑΒΓΔΕΖΗΘΛΣΦΨΩ αβγδεζηθλμξπρφψω", true);
+
 		}
 
 		public override void resize() { }

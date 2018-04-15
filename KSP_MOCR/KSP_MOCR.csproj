@@ -151,6 +151,7 @@
     <Compile Include="Screens\GeeVel.cs" />
     <Compile Include="Screens\HvsHdot.cs" />
     <Compile Include="Screens\Node.cs" />
+    <Compile Include="Screens\NodesCRT.cs" />
     <Compile Include="Screens\OrbitView.cs" />
     <Compile Include="Screens\Pilot1.cs" />
     <Compile Include="Screens\StreamsScreen.cs" />

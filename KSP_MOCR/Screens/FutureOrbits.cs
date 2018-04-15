@@ -34,7 +34,7 @@ namespace KSP_MOCR
 			for (int i = 0; i < 1; i++) screenInputs.Add(null); // Initialize Inputs
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
-			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 6, 1, "SCR 13");
+			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 7, 1, "SCR " + form.screenType.ToString());
 			screenLabels[1] = Helper.CreateCRTLabel(26, 0, 30, 1, "FUTURE ORBITS", 4);
 			screenLabels[2] = Helper.CreateCRTLabel(0, 1.5, 12, 1, "LT: XX:XX:XX");
 			screenLabels[3] = Helper.CreateCRTLabel(29, 1.5, 14, 1, "MET: XXX:XX:XX");

@@ -891,6 +891,29 @@ namespace KSP_MOCR
 		}
 
 		/// <summary>
+		/// Convert Vector to Roll, Pitch, Yaw
+		/// </summary>
+		/// <param name="v">Unit Vector</param>
+		/// <returns></returns>
+		public static Tuple<double, double, double> RPYfromVector(Tuple<double, double, double> v)
+		{
+			double x = v.Item1;
+			double y = v.Item2;
+			double z = v.Item3;
+
+			double yaw = Math.Atan2(x, y);
+			if(yaw < 0)
+			{
+				yaw += Math.PI * 2;
+			}
+
+			double pitch = Math.Asin(z);
+			double roll = 0; // Never mind this
+
+			return new Tuple<double, double, double>(roll, pitch, yaw);
+		}
+
+		/// <summary>
 		/// Converts Quaterinion to Roll, Pitch, Yaw
 		/// </summary>
 		/// <param name="q"></param>

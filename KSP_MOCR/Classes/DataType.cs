@@ -27,6 +27,10 @@ namespace KSP_MOCR
 		/// float
 		/// </summary>
 		body_mass,
+		/// <summary>
+		/// The reference frame that is fixed relative to this celestial body, and orientated in a fixed direction (it does not rotate with the body).
+		/// </summary>
+		body_nonRotatingReferenceFrame,
 
 		control_SAS,
 		control_SASmode,

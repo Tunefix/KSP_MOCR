@@ -666,7 +666,7 @@ namespace KSP_MOCR
 			g.FillEllipse(textBrush, x - 5, y - 5, 10, 10);
 		}
 
-		private void drawPeriapse(Graphics g, Orbit orbit) { drawPeriapse(g, orbit, false);  }
+		private void drawPeriapse(Graphics g, Orbit orbit) { drawPeriapse(g, orbit, false); }
 		private void drawPeriapse(Graphics g, Orbit orbit, bool relativeToParent)
 		{
 			float x, y;

@@ -205,13 +205,15 @@ namespace KSP_MOCR
 			control = connection.SpaceCenter().ActiveVessel.Control;
 			orbit = connection.SpaceCenter().ActiveVessel.Orbit;
 			resources = connection.SpaceCenter().ActiveVessel.Resources;
-			resources_stage =  connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
+			resources_stage = connection.SpaceCenter().ActiveVessel.ResourcesInDecoupleStage(stage, false);
+
 			inertialRefFrame = orbit.Body.NonRotatingReferenceFrame;
-			mapRefFrame = orbit.Body.ReferenceFrame;
-			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
 			surfaceRefFrame = vessel.SurfaceReferenceFrame;
-			flight = connection.SpaceCenter().ActiveVessel.Flight(surfaceRefFrame);
-			mapFlight = connection.SpaceCenter().ActiveVessel.Flight(mapRefFrame);
+			mapRefFrame = orbit.Body.ReferenceFrame;
+
+			inertFlight = connection.SpaceCenter().ActiveVessel.Flight(inertialRefFrame);
+			     flight = connection.SpaceCenter().ActiveVessel.Flight(surfaceRefFrame);
+			  mapFlight = connection.SpaceCenter().ActiveVessel.Flight(mapRefFrame);
 
 			
 			Kstream stream;
@@ -241,6 +243,10 @@ namespace KSP_MOCR
 
 				case DataType.body_rotPeriod:
 					stream = new floatStream(connection.AddStream(() => orbit.Body.RotationalPeriod));
+					break;
+
+				case DataType.body_nonRotatingReferenceFrame:
+					stream = new referenceFrameStream(connection.AddStream(() => orbit.Body.NonRotatingReferenceFrame));
 					break;
 
 				///// CONTROL DATA /////

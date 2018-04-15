@@ -38,9 +38,9 @@ namespace KSP_MOCR
 		public int height = 30; // in rows
 		public bool charSize = true; // Wheter size and positions are in chars/rows or pixels(without padding)
 
-		private static int screenType;
-		private static string idstr;
-		private static string name;
+		private static int screenType { get; set; }
+		private static string idstr { get; set; }
+		private static string name { get; set; }
 
 		public int updateRate = 1000;
 		public int timeWarning = 250;
@@ -112,6 +112,10 @@ namespace KSP_MOCR
 				case 13:
 					scr = new FutureOrbits(form);
 					name = "FUTURE ORBITS";
+					break;
+				case 14:
+					scr = new NodesCRT(form);
+					name = "NODES";
 					break;
 				case 40:
 					scr = new FDO(form);
