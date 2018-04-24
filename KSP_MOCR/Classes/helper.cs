@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KRPC.Client.Services.SpaceCenter;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -224,12 +225,12 @@ namespace KSP_MOCR
 		}
 
 
-		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false, ButtonType.NORMAL); }
-		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false, ButtonType.NORMAL); }
-		static public MocrButton CreateButton(double x, double y, double w, double h) { return CreateButton(x, y, w, h, "", false, ButtonType.NORMAL); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, h, t, false, ButtonType.NORMAL); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels) { return CreateButton(x, y, w, h, t, pixels, ButtonType.NORMAL); }
-		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels, ButtonType type)
+		static public MocrButton CreateButton(double x, double y) { return CreateButton(x, y, 8, 1, "", false, MocrButton.style.PUSH); }
+		static public MocrButton CreateButton(double x, double y, double w) { return CreateButton(x, y, w, 1, "", false, MocrButton.style.PUSH); }
+		static public MocrButton CreateButton(double x, double y, double w, double h) { return CreateButton(x, y, w, h, "", false, MocrButton.style.PUSH); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t) { return CreateButton(x, y, w, h, t, false, MocrButton.style.PUSH); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels) { return CreateButton(x, y, w, h, t, pixels, MocrButton.style.PUSH); }
+		static public MocrButton CreateButton(double x, double y, double w, double h, String t, bool pixels, MocrButton.style type)
 		{
 			int top, left, width, height;
 			if (pixels)
@@ -262,8 +263,7 @@ namespace KSP_MOCR
 			button.Text = t;
 			button.Padding = new Padding(0);
 
-			if (type == ButtonType.DSKY) button.buttonStyle = MocrButton.style.DSKY;
-			if (type == ButtonType.TINY_PUSH) button.buttonStyle = MocrButton.style.TINY_PUSH; 
+			button.buttonStyle = type;
 
 			form.Controls.Add(button);
 			return button;
@@ -895,44 +895,117 @@ namespace KSP_MOCR
 		/// </summary>
 		/// <param name="v">Unit Vector</param>
 		/// <returns></returns>
-		public static Tuple<double, double, double> RPYfromVector(Tuple<double, double, double> v)
+		public static Tuple<double, double, double> RPYfromVector(Tuple<double, double, double> v, ReferenceFrame vesselFrame, ReferenceFrame targetFrame, string frame)
 		{
-			double x = v.Item1;
-			double y = v.Item2;
-			double z = v.Item3;
+			double x, y, z;
+			if (frame == "SURF")
+			{
+				x = v.Item1; // UP
+				y = v.Item2; // NORTH
+				z = v.Item3; // EAST
+			}
+			else
+			{
+				x = v.Item2; // UP
+				y = v.Item1; // Arbitrary direction out the equator
+				z = v.Item3; // 90° CCW from y
+			}
 
-			double yaw = Math.Atan2(x, y);
+			double yaw = Math.Atan2(y, z);
 			if(yaw < 0)
 			{
 				yaw += Math.PI * 2;
 			}
 
-			double pitch = Math.Asin(z);
-			double roll = 0; // Never mind this
+			double pitch = Math.Asin(x);
+
+			double roll = 0;
+
+			if (frame == "SURF")
+			{
+				Tuple<double, double, double> up = new Tuple<double, double, double>(1, 0, 0);
+				Tuple<double, double, double> planeNormal = crossProduct(v, up);
+				// Compute the upwards direction of the vessel
+				Tuple<double, double, double> vesselUp = form.form.spaceCenter.TransformDirection(
+					new Tuple<double, double, double>(0, 0, -1),
+					vesselFrame, targetFrame);
+				// Compute the angle between the upwards direction of
+				// the vessel and the plane normal
+				roll = angleBetweenTwoVectors(vesselUp, planeNormal);
+				// Adjust so that the angle is between -180 and 180 and
+				// rolling right is +ve and left is -ve
+				if (vesselUp.Item1 > 0)
+					roll *= -1;
+				else if (roll < 0)
+					roll += 180;
+				else
+					roll -= 180;
+			}
+			else // Inertial frames
+			{
+				Tuple<double, double, double> up = new Tuple<double, double, double>(0, 1, 0);
+				Tuple<double, double, double> planeNormal = crossProduct(v, up);
+				// Compute the upwards direction of the vessel
+				Tuple<double, double, double> vesselUp = form.form.spaceCenter.TransformDirection(
+					new Tuple<double, double, double>(0, 0, -1),
+					vesselFrame, targetFrame);
+				// Compute the angle between the upwards direction of
+				// the vessel and the plane normal
+				roll = angleBetweenTwoVectors(vesselUp, planeNormal);
+				// Adjust so that the angle is between -180 and 180 and
+				// rolling right is +ve and left is -ve
+				if (vesselUp.Item2 > 0)
+					roll *= -1;
+				else if (roll < 0)
+					roll += 180;
+				else
+					roll -= 180;
+			}
+			// Make roll radians
+			roll = deg2rad(roll);
 
 			return new Tuple<double, double, double>(roll, pitch, yaw);
 		}
 
 		/// <summary>
-		/// Converts Quaterinion to Roll, Pitch, Yaw
+		/// Converts Quaterinion to Roll, Pitch, Yaw (Degrees)
 		/// </summary>
 		/// <param name="q"></param>
 		/// <returns></returns>
-		public static Tuple<double, double, double> RPYFromQuaternion(Tuple<double, double, double, double> q)
+		public static Tuple<double, double, double> RPYFromQuaternion(Tuple<double, double, double, double> q) { return RPYFromQuaternion(q, "SURF"); }
+		public static Tuple<double, double, double> RPYFromQuaternion(Tuple<double, double, double, double> q, string mode)
 		{
+			double x, y, z, w;
 			// 1:X, 2:Y, 3:Z, 4:W
-			/*
-			 * kRPC-angles are XYZW, but reference frame is different.
-			 * 
-			 *  Euler   kRPC
-			 *    X      Y
-			 *    Y      Z
-			 *    Z      X
-			 */
-			double x = q.Item2;
-			double y = q.Item3;
-			double z = q.Item1;
-			double w = q.Item4;
+
+			if (mode == "INER") // Body Non-Rotating Reference Frame
+			{
+				/* Inertial reference frame is different from the surface one.
+				 * 
+				 *   Euler   kRPC
+				 *    X       Z (90° CCW from X)
+				 *    Y       X (arbitrary point out the equator)
+				 *    Z       Y (Up, or through the North Pole)
+				 */
+				x = q.Item3;
+				y = q.Item1;
+				z = q.Item2;
+				w = q.Item4;
+			}
+			else // Vessel Surface Reference Frame
+			{
+				/* kRPC-angles are XYZW, but reference frame is different.
+				 * 
+				 *  Euler   kRPC
+				 *    X      Y (North)
+				 *    Y      Z (East)
+				 *    Z      X (Up)
+				 */
+				x = q.Item2;
+				y = q.Item3;
+				z = q.Item1;
+				w = q.Item4;
+			}
 
 			double roll, pitch, yaw;
 
@@ -976,9 +1049,49 @@ namespace KSP_MOCR
 			return (a.Item1 * b.Item1) + (a.Item2 * b.Item2);
 		}
 
+		public static double dotProduct(Tuple<double, double, double> a, Tuple<double, double, double> b)
+		{
+			return (a.Item1 * b.Item1) + (a.Item2 * b.Item2) + (a.Item3 * b.Item3);
+		}
+
 		public static double vectorMagnitude(Tuple<double, double> v)
 		{
 			return Math.Sqrt(Math.Pow(v.Item1, 2) + Math.Pow(v.Item2, 2));
+		}
+
+		public static double vectorMagnitude(Tuple<double, double, double> v)
+		{
+			return Math.Sqrt(Math.Pow(v.Item1, 2) + Math.Pow(v.Item2, 2) + Math.Pow(v.Item3, 2));
+		}
+
+		/// <summary>
+		/// Gets angle in degrees
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns>Angle in degrees</returns>
+		public static double angleBetweenTwoVectors(Tuple<double, double, double> a, Tuple<double, double, double> b)
+		{
+			double dot = dotProduct(a, b);
+			double ma = vectorMagnitude(a);
+			double mb = vectorMagnitude(b);
+
+			if (dot == 0) return 0;
+
+			return rad2deg(Math.Acos(dot / (ma * mb)));
+		}
+
+		public static Tuple<double, double, double> crossProduct(Tuple<double, double, double> a, Tuple<double, double, double> b)
+		{
+			double x = 0;
+			double y = 0;
+			double z = 0;
+
+			x = (a.Item2 * b.Item3) - (a.Item3 * b.Item2);
+            y = (a.Item3 * b.Item1) - (a.Item1 * b.Item3);
+			z = (a.Item1 * b.Item2) - (a.Item2 * b.Item1);
+
+			return new Tuple<double, double, double>(x, y, x);
 		}
 	}
 }

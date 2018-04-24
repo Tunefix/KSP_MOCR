@@ -14,6 +14,7 @@ namespace KSP_MOCR
 		double UT = 0;
 		IList<Node> nodes;
 		ReferenceFrame frame;
+		ReferenceFrame vesselFrame;
 
 		public NodesCRT(Screen form)
 		{
@@ -68,6 +69,7 @@ namespace KSP_MOCR
 				UT = screenStreams.GetData(DataType.spacecenter_universial_time);
 				nodes = screenStreams.GetData(DataType.control_nodes);
 				frame = screenStreams.GetData(DataType.body_nonRotatingReferenceFrame);
+				vesselFrame = screenStreams.GetData(DataType.vessel_referenceFrame);
 
 				screenLabels[3].Text = "MET: " + Helper.timeString(MET, 3);
 
@@ -89,7 +91,7 @@ namespace KSP_MOCR
 						screenLabels[(i * 20) + 9].Text = "        REM. ΔV: " + Helper.prtlen(Helper.toFixed(nodes[i - 1].RemainingDeltaV, 2), 10);
 
 
-						Tuple<double, double, double> rot = Helper.RPYfromVector(nodes[i - 1].Direction(frame));
+						Tuple<double, double, double> rot = Helper.RPYfromVector(nodes[i - 1].Direction(frame), vesselFrame, frame, "INER");
 						screenLabels[(i * 20) + 11].Text = "           ┌──────── INER ────────┐";
 						screenLabels[(i * 20) + 12].Text =  "             ROLL    PITCH    YAW";
 						screenLabels[(i * 20) + 13].Text = "      ROT: " + Helper.prtlen(Helper.toFixed(Helper.rad2deg(rot.Item1), 2), 7)

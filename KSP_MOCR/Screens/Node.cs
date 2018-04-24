@@ -54,9 +54,9 @@ namespace KSP_MOCR
 			screenDigits[0] = Helper.CreateConsoleDigit(80, 64, digits, true);
 			screenDigits[0].setDigID(10);
 
-			screenButtons[0] = Helper.CreateButton(78, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[0] = Helper.CreateButton(78, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[0].Click += (sender, e) => nextNode();
-			screenButtons[1] = Helper.CreateButton(78, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[1] = Helper.CreateButton(78, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[1].Click += (sender, e) => prevNode();
 
 			// MET
@@ -81,39 +81,39 @@ namespace KSP_MOCR
 			screenDigits[7] = Helper.CreateConsoleDigit(432, 64, digits, true);
 			screenDigits[7].setDigID(10);
 
-			screenButtons[2] = Helper.CreateButton(241, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[2] = Helper.CreateButton(241, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[2].MouseDown += (sender, e) => changeMET(360000);
-			screenButtons[3] = Helper.CreateButton(241, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[3] = Helper.CreateButton(241, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[3].MouseDown += (sender, e) => changeMET(-360000);
 
-			screenButtons[4] = Helper.CreateButton(268, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[4] = Helper.CreateButton(268, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[4].MouseDown += (sender, e) => changeMET(36000);
-			screenButtons[5] = Helper.CreateButton(268, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[5] = Helper.CreateButton(268, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[5].MouseDown += (sender, e) => changeMET(-36000);
 
-			screenButtons[6] = Helper.CreateButton(295, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[6] = Helper.CreateButton(295, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[6].MouseDown += (sender, e) => changeMET(3600);
-			screenButtons[7] = Helper.CreateButton(295, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[7] = Helper.CreateButton(295, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[7].MouseDown += (sender, e) => changeMET(-3600);
 
-			screenButtons[8] = Helper.CreateButton(335, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[8] = Helper.CreateButton(335, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[8].MouseDown += (sender, e) => changeMET(600);
-			screenButtons[9] = Helper.CreateButton(335, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[9] = Helper.CreateButton(335, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[9].MouseDown += (sender, e) => changeMET(-600);
 
-			screenButtons[10] = Helper.CreateButton(362, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[10] = Helper.CreateButton(362, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[10].MouseDown += (sender, e) => changeMET(60);
-			screenButtons[11] = Helper.CreateButton(362, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[11] = Helper.CreateButton(362, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[11].MouseDown += (sender, e) => changeMET(-60);
 
-			screenButtons[12] = Helper.CreateButton(402, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[12] = Helper.CreateButton(402, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[12].MouseDown += (sender, e) => changeMET(10);
-			screenButtons[13] = Helper.CreateButton(402, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[13] = Helper.CreateButton(402, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[13].MouseDown += (sender, e) => changeMET(-10);
 
-			screenButtons[14] = Helper.CreateButton(429, 102, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[14] = Helper.CreateButton(429, 102, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[14].MouseDown += (sender, e) => changeMET(1);
-			screenButtons[15] = Helper.CreateButton(429, 129, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[15] = Helper.CreateButton(429, 129, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[15].MouseDown += (sender, e) => changeMET(-1);
 
 
@@ -134,25 +134,25 @@ namespace KSP_MOCR
 			screenDigits[13] = Helper.CreateConsoleDigit(226, 180, digits, true);
 			screenDigits[13].setDigID(10);
 
-			screenButtons[16] = Helper.CreateButton(102, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[16] = Helper.CreateButton(102, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[16].MouseDown += (sender, e) => changeV(1000, "PRO");
-			screenButtons[17] = Helper.CreateButton(102, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[17] = Helper.CreateButton(102, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[17].MouseDown += (sender, e) => changeV(-1000, "PRO");
-			screenButtons[18] = Helper.CreateButton(129, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[18] = Helper.CreateButton(129, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[18].MouseDown += (sender, e) => changeV(100, "PRO");
-			screenButtons[19] = Helper.CreateButton(129, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[19] = Helper.CreateButton(129, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[19].MouseDown += (sender, e) => changeV(-100, "PRO");
-			screenButtons[20] = Helper.CreateButton(156, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[20] = Helper.CreateButton(156, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[20].MouseDown += (sender, e) => changeV(10, "PRO");
-			screenButtons[21] = Helper.CreateButton(156, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[21] = Helper.CreateButton(156, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[21].MouseDown += (sender, e) => changeV(-10, "PRO");
-			screenButtons[22] = Helper.CreateButton(183, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[22] = Helper.CreateButton(183, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[22].MouseDown += (sender, e) => changeV(1, "PRO");
-			screenButtons[23] = Helper.CreateButton(183, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[23] = Helper.CreateButton(183, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[23].MouseDown += (sender, e) => changeV(-1, "PRO");
-			screenButtons[24] = Helper.CreateButton(223, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[24] = Helper.CreateButton(223, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[24].MouseDown += (sender, e) => changeV(0.1, "PRO");
-			screenButtons[25] = Helper.CreateButton(223, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[25] = Helper.CreateButton(223, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[25].MouseDown += (sender, e) => changeV(-0.1, "PRO");
 
 
@@ -174,25 +174,25 @@ namespace KSP_MOCR
 			screenDigits[19] = Helper.CreateConsoleDigit(430, 180, digits, true);
 			screenDigits[19].setDigID(10);
 
-			screenButtons[26] = Helper.CreateButton(306, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[26] = Helper.CreateButton(306, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[26].MouseDown += (sender, e) => changeV(1000, "RAD");
-			screenButtons[27] = Helper.CreateButton(306, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[27] = Helper.CreateButton(306, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[27].MouseDown += (sender, e) => changeV(-1000, "RAD");
-			screenButtons[28] = Helper.CreateButton(333, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[28] = Helper.CreateButton(333, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[28].MouseDown += (sender, e) => changeV(100, "RAD");
-			screenButtons[29] = Helper.CreateButton(333, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[29] = Helper.CreateButton(333, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[29].MouseDown += (sender, e) => changeV(-100, "RAD");
-			screenButtons[30] = Helper.CreateButton(360, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[30] = Helper.CreateButton(360, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[30].MouseDown += (sender, e) => changeV(10, "RAD");
-			screenButtons[31] = Helper.CreateButton(360, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[31] = Helper.CreateButton(360, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[31].MouseDown += (sender, e) => changeV(-10, "RAD");
-			screenButtons[32] = Helper.CreateButton(387, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[32] = Helper.CreateButton(387, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[32].MouseDown += (sender, e) => changeV(1, "RAD");
-			screenButtons[33] = Helper.CreateButton(387, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[33] = Helper.CreateButton(387, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[33].MouseDown += (sender, e) => changeV(-1, "RAD");
-			screenButtons[34] = Helper.CreateButton(427, 218, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[34] = Helper.CreateButton(427, 218, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[34].MouseDown += (sender, e) => changeV(0.1, "RAD");
-			screenButtons[35] = Helper.CreateButton(427, 245, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[35] = Helper.CreateButton(427, 245, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[35].MouseDown += (sender, e) => changeV(-0.1, "RAD");
 
 
@@ -213,25 +213,25 @@ namespace KSP_MOCR
 			screenDigits[25] = Helper.CreateConsoleDigit(430, 295, digits, true);
 			screenDigits[25].setDigID(10);
 
-			screenButtons[36] = Helper.CreateButton(306, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[36] = Helper.CreateButton(306, 333, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[36].MouseDown += (sender, e) => changeV(1000, "NORM");
-			screenButtons[37] = Helper.CreateButton(306, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[37] = Helper.CreateButton(306, 360, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[37].MouseDown += (sender, e) => changeV(-1000, "NORM");
-			screenButtons[38] = Helper.CreateButton(333, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[38] = Helper.CreateButton(333, 333, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[38].MouseDown += (sender, e) => changeV(100, "NORM");
-			screenButtons[39] = Helper.CreateButton(333, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[39] = Helper.CreateButton(333, 360, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[39].MouseDown += (sender, e) => changeV(-100, "NORM");
-			screenButtons[40] = Helper.CreateButton(360, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[40] = Helper.CreateButton(360, 333, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[40].MouseDown += (sender, e) => changeV(10, "NORM");
-			screenButtons[41] = Helper.CreateButton(360, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[41] = Helper.CreateButton(360, 360, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[41].MouseDown += (sender, e) => changeV(-10, "NORM");
-			screenButtons[42] = Helper.CreateButton(387, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[42] = Helper.CreateButton(387, 333, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[42].MouseDown += (sender, e) => changeV(1, "NORM");
-			screenButtons[43] = Helper.CreateButton(387, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[43] = Helper.CreateButton(387, 360, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[43].MouseDown += (sender, e) => changeV(-1, "NORM");
-			screenButtons[44] = Helper.CreateButton(427, 333, 28, 28, "+", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[44] = Helper.CreateButton(427, 333, 28, 28, "+", true, MocrButton.style.TINY_PUSH);
 			screenButtons[44].MouseDown += (sender, e) => changeV(0.1, "NORM");
-			screenButtons[45] = Helper.CreateButton(427, 360, 28, 28, "-", true, Helper.ButtonType.TINY_PUSH);
+			screenButtons[45] = Helper.CreateButton(427, 360, 28, 28, "-", true, MocrButton.style.TINY_PUSH);
 			screenButtons[45].MouseDown += (sender, e) => changeV(-0.1, "NORM");
 
 

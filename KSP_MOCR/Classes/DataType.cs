@@ -346,6 +346,7 @@ namespace KSP_MOCR
 		/// <summary>
 		/// Orbit, The current orbit of the vessel.
 		/// </summary>
-		vessel_orbit
+		vessel_orbit,
+		vessel_autoPilot
 	}
 }

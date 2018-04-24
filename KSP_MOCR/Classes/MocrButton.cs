@@ -23,7 +23,7 @@ namespace KSP_MOCR
 		readonly Pen ControlInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 2f);
 		readonly Pen ControlBorderShadowPen = new Pen(Color.FromArgb(55, 0, 0, 0), 1f);
 		
-		readonly Pen ThinOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 1f);
+		readonly Pen ThinOuterBorderPen = new Pen(Color.FromArgb(255, 128, 128, 128), 2f);
 		readonly Pen ThinInnerBorderPen = new Pen(Color.FromArgb(255, 160, 160, 160), 1f);
 
 		readonly Pen ThinSoftBlackPen = new Pen(Color.FromArgb(128, 0, 0, 0), 1f);
@@ -148,15 +148,15 @@ namespace KSP_MOCR
 			if (buttonStyle == style.THIN_BORDER_LIGHT)
 			{
 				innerX = innerY = 5;
-				outerBorderWidth = 1;
+				outerBorderWidth = 2;
 				outerBorderPen = ThinOuterBorderPen;
 				innerBorderPen = ThinInnerBorderPen;
 			}
 			
 			if (this.pressed)
 			{
-				innerX = innerX + 1;
-				innerY = innerY + 1;
+				innerX += 1;
+				innerY += 1;
 			}
 			
 
@@ -164,14 +164,7 @@ namespace KSP_MOCR
 			g.FillRectangle(backgroundColorBlankDim, (innerX / 2f), (innerY / 2f), this.Width - innerX, this.Height - innerY);
 
 			// Button color
-			if (buttonStyle == style.LIGHT)
-			{
-				g.FillRectangle(brush1, innerX, innerY, this.Width - ((innerX) * 2), this.Height - ((innerY) * 2));
-			}
-			else
-			{
-				g.FillRectangle(brush1, 1, 1, this.Width - 2, this.Height - 2);
-			}
+			g.FillRectangle(brush1, innerX, innerY, this.Width - ((innerX) * 2), this.Height - ((innerY) * 2));
 			
 			
 			
@@ -198,7 +191,7 @@ namespace KSP_MOCR
 			g.DrawString(this.Text, this.Font, textBrushLight, new RectangleF(1, 1, this.Width - 2, this.Height - 2), format);
 
 			// Inner Border
-			if (buttonStyle == style.LIGHT)
+			if (buttonStyle == style.LIGHT || buttonStyle == style.THIN_BORDER_LIGHT)
 			{
 				g.DrawRectangle(innerBorderPen, innerX, innerY, this.Width - (innerX * 2), this.Height - (innerY * 2));
 			}

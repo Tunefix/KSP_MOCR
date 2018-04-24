@@ -674,6 +674,14 @@ namespace KSP_MOCR
 					stream = new OrbitStream(connection.AddStream(() => vessel.Orbit));
 					break;
 
+				case DataType.vessel_autoPilot:
+					stream = new AutoPilotStream(connection.AddStream(() => vessel.AutoPilot));
+					break;
+
+				case DataType.vessel_surfaceReferenceFrame:
+					stream = new referenceFrameStream(connection.AddStream(() => vessel.SurfaceReferenceFrame));
+					break;
+
 
 				default:
 					throw (new Exception("DataType: " + type.ToString() + " not supported"));

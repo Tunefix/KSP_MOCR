@@ -359,5 +359,30 @@ namespace KSP_MOCR
 
 		public override void Remove() { stream.Remove(); }
 	}
-	
+
+	class AutoPilotStream : Kstream
+	{
+		KRPC.Client.Stream<AutoPilot> stream { get; set; }
+
+		public AutoPilotStream(KRPC.Client.Stream<AutoPilot> s)
+		{
+			stream = s;
+		}
+
+		public override dynamic Get()
+		{
+			try
+			{
+				return stream.Get();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.GetType().ToString() + ":" + e.Message + "\n" + e.StackTrace);
+				return null;
+			}
+		}
+
+		public override void Remove() { stream.Remove(); }
+	}
+
 }

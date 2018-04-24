@@ -18,6 +18,7 @@ namespace KSP_MOCR
 	{
 		ReferenceFrame surfaceRefsmmat;
 		ReferenceFrame inertialRefsmmat;
+		ReferenceFrame vesselRefsmmat;
 		Tuple<double, double, double> vesselSurfDirection;
 		Tuple<double, double, double> vesselInerDirection;
 		Tuple<double, double, double, double> vesselInerRotation;
@@ -90,7 +91,7 @@ namespace KSP_MOCR
 
 			screenInputs[0] = Helper.CreateInput(-2, -2, 1, 2); // Every page must have an input to capture keypresses on Unix
 
-			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 5, 1, "SCR 5");
+			screenLabels[0] = Helper.CreateCRTLabel(0, 0, 7, 1, "SCR " + form.screenType.ToString());
 			screenLabels[1] = Helper.CreateCRTLabel(27, 0, 42, 1, "ORBIT DATA", 4); // Screen Title
 			screenLabels[2] = Helper.CreateCRTLabel(0, 1.5, 12, 1, "LT: XX:XX:XX");
 			screenLabels[3] = Helper.CreateCRTLabel(29, 1.5, 14, 1, "MET: XXX:XX:XX");
@@ -200,6 +201,10 @@ namespace KSP_MOCR
 				vesselInerDirection = screenStreams.GetData(DataType.flight_inertial_direction);
 				vesselInerRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
 
+				surfaceRefsmmat = screenStreams.GetData(DataType.vessel_surfaceReferenceFrame);
+				vesselRefsmmat = screenStreams.GetData(DataType.vessel_referenceFrame);
+				inertialRefsmmat = screenStreams.GetData(DataType.body_nonRotatingReferenceFrame);
+
 				// ROTATION
 				// Ref (AGC NOUN 20)
 				double ds;
@@ -214,11 +219,14 @@ namespace KSP_MOCR
 				if (double.TryParse(dataStorage.getData("AGC_N20R3"), out ds))
 				{ rY = ds / 100d; }
 				else { rY = 0; }
-				
 
-				iR = screenStreams.GetData(DataType.flight_inertial_roll);
-				iP = screenStreams.GetData(DataType.flight_inertial_pitch);
-				iY = screenStreams.GetData(DataType.flight_inertial_yaw);
+
+				Tuple<double, double, double> iRPY = Helper.RPYFromQuaternion(vesselInerRotation, "INER");
+				iR = iRPY.Item1;
+				iP = iRPY.Item2;
+				iY = iRPY.Item3;
+
+
 				bR = 0;
 				bP = 0;
 				bY = 0;
@@ -263,9 +271,9 @@ namespace KSP_MOCR
 				timeToApoapsis = screenStreams.GetData(DataType.orbit_timeToApoapsis);
 
 				// STATE VECTORS
-				screenLabels[32].Text = "Rx: " + Helper.prtlen(Helper.toFixed(positionVector.Item1 / 1000d, 3, true), 9, Helper.Align.RIGHT);
-				screenLabels[33].Text = "Ry: " + Helper.prtlen(Helper.toFixed(positionVector.Item2 / 1000d, 3, true), 9, Helper.Align.RIGHT);
-				screenLabels[34].Text = "Rz: " + Helper.prtlen(Helper.toFixed(positionVector.Item3 / 1000d, 3, true), 9, Helper.Align.RIGHT);
+				screenLabels[32].Text = "Px: " + Helper.prtlen(Helper.toFixed(positionVector.Item1 / 1000d, 3, true), 9, Helper.Align.RIGHT);
+				screenLabels[33].Text = "Py: " + Helper.prtlen(Helper.toFixed(positionVector.Item2 / 1000d, 3, true), 9, Helper.Align.RIGHT);
+				screenLabels[34].Text = "Pz: " + Helper.prtlen(Helper.toFixed(positionVector.Item3 / 1000d, 3, true), 9, Helper.Align.RIGHT);
 
 				// SPEED VECTORS
 				screenLabels[41].Text = "Vx: " + Helper.prtlen(Helper.toFixed(velocityVector.Item1, 3, true), 9, Helper.Align.RIGHT);

@@ -53,6 +53,7 @@ namespace KSP_MOCR
 		bool SAS, RCS, Gear, Brakes, Lights, Abort;
 		float GForce;
 		Tuple<double, double, double> inertDirection;
+		Tuple<double, double, double, double> inertRotation;
 
 
 		public AscentScreen(Screen form)
@@ -206,10 +207,7 @@ namespace KSP_MOCR
 		
 			if (form.form.connected && form.form.krpc.CurrentGameScene == GameScene.Flight)
 			{
-				inertDirection = screenStreams.GetData(DataType.flight_inertial_direction);
-				inertRoll = screenStreams.GetData(DataType.flight_inertial_roll);
-				inertPitch = (float)Helper.rad2deg(Math.Asin(inertDirection.Item2));
-				inertYaw = (float)Helper.rad2deg(Math.Atan2(inertDirection.Item1, inertDirection.Item3));
+				inertRotation = screenStreams.GetData(DataType.flight_inertial_rotation);
 				MET = screenStreams.GetData(DataType.vessel_MET);
 				MeanAltitude = screenStreams.GetData(DataType.flight_meanAltitude);
 				SurfaceAltitude = screenStreams.GetData(DataType.flight_surfaceAltitude);
@@ -284,7 +282,12 @@ namespace KSP_MOCR
 				screenLabels[61].Text = Helper.prtlen(Helper.toFixed(v, 1), 8, Helper.Align.RIGHT); // Target Obital Velocity at Apoapsis
 
 
-				// POSITION INFO
+				// POSITION AND ROTATION INFO
+				Tuple<double, double, double> iRPY = Helper.RPYFromQuaternion(inertRotation, "INER");
+				inertRoll = (float)iRPY.Item1;
+				inertPitch = (float)iRPY.Item2;
+				inertYaw = (float)iRPY.Item3;
+
 				screenLabels[46].Text = "R: " + Helper.prtlen(Helper.toFixed(Roll, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertRoll, 2), 7, Helper.Align.RIGHT);
 				screenLabels[47].Text = "P: " + Helper.prtlen(Helper.toFixed(Pitch, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertPitch, 2), 7, Helper.Align.RIGHT);
 				screenLabels[48].Text = "Y: " + Helper.prtlen(Helper.toFixed(Yaw, 2), 7, Helper.Align.RIGHT) + "  " + Helper.prtlen(Helper.toFixed(inertYaw, 2), 7, Helper.Align.RIGHT);

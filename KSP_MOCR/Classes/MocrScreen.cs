@@ -189,6 +189,10 @@ namespace KSP_MOCR
 					scr = new CrtTest(form, 5);
 					name = "CRT TEST SCREEN - FONT SIZE 5";
 					break;
+				case 98:
+					scr = new Debug(form);
+					name = "DEBUG";
+					break;
 				case 99:
 					scr = new CrtTest2(form, 5);
 					name = "CRT TEST SCREEN #2";

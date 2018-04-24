@@ -140,6 +140,7 @@
     <Compile Include="Screens\CrtTest.cs" />
     <Compile Include="Screens\CrtTest2.cs" />
     <Compile Include="Screens\DataStorageScreen.cs" />
+    <Compile Include="Screens\Debug.cs" />
     <Compile Include="Screens\DSKYScreen.cs" />
     <Compile Include="Screens\Electrical.cs" />
     <Compile Include="Screens\EventPanelEECOM1.cs" />
